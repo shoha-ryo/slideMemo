@@ -1,0 +1,37 @@
+// Prisma は、データベースを扱いやすくする ORM（Object Relational Mapper）です。
+// このファイル（schema.prisma）では、
+// 「どんなデータベースを使うか」「どんなデータを保存するか（モデル定義）」を記述します。
+
+// --------------------------------------
+// generator：Prisma が自動で生成するクライアントの設定
+// --------------------------------------
+generator client {
+  provider = "prisma-client"  // Prismaクライアントを生成する（JavaScript/TypeScriptでDB操作が可能になる）
+  output   = "../generated/prisma"  // 自動生成されるクライアントの出力先（自由に変更可能）
+}
+
+// --------------------------------------
+// datasource：実際に接続するデータベースの設定
+// --------------------------------------
+datasource db {
+  provider = "maysql"  // 使用するデータベースの種類（例: "mysql" や "sqlite" にも変更可能）
+  url      = env("DATABASE_URL") // 接続先URL。環境変数（.envファイル）から読み込む
+  // 例: DATABASE_URL="postgresql://user:password@localhost:5432/mydb"
+}
+
+// --------------------------------------
+// モデル定義（テーブル構造）はこの下に書いていきます。
+// 例：ユーザー情報を保存するモデル
+// --------------------------------------
+
+// ユーザーデータをJSONで保存できるようにするモデル
+// model User {
+//   id        Int      @id @default(autoincrement())  // 主キー（自動採番）
+//   email     String   @unique                        // メールアドレス（重複禁止）
+//   password  String                                 // パスワード
+//   createdAt DateTime @default(now())                // 登録日時
+// }
+
+// タスクデータをJSONで保存できるようにするモデル
+
+// モデルを定義した後に「npx prisma migrate dev」を実行してテーブルを作成・変更する。実行すると履歴名を聞かれるので設定すること。
