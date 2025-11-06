@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 
 export default function SignUpPage() {
@@ -9,15 +10,15 @@ export default function SignUpPage() {
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
-	const [success, setSuccess] = useState(false);
+	const router = useRouter();
 
 	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		setError(null);
+		e.preventDefault(); // 再読み込みを停止させる（状態リセットや非同期処理の中断を防ぐため）
+		setError(null); // エラーメッセージをリセット（前回のエラーを表示させない）
 		setLoading(true);
 		try {
-			await createUserWithEmailAndPassword(auth, email, password);
-			setSuccess(true);
+			await signInWithEmailAndPassword(auth, email, password);
+			router.push("/dashboard");
 		} catch (err: any) {
 			setError(err.message);
 		} finally {
@@ -25,22 +26,13 @@ export default function SignUpPage() {
 		}
 	};
 
-	if (success) {
-		return (
-			<div className="flex flex-col items-center justify-center h-screen">
-				<h2 className="text-2xl font-bold">登録が完了しました！</h2>
-				<p className="mt-2 text-gray-500">ログイン画面に進んでください。</p>
-			</div>
-		);
-	}
-
 	return (
 		<div className="flex items-center justify-center h-screen bg-gray-50">
 			<form
-				onSubmit={handleSubmit}
+				onSubmit={handleSubmit} // このフォーム内にある「ボタンを押した時」や「inputでEnterキーを押した時」に発火
 				className="bg-white p-8 rounded-2xl shadow-md w-full max-w-sm"
 			>
-				<h1 className="text-2xl font-bold mb-6 text-center">新規登録</h1>
+				<h1 className="text-2xl font-bold mb-6 text-center">ログイン画面</h1>
 
 				<input
 					type="email"
@@ -67,7 +59,7 @@ export default function SignUpPage() {
 					disabled={loading}
 					className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 disabled:opacity-50"
 				>
-					{loading ? "登録中..." : "登録"}
+					{loading ? "ログイン中..." : "ログイン"}
 				</button>
 			</form>
 		</div>
