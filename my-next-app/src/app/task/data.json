@@ -1,0 +1,151 @@
+[
+  {
+    "id": "item-1",
+    "level": 1,
+    "title": "最上位親アイテム A",
+    "details": "メインのタスクグループです。",
+    "children": [
+      {
+        "id": "item-2",
+        "level": 2,
+        "title": "子タスク B (Aの子)",
+        "details": "タスクAの主要なサブタスク。",
+        "children": [
+          {
+            "id": "item-3",
+            "level": 3,
+            "title": "孫タスク C (Bの子)",
+            "details": "タスクBの具体的な実施項目。",
+            "children": [
+              {
+                "id": "item-4",
+                "level": 4,
+                "title": "ひ孫タスク D (Cの子)",
+                "details": "最小単位の作業です。",
+                "children": []
+              },
+              {
+                "id": "item-5",
+                "level": 4,
+                "title": "ひ孫タスク E (Cの子)",
+                "details": "Dと並行して行う作業です。",
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "item-6",
+            "level": 3,
+            "title": "孫タスク F (Bの子)",
+            "details": "Bに関連する別の実施項目。",
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": "item-7",
+        "level": 2,
+        "title": "子タスク G (Aの子)",
+        "details": "タスクAの別のサブタスク。",
+        "children": [
+          {
+            "id": "item-8",
+            "level": 3,
+            "title": "孫タスク H (Gの子)",
+            "details": "Gの下にある単独作業。",
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": "item-9",
+        "level": 2,
+        "title": "子タスク I (Aの子)",
+        "details": "タスクAの最後のサブタスク。",
+        "children": [
+          {
+            "id": "item-10",
+            "level": 3,
+            "title": "孫タスク J (Iの子)",
+            "details": "詳細項目 1。",
+            "children": []
+          },
+          {
+            "id": "item-11",
+            "level": 3,
+            "title": "孫タスク K (Iの子)",
+            "details": "詳細項目 2。",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "item-12",
+    "level": 1,
+    "title": "最上位親アイテム L",
+    "details": "別のメインタスクグループです。",
+    "children": [
+      {
+        "id": "item-13",
+        "level": 2,
+        "title": "子タスク M (Lの子)",
+        "details": "重要な単独タスク。",
+        "children": []
+      },
+      {
+        "id": "item-14",
+        "level": 2,
+        "title": "子タスク N (Lの子)",
+        "details": "分解が必要なサブタスク。",
+        "children": [
+          {
+            "id": "item-15",
+            "level": 3,
+            "title": "孫タスク O (Nの子)",
+            "details": "タスク N の準備フェーズ。",
+            "children": []
+          },
+          {
+            "id": "item-16",
+            "level": 3,
+            "title": "孫タスク P (Nの子)",
+            "details": "タスク N の実行フェーズ。",
+            "children": [
+              {
+                "id": "item-17",
+                "level": 4,
+                "title": "ひ孫タスク Q (Pの子)",
+                "details": "実行ステップ 1。",
+                "children": []
+              },
+              {
+                "id": "item-18",
+                "level": 4,
+                "title": "ひ孫タスク R (Pの子)",
+                "details": "実行ステップ 2。",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "item-19",
+    "level": 1,
+    "title": "最上位親アイテム S",
+    "details": "独立したタスクです。",
+    "children": [
+      {
+        "id": "item-20",
+        "level": 2,
+        "title": "子タスク T (Sの子)",
+        "details": "最後の単独タスク。",
+        "children": []
+      }
+    ]
+  }
+]
