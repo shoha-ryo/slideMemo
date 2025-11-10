@@ -9,6 +9,7 @@ interface ItemProps {
   level: 1 | 2 | 3 | 4 | 5; // 役割 (1=親, 2=子, 3=孫, ...)
   title: string;
   details: string;
+	children: ItemProps[]; // ⭐ 再帰的に子要素を持つ
   // その他のprops (例えば、ネストされた子要素など)
 }
 
@@ -75,13 +76,23 @@ const Card: React.FC<ItemProps> = ({ id, level, title, details, children }) => {
       {...listeners} // ドラッグイベントのリスナー
       {...attributes} // アクセシビリティ属性
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <strong>{title}</strong>
-        <span style={{ fontSize: '0.8em', color: '#666' }}>深さ: {level}</span>
-      </div>
-      <p style={{ margin: '4px 0 0', fontSize: '0.9em', color: '#333' }}>
-        {details}
-      </p>
+
+				{/* ⭐ 1. このアイテム自体の表示部分 */}
+				<div style={{ paddingLeft: `${paddingLeft + 10}px` }}>
+					<strong>{title}</strong>
+					<span style={{ fontSize: '0.8em', color: '#666' }}> (Level: {level})</span>
+				</div>
+				{/* ⭐ 2. 子要素の再帰的なレンダリング */}
+				{children.length > 0 && (
+				<div style={{ /* 必要に応じて子要素全体を囲むスタイル */ }}>
+					{children.map((child) => (
+						// 💡 再帰的な呼び出し：自身 (Card) を再びレンダリング
+						// level は次のネストレベルになっているので、そのまま渡すだけでOK
+						<Card key={child.id} {...child} />
+					))}
+				</div>
+				)}
+
     </div>
   );
 };
