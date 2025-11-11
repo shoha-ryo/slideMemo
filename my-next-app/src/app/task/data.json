@@ -138,14 +138,6 @@
     "level": 1,
     "title": "最上位親アイテム S",
     "details": "独立したタスクです。",
-    "children": [
-      {
-        "id": "item-20",
-        "level": 2,
-        "title": "子タスク T (Sの子)",
-        "details": "最後の単独タスク。",
-        "children": []
-      }
-    ]
+    "children": []
   }
 ]

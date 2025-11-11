@@ -61,38 +61,37 @@ const Card: React.FC<ItemProps> = ({ id, level, title, details, children }) => {
   return (
     <div
       ref={setNodeRef} // 両方のrefを設定
-      style={{
-        ...draggableStyle, // ドラッグ時の移動スタイル
-        ...activeStyle,     // ドロップ時のフィードバックスタイル
-        padding: '10px',
-        paddingLeft: `${paddingLeft + 10}px`, // 基本padding + インデント
-        marginBottom: '4px',
-        border: '1px solid #ccc',
-        borderRadius: '4px',
-        transition: 'background-color 0.2s, outline 0.2s',
-        // ドラッグ中でない場合はtransformをクリア（重要）
-        ...(transform && { position: 'relative' }),
-      }}
+			style={{
+				...draggableStyle,
+				...activeStyle,
+				padding: '10px',
+				paddingLeft: `${paddingLeft + 10}px`,
+				marginBottom: '4px',
+				border: '1px solid #ccc',
+				borderRadius: '4px',
+				transition: 'background-color 0.2s, outline 0.2s',
+				position: 'relative', // transformがなくても常にrelative固定
+			}}
+
       {...listeners} // ドラッグイベントのリスナー
       {...attributes} // アクセシビリティ属性
     >
 
-				{/* ⭐ 1. このアイテム自体の表示部分 */}
-				<div style={{ paddingLeft: `${paddingLeft + 10}px` }}>
-					<strong>{title}</strong>
-					<span style={{ fontSize: '0.8em', color: '#666' }}> (Level: {level})</span>
-				</div>
-				{/* ⭐ 2. 子要素の再帰的なレンダリング */}
-				{children.length > 0 && (
-				<div style={{ /* 必要に応じて子要素全体を囲むスタイル */ }}>
-					{children.map((child) => (
-						// 💡 再帰的な呼び出し：自身 (Card) を再びレンダリング
-						// level は次のネストレベルになっているので、そのまま渡すだけでOK
-						<Card key={child.id} {...child} />
-					))}
-				</div>
-				)}
-
+			{/* ⭐ 1. このアイテム自体の表示部分 */}
+			<div style={{ paddingLeft: `${paddingLeft + 10}px` }}>
+				<strong>{title}</strong>
+				<span style={{ fontSize: '0.8em', color: '#666' }}> (Level: {level})</span>
+			</div>
+			{/* ⭐ 2. 子要素の再帰的なレンダリング */}
+			{children.length > 0 && (
+			<div>
+				{children.map((child) => (
+					// 💡 再帰的な呼び出し：自身 (Card) を再びレンダリング
+					// level は次のネストレベルになっているので、そのまま渡すだけでOK
+					<Card key={child.id} {...child} />
+				))}
+			</div>
+			)}
     </div>
   );
 };
