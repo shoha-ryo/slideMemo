@@ -2,7 +2,7 @@
 
 // App.js や 親コンポーネント
 import React, {useState} from 'react';
-import { useDndContext, DndContext, closestCenter, DragEndEvent, DragOverEvent } from '@dnd-kit/core';
+import { DndContext, closestCenter, pointerWithin } from '@dnd-kit/core';
 import { getQuadrant } from './components/quadrantCollisionDetection';
 import  Card  from './components/Card';
 import ItemData from './data.json';
@@ -25,7 +25,7 @@ export default function App() {
 	});
 
 
-
+	// 動的に象限を判定して状態更新
 	const handleDragMove = (event) => {
     const { active, over } = event;
 		if (!over) {
@@ -37,9 +37,7 @@ export default function App() {
     const dropRect = over.rect;
 
     if (!dragRect || !dropRect) return;
-
     const quadrant = getQuadrant(dragRect, dropRect);
-        // stateを更新
     setHoverInfo({
       activeId: active.id,
       droppableId: over.id,
@@ -58,7 +56,7 @@ export default function App() {
   return (
     <DndContext
       // collisionDetection={quadrantCollisionDetection}
-      collisionDetection={closestCenter}
+      collisionDetection={pointerWithin}
       // onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
 			onDragMove={handleDragMove}
@@ -82,8 +80,8 @@ export default function App() {
         >
 					{hoverInfo.droppableId ? (
 						<>
-							<p>🟦 ドラッグ中: <strong>{hoverInfo.activeId}</strong></p>
-							<p>📍 現在カード: <strong>{hoverInfo.droppableId}</strong></p>
+							<p>🟦 ドラッグ中(ID): <strong>{hoverInfo.activeId}</strong></p>
+							<p>📍 現在カード(ID): <strong>{hoverInfo.droppableId}</strong></p>
 							<p>🧭 象限: <strong>{hoverInfo.quadrant}</strong></p>
 						</>
           ) : (

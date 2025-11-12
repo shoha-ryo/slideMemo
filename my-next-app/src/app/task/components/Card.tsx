@@ -10,7 +10,6 @@ interface ItemProps {
   title: string;
   details: string;
 	children: ItemProps[]; // ⭐ 再帰的に子要素を持つ
-  // その他のprops (例えば、ネストされた子要素など)
 }
 
 
@@ -49,6 +48,7 @@ const Card: React.FC<ItemProps> = ({ id, level, title, details, children }) => {
   const activeStyle = {
     backgroundColor: isOver ? '#e0f7fa' : 'white', // isOver のとき色を変える
     outline: isOver ? '2px solid #00bcd4' : 'none',
+		// 動的に入れ替えを行なって、実際にドロップされる場所を視覚的に示す（入れ替えるよりラインが引かれる方がいいかも？）
   };
 
   // DraggableとDroppableのrefを両方設定
