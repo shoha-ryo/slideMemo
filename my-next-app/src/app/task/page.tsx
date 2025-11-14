@@ -1,8 +1,8 @@
 'use client';
 
 // App.js や 親コンポーネント
-import React, {useState} from 'react';
-import { DndContext, closestCenter, pointerWithin } from '@dnd-kit/core';
+import React, { useState } from 'react';
+import { DndContext, DragOverlay, closestCenter, pointerWithin } from '@dnd-kit/core';
 import { getQuadrant } from './components/quadrantCollisionDetection';
 import  Card  from './components/Card';
 import ItemData from './data.json';
@@ -25,6 +25,7 @@ export default function App() {
 		quadrant: null,
 	});
 	const [startOffset, setStartOffset] = useState({ x: 0, y: 0 });
+	const [activeId, setActiveId] = useState(null);
 
 
 	// 動的に象限を判定して状態更新
@@ -54,6 +55,7 @@ export default function App() {
 
   const handleDragStart = (event) => {
 		const { active } = event;
+		setActiveId(event.active.id);
 
 		// ポインタと図形の左上を合わせるためのオフセット計算
     const e = event.activatorEvent;
@@ -67,6 +69,7 @@ export default function App() {
 				y: e.clientY - rect.top,
 			});
 			console.log(startOffset)
+			console.log(rect)
 		}
   }
 
@@ -81,12 +84,29 @@ export default function App() {
 
 
 	const handleDragEnd = (event) => {
+		setActiveId(null);
+
 		setHoverInfo({
       activeId: null,
       droppableId: null,
       quadrant: null,
     });
 	};
+
+
+	  // 取得関数：ID を指定してそのアイテムだけを返す（Overlay用）
+  const findItem = (id, list = items) => {
+    for (const item of list) {
+      if (item.id === id) return item;
+      if (item.children?.length) {
+        const deep = findItem(id, item.children);
+        if (deep) return deep;
+      }
+    }
+    return null;
+  };
+	const activeItem = activeId ? findItem(activeId) : null;
+
 
 
 
@@ -104,6 +124,21 @@ export default function App() {
         {items.map((item) => (
           <Card key={item.id} startOffset={startOffset} {...item} />
         ))}
+
+        {/* Overlay */}
+        <DragOverlay>
+          {activeItem ? (
+            // ⭐ 子は渡さない → 安定する（見た目だけ子を渡したい）
+            <Card
+              {...activeItem}
+              startOffset={startOffset}
+              children={[]} 
+              useOverlay={true} // transform補正のために渡す
+            />
+          ) : null}
+        </DragOverlay>
+
+
 				{/* ↓ 衝突状況の表示領域 */}
         <div
           style={{

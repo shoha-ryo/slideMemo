@@ -1,7 +1,7 @@
 'use client'
 
-import React from 'react';
-import { useDraggable, useDroppable } from '@dnd-kit/core';
+import React, { use } from 'react';
+import { useDraggable, useDroppable, useDndContext } from '@dnd-kit/core';
 
 // アイテムデータの型定義
 interface ItemProps {
@@ -11,28 +11,27 @@ interface ItemProps {
   title: string;
   details: string;
 	children: ItemProps[]; // ⭐ 再帰的に子要素を持つ
+	useOverlay?: boolean; // DragOverlayで使用するかどうかのフラグ
 }
 
 
 
 // Draggable/Droppable コンポーネント
-const Card: React.FC<ItemProps> = ({ startOffset, id, level, title, details, children }) => {
+const Card: React.FC<ItemProps> = ({ startOffset, id, level, title, details, children, useOverlay }) => {
 
   // --- 1. Draggableの設定 ---
   const { attributes, listeners, setNodeRef: setDraggableRef, transform } = useDraggable({
     id: id,
   });
 
+	const isActive = useDndContext().active?.id === id;
+
   // ドラッグ時の位置変換スタイル
-  const draggableStyle = transform ? {
-    // transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-    transform: `translate3d(${transform.x + startOffset.x}px, ${transform.y + startOffset.y}px, 0)`,
-    // ドラッグ中は手前に表示するためz-indexを高くする
-    zIndex: 100,
-    cursor: 'grabbing',
+  const draggableStyle = useOverlay ? {
+		// DragOverlay 用のスタイル
   } : {
-    cursor: 'grab',
-  };
+		opacity: isActive? 0.3 : 1
+	};
 
   // --- 2. Droppableの設定 ---
   const { isOver, setNodeRef: setDroppableRef } = useDroppable({
@@ -44,7 +43,7 @@ const Card: React.FC<ItemProps> = ({ startOffset, id, level, title, details, chi
   // role (1~5) を元にネストレベル (インデント) を計算
   // 例: role 1 -> 0px, role 2 -> 20px, role 3 -> 40px, ...
   const nestingLevel = level - 1;
-  const paddingLeft = nestingLevel * 20; // 20px ずつインデント
+  const paddingLeft = nestingLevel * 0; // 20px ずつインデント
 
   // ドロップ時の視覚的なフィードバック
   const activeStyle = {
@@ -58,7 +57,6 @@ const Card: React.FC<ItemProps> = ({ startOffset, id, level, title, details, chi
     setDroppableRef(node);
     setDraggableRef(node);
   };
-
 
   return (
     <div
@@ -83,7 +81,11 @@ const Card: React.FC<ItemProps> = ({ startOffset, id, level, title, details, chi
 			{/* ⭐ 1. このアイテム自体の表示部分 */}
 			<div style={{ paddingLeft: `${paddingLeft + 10}px` }}>
 				<strong>{title}</strong>
-				<span style={{ fontSize: '0.8em', color: '#666' }}> (Level: {level})</span>
+				<span style={{ fontSize: '0.8em', color: '#666' }}> (階層: {level})</span>
+				{useOverlay
+					? <p>・・・</p>
+					: <p style={{ fontSize: '0.8em', color: '#666'}}>{details}</p>
+				}
 			</div>
 			{/* ⭐ 2. 子要素の再帰的なレンダリング */}
 			{children.length > 0 && (
