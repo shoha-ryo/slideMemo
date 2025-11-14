@@ -6,6 +6,7 @@ import { DndContext, closestCenter, pointerWithin } from '@dnd-kit/core';
 import { getQuadrant } from './components/quadrantCollisionDetection';
 import  Card  from './components/Card';
 import ItemData from './data.json';
+import { log } from 'node:console';
 
 
 // ダミーデータ
@@ -23,6 +24,7 @@ export default function App() {
 		activeId: null,
 		quadrant: null,
 	});
+	const [startOffset, setStartOffset] = useState({ x: 0, y: 0 });
 
 
 	// 動的に象限を判定して状態更新
@@ -50,22 +52,57 @@ export default function App() {
 	// overの図形情報を使って四象限を判定
 
 
-	const handleDragEnd = (event: DragEndEvent) => {};
+  const handleDragStart = (event) => {
+		const { active } = event;
+
+		// ポインタと図形の左上を合わせるためのオフセット計算
+    const rect = event.active?.rect?.current?.initial;
+    const e = event.activatorEvent;
+
+    if (rect && e instanceof MouseEvent) {
+      setStartOffset({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+    }
+
+		// クリック下の要素とその位置情報を取得（デバッグ用）
+		console.log(event);
+
+
+
+		// ドラッグ開始時に状態をリセット
+		setHoverInfo({
+      activeId: active.id,
+      droppableId: null,
+      quadrant: null,
+    });
+  };
+
+
+	const handleDragEnd = (event) => {
+		setHoverInfo({
+      activeId: null,
+      droppableId: null,
+      quadrant: null,
+    });
+	};
+
 
 
   return (
     <DndContext
-      // collisionDetection={quadrantCollisionDetection}
-      collisionDetection={pointerWithin}
+      collisionDetection={pointerWithin} // ポインタが重なっている要素を検出
+			onDragStart={handleDragStart}
+			onDragMove={handleDragMove}
       // onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
-			onDragMove={handleDragMove}
     >
       {/* Draggable および Droppable コンポーネント */}
       <div style={{ width: '400px', margin: '20px auto' }}>
         <h2>ネスト可能なアイテムリスト</h2>
         {items.map((item) => (
-          <Card key={item.id} {...item} />
+          <Card key={item.id} startOffset={startOffset} {...item} />
         ))}
 				{/* ↓ 衝突状況の表示領域 */}
         <div
@@ -78,11 +115,13 @@ export default function App() {
             textAlign: 'center',
           }}
         >
-					{hoverInfo.droppableId ? (
+					{hoverInfo.activeId ? (
 						<>
 							<p>🟦 ドラッグ中(ID): <strong>{hoverInfo.activeId}</strong></p>
 							<p>📍 現在カード(ID): <strong>{hoverInfo.droppableId}</strong></p>
 							<p>🧭 象限: <strong>{hoverInfo.quadrant}</strong></p>
+							<p>X座標: <strong>{startOffset.x}</strong></p>
+							<p>Y座標: <strong>{startOffset.y}</strong></p>
 						</>
           ) : (
             <p>ドラッグ中ではありません</p>

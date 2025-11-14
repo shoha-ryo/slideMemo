@@ -5,6 +5,7 @@ import { useDraggable, useDroppable } from '@dnd-kit/core';
 
 // アイテムデータの型定義
 interface ItemProps {
+	startOffset: { x: number; y: number }; // 開始位置のオフセット
   id: string; // 一意のID (dnd-kitで使用)
   level: 1 | 2 | 3 | 4 | 5; // 役割 (1=親, 2=子, 3=孫, ...)
   title: string;
@@ -15,7 +16,7 @@ interface ItemProps {
 
 
 // Draggable/Droppable コンポーネント
-const Card: React.FC<ItemProps> = ({ id, level, title, details, children }) => {
+const Card: React.FC<ItemProps> = ({ startOffset, id, level, title, details, children }) => {
 
   // --- 1. Draggableの設定 ---
   const { attributes, listeners, setNodeRef: setDraggableRef, transform } = useDraggable({
@@ -25,6 +26,7 @@ const Card: React.FC<ItemProps> = ({ id, level, title, details, children }) => {
   // ドラッグ時の位置変換スタイル
   const draggableStyle = transform ? {
     transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    // transform: `translate3d(${transform.x - startOffset.x}px, ${transform.y - startOffset.y}px, 0)`,
     // ドラッグ中は手前に表示するためz-indexを高くする
     zIndex: 100,
     cursor: 'grabbing',
@@ -53,8 +55,8 @@ const Card: React.FC<ItemProps> = ({ id, level, title, details, children }) => {
 
   // DraggableとDroppableのrefを両方設定
   const setNodeRef = (node) => {
-    setDraggableRef(node);
     setDroppableRef(node);
+    setDraggableRef(node);
   };
 
 
