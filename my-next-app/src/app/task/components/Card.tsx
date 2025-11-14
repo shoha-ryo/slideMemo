@@ -74,6 +74,7 @@ const Card: React.FC<ItemProps> = ({ startOffset, id, level, title, details, chi
 				transition: 'background-color 0.2s, outline 0.2s',
 				position: 'relative', // transformがなくても常にrelative固定
 			}}
+			className='card'
 
       {...listeners} // ドラッグイベントのリスナー
       {...attributes} // アクセシビリティ属性

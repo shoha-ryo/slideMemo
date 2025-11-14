@@ -66,9 +66,16 @@ export default function App() {
       });
     }
 
-		// クリック下の要素とその位置情報を取得（デバッグ用）
-		console.log(event);
 
+		// ドラッグ終了時に要素の位置情報を取得（デバッグ用）
+		if (e instanceof MouseEvent) {
+		const el = document.elementFromPoint(e.clientX, e.clientY);
+		const cardEl = el?.closest('.card');
+		const rect = cardEl?.getBoundingClientRect();
+		// console.log('クリック下の要素:', el);
+		// console.log('カード要素まで回帰:', cardEl);
+		console.log('カードの位置とサイズ:', rect);
+  }
 
 
 		// ドラッグ開始時に状態をリセット
