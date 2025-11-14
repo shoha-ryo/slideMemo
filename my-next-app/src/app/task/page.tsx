@@ -56,25 +56,18 @@ export default function App() {
 		const { active } = event;
 
 		// ポインタと図形の左上を合わせるためのオフセット計算
-    const rect = event.active?.rect?.current?.initial;
     const e = event.activatorEvent;
-
-    if (rect && e instanceof MouseEvent) {
-      setStartOffset({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      });
-    }
-
-
-		// ドラッグ終了時に要素の位置情報を取得（デバッグ用）
 		if (e instanceof MouseEvent) {
 		const el = document.elementFromPoint(e.clientX, e.clientY);
 		const cardEl = el?.closest('.card');
 		const rect = cardEl?.getBoundingClientRect();
-		// console.log('クリック下の要素:', el);
-		// console.log('カード要素まで回帰:', cardEl);
-		console.log('カードの位置とサイズ:', rect);
+		if (rect) {
+			setStartOffset({
+				x: e.clientX - rect.left,
+				y: e.clientY - rect.top,
+			});
+			console.log(startOffset)
+		}
   }
 
 

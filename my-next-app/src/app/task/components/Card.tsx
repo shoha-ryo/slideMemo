@@ -25,8 +25,8 @@ const Card: React.FC<ItemProps> = ({ startOffset, id, level, title, details, chi
 
   // ドラッグ時の位置変換スタイル
   const draggableStyle = transform ? {
-    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-    // transform: `translate3d(${transform.x - startOffset.x}px, ${transform.y - startOffset.y}px, 0)`,
+    // transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    transform: `translate3d(${transform.x + startOffset.x}px, ${transform.y + startOffset.y}px, 0)`,
     // ドラッグ中は手前に表示するためz-indexを高くする
     zIndex: 100,
     cursor: 'grabbing',
@@ -74,7 +74,7 @@ const Card: React.FC<ItemProps> = ({ startOffset, id, level, title, details, chi
 				transition: 'background-color 0.2s, outline 0.2s',
 				position: 'relative', // transformがなくても常にrelative固定
 			}}
-			className='card'
+			className='card' // カードの外枠要素の取得用
 
       {...listeners} // ドラッグイベントのリスナー
       {...attributes} // アクセシビリティ属性
