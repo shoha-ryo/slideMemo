@@ -6,11 +6,10 @@ import { DndContext, DragOverlay, closestCenter, pointerWithin } from '@dnd-kit/
 import { getQuadrant } from './components/quadrantCollisionDetection';
 import  Card  from './components/Card';
 import ItemData from './data.json';
-import { log } from 'node:console';
+import { moveNode } from './components/moveCards';
 
 
-// ダミーデータ
-const items = ItemData;
+
 
 
 export default function App() {
@@ -26,7 +25,7 @@ export default function App() {
 	});
 	const [startOffset, setStartOffset] = useState({ x: 0, y: 0 });
 	const [activeId, setActiveId] = useState(null);
-
+	const [items, setItems] = useState(ItemData); // ダミーデータ
 
 	// 動的に象限を判定して状態更新
 	const handleDragMove = (event) => {
@@ -68,8 +67,6 @@ export default function App() {
 				x: e.clientX - rect.left,
 				y: e.clientY - rect.top,
 			});
-			console.log(startOffset)
-			console.log(rect)
 		}
   }
 
@@ -84,6 +81,7 @@ export default function App() {
 
 
 	const handleDragEnd = (event) => {
+		const { active, over } = event;
 		setActiveId(null);
 
 		setHoverInfo({
@@ -91,6 +89,7 @@ export default function App() {
       droppableId: null,
       quadrant: null,
     });
+		setItems(moveNode(items, active.id, over.id));
 	};
 
 
@@ -132,7 +131,7 @@ export default function App() {
             <Card
               {...activeItem}
               startOffset={startOffset}
-              children={[]} 
+              children={[]}
               useOverlay={true} // transform補正のために渡す
             />
           ) : null}
