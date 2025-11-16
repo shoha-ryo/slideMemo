@@ -1,4 +1,4 @@
-type Quadrant = '左上' | '右上' | '左下' | '右下';
+type Quadrant = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
 
 export function getQuadrant(
   dragRect: ClientRect,
@@ -11,8 +11,8 @@ export function getQuadrant(
   const midY = dropRect.top + dropRect.height / 2;
 
   if (dragCenterY < midY) {
-    return dragCenterX < midX ? '左上' : '右上';
+    return dragCenterX < midX ? 'topLeft' : 'topRight';
   } else {
-    return dragCenterX < midX ? '左下' : '右下';
+    return dragCenterX < midX ? 'bottomLeft' : 'bottomRight';
   }
 }

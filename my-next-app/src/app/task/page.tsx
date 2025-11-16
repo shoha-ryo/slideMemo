@@ -6,7 +6,7 @@ import { DndContext, DragOverlay, closestCenter, pointerWithin } from '@dnd-kit/
 import { getQuadrant } from './components/quadrantCollisionDetection';
 import  Card  from './components/Card';
 import ItemData from './data.json';
-import { moveNode } from './components/moveCards';
+import { moveCard } from './components/moveCards';
 
 
 
@@ -27,29 +27,7 @@ export default function App() {
 	const [activeId, setActiveId] = useState(null);
 	const [items, setItems] = useState(ItemData); // ダミーデータ
 
-	// 動的に象限を判定して状態更新
-	const handleDragMove = (event) => {
-    const { active, over } = event;
-		if (!over) {
-			setHoverInfo({ activeId: null, droppableId: null, quadrant: null });
-			return;
-		}
 
-    const dragRect = active.rect.current.translated;
-    const dropRect = over.rect;
-
-    if (!dragRect || !dropRect) return;
-    const quadrant = getQuadrant(dragRect, dropRect);
-    setHoverInfo({
-      activeId: active.id,
-      droppableId: over.id,
-      quadrant,
-    });
-  };
-
-
-	// マウスポインタの中心との衝突位置を判定して状態更新
-	// overの図形情報を使って四象限を判定
 
 
   const handleDragStart = (event) => {
@@ -59,29 +37,53 @@ export default function App() {
 		// ポインタと図形の左上を合わせるためのオフセット計算
     const e = event.activatorEvent;
 		if (e instanceof MouseEvent) {
-		const el = document.elementFromPoint(e.clientX, e.clientY);
-		const cardEl = el?.closest('.card');
-		const rect = cardEl?.getBoundingClientRect();
-		if (rect) {
-			setStartOffset({
-				x: e.clientX - rect.left,
-				y: e.clientY - rect.top,
-			});
+			const el = document.elementFromPoint(e.clientX, e.clientY);
+			const cardEl = el?.closest('.card');
+			const rect = cardEl?.getBoundingClientRect();
+			if (rect) {
+				setStartOffset({
+					x: e.clientX - rect.left,
+					y: e.clientY - rect.top,
+				});
+			}
 		}
-  }
-
-
-		// ドラッグ開始時に状態をリセット
-		setHoverInfo({
-      activeId: active.id,
+		setHoverInfo({	// ドラッグ開始時に状態をリセット
+			activeId: active.id,
       droppableId: null,
       quadrant: null,
     });
   };
 
 
+	const handleDragMove = (event) => {
+		const { active, over } = event;
+		if (!over) {
+			setHoverInfo({ activeId: null, droppableId: null, quadrant: null });
+			return;
+		}
+
+		// 動的に象限を判定して状態更新
+		const dragRect = active.rect.current.translated;
+		const dropRect = over.rect;
+
+		if (!dragRect || !dropRect) return;
+		const quadrant = getQuadrant(dragRect, dropRect);
+		setHoverInfo({
+			activeId: active.id,
+			droppableId: over.id,
+			quadrant,
+		});
+
+		if (over?.data?.current) {
+			over.data.current.quadrant = quadrant;
+		}
+	};
+
+
 	const handleDragEnd = (event) => {
 		const { active, over } = event;
+		setItems(moveCard(items, active.id, over.id, hoverInfo.quadrant));
+
 		setActiveId(null);
 
 		setHoverInfo({
@@ -89,7 +91,6 @@ export default function App() {
       droppableId: null,
       quadrant: null,
     });
-		setItems(moveNode(items, active.id, over.id));
 	};
 
 
@@ -118,10 +119,14 @@ export default function App() {
       onDragEnd={handleDragEnd}
     >
       {/* Draggable および Droppable コンポーネント */}
-      <div style={{ width: '400px', margin: '20px auto' }}>
+      <div style={{ width: '600px', margin: '20px auto' }}>
         <h2>ネスト可能なアイテムリスト</h2>
         {items.map((item) => (
-          <Card key={item.id} startOffset={startOffset} {...item} />
+          <Card
+						key={item.id}
+						startOffset={startOffset}
+						{...item}
+					/>
         ))}
 
         {/* Overlay */}

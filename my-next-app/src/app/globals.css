@@ -1,1 +1,39 @@
 @import "tailwindcss";
+
+
+
+.card {
+  position: relative;
+}
+
+/* 擬似要素の共通設定 */
+.card.q-topLeft::before,
+.card.q-bottomLeft::before,
+.card.q-topRight::before,
+.card.q-bottomRight::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  pointer-events: none; /* イベントを邪魔しない */
+}
+
+/* ---- 上に線 ---- */
+.card.q-topLeft::before {
+  top: 0;
+  border-top: 5px solid #00bcd4;
+}
+
+/* ---- 下に線 ---- */
+.card.q-bottomLeft::before {
+  bottom: 0;
+  border-bottom: 5px solid #00bcd4;
+}
+
+/* ---- 右側は全体を囲う ---- */
+.card.q-topRight,
+.card.q-bottomRight {
+  outline: 2px solid #00bcd4;
+  outline-offset: -2px; /* 内側に寄せる場合 */
+}

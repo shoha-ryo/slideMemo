@@ -13,30 +13,38 @@ const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children
   // --- 1. Draggableの設定 ---
   const { attributes, listeners, setNodeRef: setDraggableRef, transform } = useDraggable({
     id: id,
+		data: {
+			quadrant: null, // 象限情報をここで保持
+		},
   });
 
+	const { over } = useDndContext();
 	const isActive = useDndContext().active?.id === id;
+	const quadrant = over?.id === id ? over?.data?.current?.quadrant : null;
+
 
 
   // --- 2. Droppableの設定 ---
   const { isOver, setNodeRef: setDroppableRef } = useDroppable({
 		id: id, // Draggableと同じIDを使用
+			data: {
+		quadrant: null, // 象限情報をここで保持
+		},
   });
 
   // --- 3. スタイリングとネストレベルの決定 ---
 	const draggableStyle = useOverlay ? {
-		outline: '20px solid #00bcd4',
+		// outline: '2px solid #00bcd4',
 	} : {
-		opacity: isActive? 0 : 1
+		opacity: isActive? 0.2 : 1
 	};
 
   const nestingLevel = level - 1;
   const paddingLeft = nestingLevel * 0; // 20px ずつインデント
   const droppableStyle = {
     backgroundColor: isOver ? '#e0f7fa' : 'white', // isOver のとき色を変える
-    outline: isOver ? '2px solid #00bcd4' : 'none',
-		// 動的に入れ替えを行なって、実際にドロップされる場所を視覚的に示す（入れ替えるよりラインが引かれる方がいいかも？）
   };
+
 
 
   // DraggableとDroppableのrefを両方設定
@@ -58,8 +66,10 @@ const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children
 				position: 'relative', // transformがなくても常にrelative固定
 				...draggableStyle,
 				...droppableStyle,
+				marginLeft: '50px',
 		}}
-			className='card' // カードの外枠要素の取得用
+			className={`card ${isOver ? `q-${quadrant}` : ""}`}
+
 
       {...listeners} // ドラッグイベントのリスナー
       {...attributes} // アクセシビリティ属性
@@ -69,7 +79,13 @@ const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children
 			<div style={{ paddingLeft: `${paddingLeft + 10}px` }}>
 				<strong>{title}</strong>
 				<span style={{ fontSize: '0.8em', color: '#666' }}> (階層: {level})</span>
+				{/* { useOverlay
+					// quadrantが"Right"なら"中に追加する", "topLeft"なら"上に移動する", "bottomLeft"なら"下に移動する" を表示
+					? quadrant && <p style={{ fontSize: '0.8em', color: '#666'}}>→ { quadrant.includes('Right') ? '中に追加する' : quadrant.includes('topLeft') ? '上に移動する' : '下に移動する' }</p>
+					: <p style={{ fontSize: '0.8em', color: '#666'}}>{details}</p>
+				} */}
 				<p style={{ fontSize: '0.8em', color: '#666'}}>{details}</p>
+
 
 			</div>
 			{/* ⭐ 2. 子要素の再帰的なレンダリング */}
