@@ -7,5 +7,4 @@ export interface Item {
 	details: string;
 	children: Item[]; // ⭐ 再帰的に子要素を持つ
 	useOverlay?: boolean; // DragOverlayで使用するかどうかのフラグ
-	quadrant?: string; // 象限情報
 }

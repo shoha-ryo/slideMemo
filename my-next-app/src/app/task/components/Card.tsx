@@ -8,7 +8,7 @@ import { Item } from '../../../types/item';
 
 
 // Draggable/Droppable コンポーネント
-const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children, useOverlay }) => {
+const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children, useOverlay}) => {
 
   // --- 1. Draggableの設定 ---
   const { attributes, listeners, setNodeRef: setDraggableRef, transform } = useDraggable({
@@ -18,8 +18,8 @@ const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children
 		},
   });
 
-	const { over } = useDndContext();
-	const isActive = useDndContext().active?.id === id;
+	const { active, over } = useDndContext();
+	const isActive = active?.id === id;
 	const quadrant = over?.id === id ? over?.data?.current?.quadrant : null;
 
 
@@ -34,9 +34,12 @@ const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children
 
   // --- 3. スタイリングとネストレベルの決定 ---
 	const draggableStyle = useOverlay ? {
-		// outline: '2px solid #00bcd4',
+		outline: '2px solid #00bcd4',
+		transform: transform? `translate3d(${transform.x + startOffset.x}px, ${transform.y + startOffset.y}px, 0)` : undefined,
+		cursor: 'grabbing',
 	} : {
-		opacity: isActive? 0.2 : 1
+		opacity: isActive? 0.2 : 1,
+		cursor: 'grab',
 	};
 
   const nestingLevel = level - 1;

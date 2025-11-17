@@ -1,18 +1,19 @@
 type Quadrant = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
 
 export function getQuadrant(
-  dragRect: ClientRect,
+  pointer: { x: number; y: number },
   dropRect: ClientRect
 ): Quadrant {
-  const dragCenterX = dragRect.left + dragRect.width / 2;
-  const dragCenterY = dragRect.top + dragRect.height / 2;
-
   const midX = dropRect.left + dropRect.width / 2;
   const midY = dropRect.top + dropRect.height / 2;
 
-  if (dragCenterY < midY) {
-    return dragCenterX < midX ? 'topLeft' : 'topRight';
+	//console.log(`ポインターX：${pointer.x}, BOX横：${midX}, ポインターY：${pointer.y}, BOX縦：${midY}`);
+
+  if (pointer.y < midY) {
+		return pointer.x < midX ? 'topLeft' : 'topRight';
+  } else if  (pointer.y > midY) {
+    return pointer.x < midX ? 'bottomLeft' : 'bottomRight';
   } else {
-    return dragCenterX < midX ? 'bottomLeft' : 'bottomRight';
-  }
-}
+		return 'topLeft'; // デフォルト値
+	}
+		}
