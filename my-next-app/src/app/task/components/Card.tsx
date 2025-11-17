@@ -72,31 +72,19 @@ const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children
 				marginLeft: '50px',
 		}}
 			className={`card ${isOver ? `q-${quadrant}` : ""}`}
-
-
       {...listeners} // ドラッグイベントのリスナー
       {...attributes} // アクセシビリティ属性
     >
 
-			{/* ⭐ 1. このアイテム自体の表示部分 */}
 			<div style={{ paddingLeft: `${paddingLeft + 10}px` }}>
 				<strong>{title}</strong>
 				<span style={{ fontSize: '0.8em', color: '#666' }}> (階層: {level})</span>
-				{/* { useOverlay
-					// quadrantが"Right"なら"中に追加する", "topLeft"なら"上に移動する", "bottomLeft"なら"下に移動する" を表示
-					? quadrant && <p style={{ fontSize: '0.8em', color: '#666'}}>→ { quadrant.includes('Right') ? '中に追加する' : quadrant.includes('topLeft') ? '上に移動する' : '下に移動する' }</p>
-					: <p style={{ fontSize: '0.8em', color: '#666'}}>{details}</p>
-				} */}
 				<p style={{ fontSize: '0.8em', color: '#666'}}>{details}</p>
-
-
 			</div>
-			{/* ⭐ 2. 子要素の再帰的なレンダリング */}
+
 			{children.length > 0 && (
 			<div>
 				{children.map((child) => (
-					// 💡 再帰的な呼び出し：自身 (Card) を再びレンダリング
-					// level は次のネストレベルになっているので、そのまま渡すだけでOK
 					<Card key={child.id} {...child} />
 				))}
 			</div>

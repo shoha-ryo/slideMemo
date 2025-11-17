@@ -5,11 +5,12 @@ import React, { useState } from 'react';
 import { DndContext, DragOverlay, closestCenter, pointerWithin } from '@dnd-kit/core';
 import { getQuadrant } from './components/quadrantCollisionDetection';
 import  Card  from './components/Card';
+import BoardList from './components/BoardList';
 import ItemData from './data.json';
 import { moveCard } from './components/moveCards';
 import Dot from './components/Dot';
 import { usePointer } from './components/usePointer';
-
+import { arrayMove } from "@dnd-kit/sortable";
 
 
 
@@ -87,6 +88,8 @@ export default function App() {
       quadrant: quadrant,
     });
 
+		console.log(event)
+
 		if (over?.data?.current) {
 			over.data.current.quadrant = quadrant;
 		}
@@ -104,6 +107,13 @@ export default function App() {
       droppableId: null,
       quadrant: null,
     });
+
+		if (!over || active.id === over.id) return;
+		setItems((prev) => {
+			const oldIndex = prev.findIndex((b) => b.id === active.id);
+			const newIndex = prev.findIndex((b) => b.id === over.id);
+			return arrayMove(prev, oldIndex, newIndex);
+		});
 	};
 
 
@@ -137,13 +147,9 @@ export default function App() {
 				{/* Draggable および Droppable コンポーネント */}
 				<div style={{ width: '600px', margin: '20px auto' }}>
 					<h2>ネスト可能なアイテムリスト</h2>
-					{items.map((item) => (
-						<Card
-							key={item.id}
-							startOffset={startOffset}
-							{...item}
+						<BoardList
+							boards={items}
 						/>
-					))}
 
 					{/* Overlay */}
 					<DragOverlay>
