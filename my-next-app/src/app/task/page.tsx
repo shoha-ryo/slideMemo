@@ -2,7 +2,8 @@
 
 // App.js や 親コンポーネント
 import React, { useState } from 'react';
-import { DndContext, DragOverlay, closestCenter, pointerWithin } from '@dnd-kit/core';
+import { DndContext, DragOverlay, pointerWithin,
+				 useSensor, useSensors, MouseSensor } from '@dnd-kit/core';
 import { getQuadrant } from './components/quadrantCollisionDetection';
 import  Card  from './components/Card';
 import BoardList from './components/BoardList';
@@ -33,6 +34,15 @@ export default function App() {
 	const [mouse, setMouse] = useState({ x: 0, y: 0 });
 	const [overCenter, setOverCenter] = useState({x: 0, y: 0});
 	const { x, y } = usePointer();
+
+	const mouseSensor = useSensor(MouseSensor, {
+    activationConstraint: {
+			delay: 250, // 100ms ホールドでドラッグ開始
+      distance: 5, // 5px以内のわずかな移動は無視
+    },
+  });
+
+  const sensors = useSensors(mouseSensor, /* TouchSensorなど */);
 
 
 
@@ -141,6 +151,7 @@ export default function App() {
 				onDragMove={handleDragMove}
 				// onDragOver={handleDragOver}
 				onDragEnd={handleDragEnd}
+				sensors={sensors}
 			>
 				{/* Draggable および Droppable コンポーネント */}
 				<div style={{ width: 'auto', margin: '20px auto' }}>
