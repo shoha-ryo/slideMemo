@@ -2,13 +2,12 @@
 
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import BoardCreateButton from "./BoardCreateButton";
-
 import Board from "./Board";
 
-function BoardList({ boards, setBoards }) {
+function itemList({ items, setItems }) {
   return (
 
-      <SortableContext items={boards}>
+      <SortableContext items={items}>
         <div
 					style={{
 						display: "inline-flex",
@@ -21,13 +20,13 @@ function BoardList({ boards, setBoards }) {
 						// outline: '1px solid #ccc',
 					}}
 				>
-          {boards.map((board) => (
-            <Board key={board.id} {...board} />
+          {items.map((item) => (
+            <Board key={item.id} {...item} setItems={setItems}/>
           ))}
-					<BoardCreateButton boards={boards} setBoards={setBoards} />
+					<BoardCreateButton items={items} setItems={setItems} />
         </div>
       </SortableContext>
   );
 }
 
-export default BoardList;
+export default itemList;

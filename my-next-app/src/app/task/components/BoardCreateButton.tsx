@@ -3,14 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 // BoardCreateButton: ボード追加用コンポーネント
-export default function BoardCreateButton({ boards, setBoards }) {
+export default function BoardCreateButton({ items, setItems }) {
 
   const handleSubmit = () => {
 		const newBoard = {
 			id: `board-${Date.now()}`,
 			children: [],
 		}
-		setBoards([...boards, newBoard]);
+		setItems([...items, newBoard]);
   };
 
   return (

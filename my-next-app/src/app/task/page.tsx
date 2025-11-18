@@ -146,8 +146,8 @@ export default function App() {
 				<div style={{ width: 'auto', margin: '20px auto' }}>
 					<h2>ネスト可能なアイテムリスト</h2>
 						<BoardList
-							boards={items}
-							setBoards={setItems}
+							items={items}
+							setItems={setItems}
 						/>
 
 					{/* Overlay */}
