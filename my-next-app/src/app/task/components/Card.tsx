@@ -89,6 +89,7 @@ const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children
 				))}
 			</div>
 			)}
+
     </div>
   );
 };

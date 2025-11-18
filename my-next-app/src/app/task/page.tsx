@@ -88,8 +88,6 @@ export default function App() {
       quadrant: quadrant,
     });
 
-		console.log(event)
-
 		if (over?.data?.current) {
 			over.data.current.quadrant = quadrant;
 		}
@@ -149,6 +147,7 @@ export default function App() {
 					<h2>ネスト可能なアイテムリスト</h2>
 						<BoardList
 							boards={items}
+							setBoards={setItems}
 						/>
 
 					{/* Overlay */}
