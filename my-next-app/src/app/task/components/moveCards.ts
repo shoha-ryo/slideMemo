@@ -32,10 +32,14 @@ function isDroppingIntoOwnDescendant( // ノードの探索
 ): boolean {
   const activeNode = getNode(rootList, activeId) // activeノード全体を取得
   if (!activeNode) return false
-
   const descendants = collectDescendantIds(activeNode) // activeノードの全子孫IDを収集
-
   return descendants.includes(overId)  // 自分の子孫に drop しようとしているかを判定
+}
+
+function isDroppingOnBoard(
+	overId: string
+): boolean {
+	return overId.startsWith('board-');
 }
 
 
@@ -121,6 +125,7 @@ function moveCard(tree: Item[], activeId: string, overId: string, quadrant: stri
 
 	// ドロップ先が自分の子孫の場合は何もしない
 	if (isDroppingIntoOwnDescendant(tree, activeId, overId)) {return tree;}
+	if (isDroppingOnBoard(overId)) {return tree;}
 
   // ① 「active以外のノード」と「activeノード」を分離
   const { newTree, removed: activeNode } = removeNode(tree, activeId);

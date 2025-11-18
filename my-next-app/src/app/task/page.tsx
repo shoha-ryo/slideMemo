@@ -145,7 +145,7 @@ export default function App() {
 				onDragEnd={handleDragEnd}
 			>
 				{/* Draggable および Droppable コンポーネント */}
-				<div style={{ width: '600px', margin: '20px auto' }}>
+				<div style={{ width: 'auto', margin: '20px auto' }}>
 					<h2>ネスト可能なアイテムリスト</h2>
 						<BoardList
 							boards={items}

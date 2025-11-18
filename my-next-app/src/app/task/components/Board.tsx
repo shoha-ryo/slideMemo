@@ -15,6 +15,7 @@ export default function Board({ id, children }) {
     borderRadius: 8,
     display: "flex",
 		flexDirection: "column",
+		width: '800px',
     gap: 12,
   };
 
