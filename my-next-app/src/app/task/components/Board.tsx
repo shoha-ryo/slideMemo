@@ -13,7 +13,8 @@ export default function Board({ id, children }) {
     padding: 12,
     background: "#f5f5f5",
     borderRadius: 8,
-    display: "inline-flex",
+    display: "flex",
+		flexDirection: "column",
     gap: 12,
   };
 
@@ -23,6 +24,6 @@ export default function Board({ id, children }) {
         <Card key={c.id} {...c} />
       ))}
     </div>
-		
+
   );
 }

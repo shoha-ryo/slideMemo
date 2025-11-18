@@ -9,7 +9,7 @@ function BoardList({ boards }) {
   return (
 
       <SortableContext items={boards}>
-        <div style={{ gap: 12 }}>
+        <div style={{ display: 'flex-inline', gap: '16px' }}>
           {boards.map((board) => (
             <Board key={board.id} {...board} />
           ))}
