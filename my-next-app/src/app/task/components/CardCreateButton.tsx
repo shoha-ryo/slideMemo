@@ -28,7 +28,7 @@ export default function CardCreateButton({ items, setItems }) {
         </div>
       ) : (
         <Button onClick={() => setOpen(true)} className="rounded-2xl w-full">
-          ＋ ボードを追加
+          ＋ カードを追加
         </Button>
       )}
     </div>
