@@ -135,6 +135,7 @@ function moveCard(tree: Item[], activeId: string, overId: string, quadrant: stri
 		insertedTree = insertUnder(newTree, overId, activeNode);
 	} else if (quadrant.includes('Left')) {
 		insertedTree = insertSibling(newTree, overId, activeNode, quadrant);
+		console.log(insertedTree);
 	}
 	
   // ③ over のレベルを取得するための検索

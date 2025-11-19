@@ -105,8 +105,10 @@ export default function App() {
 
 	const handleDragEnd = (event) => {
 		const { active, over } = event;
-		console.log(moveCard(items, active.id, over.id, hoverInfo.quadrant))
-		useItemStore.setState(moveCard(items, active.id, over.id, hoverInfo.quadrant));
+		useItemStore.setState((prev) => ({
+			...prev,
+			items: moveCard(prev.items, active.id, over.id, hoverInfo.quadrant)
+		}));
 
 		setActiveId(null);
 
@@ -142,6 +144,7 @@ export default function App() {
 
 
   return (
+		// console.log(Math.random(), items),
 		<div style={{ position: 'relative' }}>
 			<Dot x={mouse.x} y={mouse.y} size={20} color='blue'></Dot>
 			<Dot x={overCenter.x} y={overCenter.y} size={10} color='red'></Dot>
