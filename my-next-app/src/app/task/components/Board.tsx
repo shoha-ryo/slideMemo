@@ -5,7 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 import Card from "./Card";
 import CardCreateButton from "./CardCreateButton";
 
-export default function Board({ id, children, setItems }) {
+export default function Board({ id, selfItem, children, setItems }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
   const style = {
@@ -25,8 +25,7 @@ export default function Board({ id, children, setItems }) {
       {children.map((c) => (
         <Card key={c.id} {...c} />
       ))}
-			<CardCreateButton items={children} setItems={setItems} />
+			<CardCreateButton selfItem={selfItem} setItems={setItems} />
     </div>
-
   );
 }

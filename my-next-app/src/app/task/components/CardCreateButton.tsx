@@ -1,14 +1,25 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Item } from "@/types/item";
 
 // BoardCreateButton: ボード追加用コンポーネント
-export default function CardCreateButton({ items, setItems }) {
+export default function CardCreateButton({ selfItem, setItems }) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
 
   const handleSubmit = () => {
+		console.log("ボードを取得：", selfItem)
     if (!title.trim()) return;
+		const newCard = {
+			id: `card-${Date.now()}`, // 一意のIDを生成
+			level: 1,
+			title: title.trim(),
+			details: "",
+			children: [],
+		} // ここにカードの初期データを設定
+		console.log("newカードを取得：", newCard)
+		setItems([...selfItem.children, newCard])
     setTitle("");
     setOpen(false);
   };
@@ -20,7 +31,7 @@ export default function CardCreateButton({ items, setItems }) {
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="ボード名"
+            placeholder="カード名"
             className="w-40"
           />
           <Button onClick={handleSubmit} className="rounded-2xl">追加</Button>

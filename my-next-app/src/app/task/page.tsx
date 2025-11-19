@@ -198,6 +198,16 @@ export default function App() {
 							<p>ドラッグ中ではありません</p>
 						)}
 					</div>
+					<pre style={{
+						backgroundColor: '#f4f4f4',
+						padding: '15px',
+						borderRadius: '5px',
+						overflowX: 'auto' // 横スクロールが必要な場合に備える
+					}}>
+						<code>
+							{JSON.stringify(items, null, 2)}
+						</code>
+					</pre>
 				</div>
 			</DndContext>
 		</div>

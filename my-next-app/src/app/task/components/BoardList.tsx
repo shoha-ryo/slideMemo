@@ -21,7 +21,7 @@ function itemList({ items, setItems }) {
 					}}
 				>
           {items.map((item) => (
-            <Board key={item.id} {...item} setItems={setItems}/>
+            <Board key={item.id} selfItem={item} {...item} setItems={setItems}/>
           ))}
 					<BoardCreateButton items={items} setItems={setItems} />
         </div>
