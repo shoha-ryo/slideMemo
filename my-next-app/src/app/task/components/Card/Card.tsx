@@ -2,7 +2,7 @@
 
 import React, { use } from 'react';
 import { useDraggable, useDroppable, useDndContext } from '@dnd-kit/core';
-import { Item } from '../../../types/item';
+import { Item } from '../../../../types/item';
 
 
 

@@ -1,10 +1,14 @@
 'use client';
 
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { SortableContext } from "@dnd-kit/sortable";
 import BoardCreateButton from "./BoardCreateButton";
 import Board from "./Board";
+import { useItemStore } from "../../ItemStore";
 
-function itemList({ items, setItems }) {
+function itemList({}) {
+
+	const {items} = useItemStore();
+
   return (
 
       <SortableContext items={items}>
@@ -21,9 +25,9 @@ function itemList({ items, setItems }) {
 					}}
 				>
           {items.map((item) => (
-            <Board key={item.id} selfItem={item} {...item} setItems={setItems}/>
+            <Board key={item.id} selfItem={item} {...item} />
           ))}
-					<BoardCreateButton items={items} setItems={setItems} />
+					<BoardCreateButton/>
         </div>
       </SortableContext>
   );

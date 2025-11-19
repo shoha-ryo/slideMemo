@@ -2,10 +2,14 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import Card from "./Card";
-import CardCreateButton from "./CardCreateButton";
+import Card from "../Card/Card";
+import CardCreateButton from "../Card/CardCreateButton";
+import { useItemStore } from "../../ItemStore";
 
-export default function Board({ id, selfItem, children, setItems }) {
+export default function Board({ id, selfItem, children }) {
+
+	const {} = useItemStore();
+
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
   const style = {
@@ -25,7 +29,7 @@ export default function Board({ id, selfItem, children, setItems }) {
       {children.map((c) => (
         <Card key={c.id} {...c} />
       ))}
-			<CardCreateButton selfItem={selfItem} setItems={setItems} />
+			<CardCreateButton selfItem={selfItem} />
     </div>
   );
 }

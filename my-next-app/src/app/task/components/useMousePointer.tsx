@@ -1,7 +1,9 @@
 'use client'
+
+
 import { useEffect, useState } from 'react';
 
-export function usePointer() {
+export function useMousePointer() {
   const [pos, setPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {

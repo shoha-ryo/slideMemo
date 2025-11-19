@@ -5,14 +5,13 @@ import React, { useState } from 'react';
 import { DndContext, DragOverlay, pointerWithin,
 				 useSensor, useSensors, MouseSensor } from '@dnd-kit/core';
 import { getQuadrant } from './components/quadrantCollisionDetection';
-import  Card  from './components/Card';
-import BoardList from './components/BoardList';
-import ItemData from './data.json';
-import { moveCard } from './components/moveCards';
+import  Card  from './components/Card/Card';
+import BoardList from './components/Board/BoardList';
+import { moveCard } from './components/Card/moveCards';
 import Dot from './components/Dot';
-import { usePointer } from './components/usePointer';
+import { useMousePointer } from './components/useMousePointer';
 import { arrayMove } from "@dnd-kit/sortable";
-
+import { useItemStore } from './ItemStore';
 
 
 
@@ -29,11 +28,11 @@ export default function App() {
 	});
 	const [startOffset, setStartOffset] = useState({ x: 0, y: 0 });
 	const [activeId, setActiveId] = useState(null);
-	const [items, setItems] = useState(ItemData); // ダミーデータ
+	const {items} = useItemStore(); // ダミーデータ(Zustandで管理)
 
 	const [mouse, setMouse] = useState({ x: 0, y: 0 });
 	const [overCenter, setOverCenter] = useState({x: 0, y: 0});
-	const { x, y } = usePointer();
+	const { x, y } = useMousePointer();
 
 	const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
@@ -106,7 +105,8 @@ export default function App() {
 
 	const handleDragEnd = (event) => {
 		const { active, over } = event;
-		setItems(moveCard(items, active.id, over.id, hoverInfo.quadrant));
+		console.log(moveCard(items, active.id, over.id, hoverInfo.quadrant))
+		useItemStore.setState(moveCard(items, active.id, over.id, hoverInfo.quadrant));
 
 		setActiveId(null);
 
@@ -115,12 +115,12 @@ export default function App() {
       droppableId: null,
       quadrant: null,
     });
-
+		
 		if (!over || active.id === over.id) return;
-		setItems((prev) => {
-			const oldIndex = prev.findIndex((b) => b.id === active.id);
-			const newIndex = prev.findIndex((b) => b.id === over.id);
-			return arrayMove(prev, oldIndex, newIndex);
+		useItemStore.setState((prev) => {
+			const oldIndex = prev.items.findIndex((b) => b.id === active.id);
+			const newIndex = prev.items.findIndex((b) => b.id === over.id);
+			return arrayMove(prev.items, oldIndex, newIndex);
 		});
 	};
 
@@ -156,10 +156,7 @@ export default function App() {
 				{/* Draggable および Droppable コンポーネント */}
 				<div style={{ width: 'auto', margin: '20px auto' }}>
 					<h2>ネスト可能なアイテムリスト</h2>
-						<BoardList
-							items={items}
-							setItems={setItems}
-						/>
+						<BoardList/>
 
 					{/* Overlay */}
 					<DragOverlay>

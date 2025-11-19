@@ -1,5 +1,5 @@
 import { Item } from '@/types/item'
-import { log } from 'console'
+import { log, time } from 'console'
 
 
 // ツリー構造のノード移動ロジック
@@ -81,10 +81,9 @@ function insertUnder(newTree: Item[], overId: string, activeNode: Item): Item[] 
 
 function insertSibling(tree: Item[], targetId: string, nodeToInsert: Item, quadrant: string): Item[] {
   const walk = (nodes: Item[]) => {
-    return nodes.map((node) => {
-      // ★ ここの children の中に targetId を持つ子がいれば兄弟に追加
+		return nodes.map((node) => {
+			// ★ ここの children の中に targetId を持つ子がいれば兄弟に追加
       const hasTarget = node.children.some((child) => child.id === targetId);
-
 			// targetId を持つ子が見つかった場合の処理
 			if (hasTarget) {
 				const idx = node.children.findIndex(c => c.id === targetId);
@@ -126,34 +125,33 @@ function moveCard(tree: Item[], activeId: string, overId: string, quadrant: stri
 	// ドロップ先が自分の子孫の場合は何もしない
 	if (isDroppingIntoOwnDescendant(tree, activeId, overId)) {return tree;}
 	if (isDroppingOnBoard(overId)) {return tree;}
-
   // ① 「active以外のノード」と「activeノード」を分離
   const { newTree, removed: activeNode } = removeNode(tree, activeId);
   if (!activeNode) return tree; // 想定外の時は何もしない
-
+	
   // ② active を over の子として挿入※象限次第で処理を分岐
 	let insertedTree;
 	if (quadrant.includes('Right')) {
-  	insertedTree = insertUnder(newTree, overId, activeNode);
+		insertedTree = insertUnder(newTree, overId, activeNode);
 	} else if (quadrant.includes('Left')) {
 		insertedTree = insertSibling(newTree, overId, activeNode, quadrant);
 	}
-
+	
   // ③ over のレベルを取得するための検索
   const findLevel = (nodes, id) => {
-    for (const n of nodes) {
-      if (n.id === id) return n.level;
+		for (const n of nodes) {
+			if (n.id === id) return n.level;
       const r = findLevel(n.children, id);
       if (r !== null) return r;
     }
     return null;
   };
-
+	
   const overLevel = findLevel(insertedTree, overId);
-
+	
   // ④ active の level を “overLevel + 1” に変更
   updateLevels(activeNode, overLevel + 1);
-
+	
   return insertedTree;
 }
 
