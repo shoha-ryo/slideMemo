@@ -35,7 +35,7 @@ const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children
   // --- 3. スタイリングとネストレベルの決定 ---
 	const draggableStyle = useOverlay ? {
 		outline: '2px solid #00bcd4',
-		transform: transform? `translate3d(${transform.x + startOffset.x}px, ${transform.y + startOffset.y}px, 0)` : undefined,
+		transform: transform? `translate3d(${transform.x - startOffset.x}px, ${transform.y - startOffset.y}px, 0)` : undefined,
 		cursor: 'grabbing',
 	} : {
 		opacity: isActive? 0.2 : 1,

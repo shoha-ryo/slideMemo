@@ -4,11 +4,11 @@
 import React, { useState } from 'react';
 import { DndContext, DragOverlay, pointerWithin,
 				 useSensor, useSensors, MouseSensor } from '@dnd-kit/core';
-import { getQuadrant } from './components/quadrantCollisionDetection';
+import { getQuadrant } from './lib/quadrantCollisionDetection';
 import  Card  from './components/Card/Card';
 import BoardList from './components/Board/BoardList';
 import { moveCard } from './components/Card/moveCards';
-import Dot from './components/Dot';
+import Dot from './components/devOnly/Dot';
 import { useMousePointer } from './components/useMousePointer';
 import { arrayMove } from "@dnd-kit/sortable";
 import { useItemStore } from './ItemStore';
