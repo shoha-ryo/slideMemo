@@ -41,7 +41,8 @@
 	"lint-staged": {
 		"*.{ts,tsx,js,jsx}": [
 			"eslint --fix",
-			"git add"
+			"git add",
+			"npm run test"
 		]
 	}
 
