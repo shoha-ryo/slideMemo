@@ -1,0 +1,31 @@
+Dockerメモ
+
+前提
+	コンテナは役割ごとに分ける。
+	例：frontend, backend, nginx, mysqlなど
+	今回はNext.jsがfrontend+backendを担っている
+
+docker-compose.yml
+	複数のDockerfileをまとめて実行するためのファイル。
+
+Dockerfile (イメージの内容を記述)
+	仮想環境を自動で作成するためのファイル。
+	(Node.jsの場合) npm install したいライブラリやフレームワークを実行順に記述する。
+
+AWSへのデプロイ手順
+	①ビルド：
+		ローカル or CI/CDパイプライン内で"docker compose build"を実行し、Dockerイメージをローカルに作成
+	②ECRへプッシュ：
+		作成したイメージにECRリポジトリに対応したタグをつける？？？
+		タグ付けしたイメージをAmazon ECRにプッシュ？？？
+	③ECSにデプロイ：
+		ECSのタスク定義を更新し、使用するDockerイメージの参照先をECRにプッシュした最新のタグに変更。？？？
+
+	結果：よくわからない（後でAWSの勉強しよう※ECS,ECR）
+
+
+
+確認事項
+	複数コンテナある場合のデプロイはどうなる？同じインフラの中に全てのコンテナを入れる？
+
+
