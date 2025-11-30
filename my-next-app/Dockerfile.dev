@@ -1,0 +1,16 @@
+# Node.js20を使い"builder"として扱う。
+FROM node:20-alpine AS builder
+
+# 作業ディレクトリを"/app"に設定。
+WORKDIR /app
+
+# package.jsonとpackage-lock.jsonをコピーし、依存関係をインストール。
+COPY package*.json ./
+RUN npm install
+
+# ソースコードを全てコピー
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]

@@ -1,9 +1,16 @@
 services:
   next_app:
-    build: .
+    image: next-app
+    build:
+      context: ./my-next-app/
+      dockerfile: Dockerfile.dev
+      ### 開発用を読み込み ###
     container_name: next_app
     ports:
       - "3000:3000"
+    volumes:
+      - ./my-next-app:/app
+      - /app/node_modules
 
   nginx:
     image: nginx:alpine

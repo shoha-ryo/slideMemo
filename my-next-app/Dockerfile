@@ -17,6 +17,7 @@ RUN npm run build
 #####################
 
 
+
 FROM node:20-alpine
 # 同じくNode.js20を使う。（先ほど環境とは別でクリーンな状態）
 
