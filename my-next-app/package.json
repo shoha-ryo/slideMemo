@@ -50,6 +50,11 @@
 			"git add",
 			"npm run test"
 		]
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "eslint && vitest"
+		}
 	}
 
 }
