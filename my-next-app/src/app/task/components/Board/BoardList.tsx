@@ -5,7 +5,7 @@ import BoardCreateButton from "./BoardCreateButton";
 import Board from "./Board";
 import { useItemStore } from "../../ItemStore";
 
-function itemList({}) {
+function BoardList({}) {
 
 	const {items} = useItemStore();
 
@@ -33,4 +33,4 @@ function itemList({}) {
   );
 }
 
-export default itemList;
+export default BoardList;

@@ -1,6 +1,7 @@
 [
 	{
 		"id": "board-1",
+		"level": 0,
 		"children": [
 			{
 				"id": "card-A",
@@ -44,6 +45,7 @@
 	},
 	{
 		"id": "board-2",
+		"level": 0,
 		"children": [
 			{
 				"id": "card-A2",

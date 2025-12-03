@@ -5,14 +5,21 @@ import { CSS } from "@dnd-kit/utilities";
 import Card from "../Card/Card";
 import CardCreateButton from "../Card/CardCreateButton";
 import { useItemStore } from "../../ItemStore";
+import { Item } from '@/types/item'
 
-export default function Board({ id, selfItem, children }) {
+interface BoardProps {
+  id: string;
+  selfItem: Item;
+  children: Item[];
+}
+
+export default function Board({ id, selfItem, children }: BoardProps) {
 
 	const {} = useItemStore();
 
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
-  const style = {
+  const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
     padding: 12,
@@ -20,7 +27,7 @@ export default function Board({ id, selfItem, children }) {
     borderRadius: 8,
     display: "flex",
 		flexDirection: "column",
-		width: '800px',
+		width: 800,
     gap: 12,
   };
 

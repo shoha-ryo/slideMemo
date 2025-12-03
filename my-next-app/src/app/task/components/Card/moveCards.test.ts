@@ -49,10 +49,10 @@ describe("moveCard basic behavior", () => {
   it("兄弟として C の前に B を移動（Left/Top → 挿入前）する", () => {
     const tree = createInitialTree();
 
-    const result = moveCard(tree, "B", "C", "Left-Top");
+    const result = moveCard(tree, "B", "C", "topLeft");
 
     const A = result[0];
-		
+
     expect(A.children.map((n) => n.id)).toEqual(["B", "C"]); // B が先頭へ
     expect(A.children[0].id).toBe("B");
   });
@@ -60,7 +60,7 @@ describe("moveCard basic behavior", () => {
   it("兄弟として C の後に B を移動（Left/Bottom → 挿入後）する", () => {
     const tree = createInitialTree();
 
-    const result = moveCard(tree, "B", "C", "Left-Bottom");
+    const result = moveCard(tree, "B", "C", "bottomLeft");
 
     const A = result[0];
     expect(A.children.map((n) => n.id)).toEqual(["C", "B"]); // C の後に B
@@ -69,7 +69,7 @@ describe("moveCard basic behavior", () => {
   it("C の子として B を移動（Right → insertUnder）する", () => {
     const tree = createInitialTree();
 
-    const result = moveCard(tree, "B", "C", "Right");
+    const result = moveCard(tree, "B", "C", "topRight");
 
     const A = result[0];
     const C = A.children.find((c) => c.id === "C");
@@ -80,7 +80,7 @@ describe("moveCard basic behavior", () => {
   it("自分の子孫にドロップしようとした場合は無視される（B → D のパターン）", () => {
     const tree = createInitialTree();
 
-    const result = moveCard(tree, "B", "D", "Right");
+    const result = moveCard(tree, "B", "D", "bottomRight");
 
     // 変更されない
     expect(result).toEqual(tree);
@@ -89,7 +89,7 @@ describe("moveCard basic behavior", () => {
   it("removeNode によって activeNode が消失しないこと", () => {
     const tree = createInitialTree();
 
-    const result = moveCard(tree, "D", "C", "Left-Top");
+    const result = moveCard(tree, "D", "C", "topLeft");
 
     const A = result[0];
 
@@ -100,7 +100,7 @@ describe("moveCard basic behavior", () => {
   it("board にドロップした場合は無視される", () => {
     const tree = createInitialTree();
 
-    const result = moveCard(tree, "B", "board-1", "Left");
+    const result = moveCard(tree, "B", "board-1", "topLeft");
 
     expect(result).toEqual(tree);
   });
@@ -108,7 +108,7 @@ describe("moveCard basic behavior", () => {
   it("レベルが正しく更新される（B を C の子に → level 3 に上がる）", () => {
     const tree = createInitialTree();
 
-    const result = moveCard(tree, "B", "C", "Right");
+    const result = moveCard(tree, "B", "C", "topRight");
 
     const A = result[0];
     const C = A.children.find((n) => n.id === "C");

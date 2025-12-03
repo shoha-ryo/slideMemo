@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Item } from "@/types/item";
 import { useItemStore } from "../../ItemStore";
+import { Item } from "@/types/item"
+
+interface CardCreateButton {
+	selfItem: Item
+}
 
 // BoardCreateButton: ボード追加用コンポーネント
-export default function CardCreateButton({ selfItem }) {
+export default function CardCreateButton({ selfItem }: CardCreateButton) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
-	const { items, setItems } = useItemStore();
+	const { setItems } = useItemStore();
 
   const handleSubmit = () => {
 		console.log("ボードを取得：", selfItem)
