@@ -3,31 +3,36 @@
 // App.js や 親コンポーネント
 import React, { useState } from 'react';
 import { DndContext, DragOverlay, pointerWithin,
-				 useSensor, useSensors, MouseSensor } from '@dnd-kit/core';
+				 useSensor, useSensors, MouseSensor,
+				 DragStartEvent,
+				 DragMoveEvent,
+				 DragEndEvent} from '@dnd-kit/core';
 import { getQuadrant } from './lib/quadrantCollisionDetection';
-import  Card  from './components/Card/Card';
+import Card from './components/Card/Card';
 import BoardList from './components/Board/BoardList';
-import { moveCard } from './components/Card/moveCards';
 import Dot from './components/devOnly/Dot';
+import { moveCard } from './components/Card/moveCards';
 import { useMousePointer } from './components/useMousePointer';
-import { arrayMove } from "@dnd-kit/sortable";
+// import { arrayMove } from "@dnd-kit/sortable";
 import { useItemStore } from './ItemStore';
+import { Quadrant } from '@/types/quadrant'
+import { Item } from '@/types/item'
 
 
 
 export default function App() {
   // 表示用の状態保持
   const [hoverInfo, setHoverInfo] = useState<{
-		droppableId: string | null;
-		activeId: string | null;
-		quadrant: string | null;
+		droppableId: string | number | null;
+		activeId: string | number | null;
+		quadrant: Quadrant | null;
 	}>({
 		droppableId: null,
 		activeId: null,
 		quadrant: null,
 	});
 	const [startOffset, setStartOffset] = useState({ x: 0, y: 0 });
-	const [activeId, setActiveId] = useState(null);
+	const [activeId, setActiveId] = useState<string | number | null>(null);
 	const {items} = useItemStore(); // ダミーデータ(Zustandで管理)
 
 	const [mouse, setMouse] = useState({ x: 0, y: 0 });
@@ -46,9 +51,9 @@ export default function App() {
 
 
 
-  const handleDragStart = (event) => {
+  const handleDragStart = (event: DragStartEvent) => {
 		const { active } = event;
-		setActiveId(event.active.id);
+		setActiveId(active.id);
 
 		// ポインタと図形の左上を合わせるためのオフセット計算
     const e = event.activatorEvent;
@@ -71,7 +76,7 @@ export default function App() {
   };
 
 
-	const handleDragMove = (event) => {
+	const handleDragMove = (event: DragMoveEvent) => {
 		const { active, over } = event;
 		if (!over) {
 			setHoverInfo({ activeId: null, droppableId: null, quadrant: null });
@@ -83,14 +88,13 @@ export default function App() {
 		if (!(e instanceof MouseEvent)) return;
 		const pointer = { x: x, y: y };
 		const quadrant = getQuadrant(pointer, over.rect);
-    
-		//
+
+		// マウスの座標を保存する（Dotコンポーネント専用）
 		setMouse({ x: x, y: y })
 		const midX = over.rect.left + over.rect.width / 2;
   	const midY = over.rect.top + over.rect.height / 2;
 		setOverCenter({ x: midX, y: midY });
-		//
-    
+
 		setHoverInfo({
       activeId: active.id,
       droppableId: over.id,
@@ -103,11 +107,18 @@ export default function App() {
 		};
 
 
-	const handleDragEnd = (event) => {
+	const handleDragEnd = (event: DragEndEvent) => {
 		const { active, over } = event;
+		const activeId = active.id
+		const overId = over?.id
+		const quadrant = hoverInfo.quadrant
+
+		// 象限に紐づいてカードの位置変更処理を実行する
+		if (typeof activeId !== "string" || typeof overId !== "string") return
+		if (typeof quadrant !== "string" ) return
 		useItemStore.setState((prev) => ({
 			...prev,
-			items: moveCard(prev.items, active.id, over.id, hoverInfo.quadrant)
+			items: moveCard(prev.items, activeId, overId, quadrant)
 		}));
 
 		setActiveId(null);
@@ -117,18 +128,19 @@ export default function App() {
       droppableId: null,
       quadrant: null,
     });
-		
-		if (!over || active.id === over.id) return;
-		useItemStore.setState((prev) => {
-			const oldIndex = prev.items.findIndex((b) => b.id === active.id);
-			const newIndex = prev.items.findIndex((b) => b.id === over.id);
-			return arrayMove(prev.items, oldIndex, newIndex);
-		});
+
+		// ダブってるけどこの処理いるん？
+		// if (!over || active.id === over.id) return;
+		// useItemStore.setState((prev) => {
+		// 	const oldIndex = prev.items.findIndex((b) => b.id === active.id);
+		// 	const newIndex = prev.items.findIndex((b) => b.id === over.id);
+		// 	return arrayMove(prev.items, oldIndex, newIndex);
+		// });
 	};
 
 
 	  // 取得関数：ID を指定してそのアイテムだけを返す（Overlay用）
-  const findItem = (id, list = items) => {
+  const findItem = (id: string | number, list: Item[]):Item | null => {
     for (const item of list) {
       if (item.id === id) return item;
       if (item.children?.length) {
@@ -138,7 +150,7 @@ export default function App() {
     }
     return null;
   };
-	const activeItem = activeId ? findItem(activeId) : null;
+	const activeItem = activeId ? findItem(activeId, items) : null;
 
 
 
@@ -168,7 +180,6 @@ export default function App() {
 							<Card
 								{...activeItem}
 								startOffset={startOffset}
-								children={[]}
 								useOverlay={true} // transform補正のために渡す
 							/>
 						) : null}

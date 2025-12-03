@@ -1,8 +1,18 @@
-type Quadrant = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
+import { Quadrant } from "../../../../../my-next-app/src/types/quadrant";
+
+type DndRect = {
+        width: number;
+        height: number;
+        top: number;
+        left: number;
+        right: number;
+        bottom: number;
+    };
+
 
 export function getQuadrant(
   pointer: { x: number; y: number },
-  dropRect: ClientRect
+  dropRect: DndRect
 ): Quadrant {
   const midX = dropRect.left + dropRect.width / 2;
   const midY = dropRect.top + dropRect.height / 2;

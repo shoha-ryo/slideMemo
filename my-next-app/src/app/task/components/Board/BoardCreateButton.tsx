@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useItemStore } from "../../ItemStore";
+import { Item } from '@/types/item'
 
 // BoardCreateButton: ボード追加用コンポーネント
 export default function BoardCreateButton({}) {
@@ -11,9 +10,15 @@ export default function BoardCreateButton({}) {
   const handleSubmit = () => {
 		const newBoard = {
 			id: `board-${Date.now()}`,
+			level: 0,
 			children: [],
 		}
-		useItemStore.setState([...items, newBoard]);
+		console.log(items)
+		//useItemStore.setState([...items, newBoard]);
+		useItemStore.setState((prev) => ({
+			...prev,
+			items: [...prev.items, newBoard]
+		}))
   };
 
   return (

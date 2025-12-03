@@ -19,7 +19,7 @@ export default function SignUpPage() {
 		try {
 			await signInWithEmailAndPassword(auth, email, password);
 			router.push("/dashboard");
-		} catch (err: any) {
+		} catch (err) {
 			setError(err.message);
 		} finally {
 			setLoading(false);
