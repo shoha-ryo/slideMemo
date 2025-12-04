@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest"
+    "test": "vitest",
+    "prepare": "husky"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -17,6 +18,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "firebase": "^12.5.0",
+    "husky": "^9.1.7",
     "lucide-react": "^0.554.0",
     "next": "16.0.1",
     "react": "19.2.0",
@@ -35,7 +37,6 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
-    "husky": "^6.0.0",
     "jsdom": "^27.0.1",
     "lint-staged": "^16.2.7",
     "prisma": "^6.19.0",
@@ -50,10 +51,5 @@
       "git add",
       "npm run test"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "eslint && vitest"
-    }
   }
 }
