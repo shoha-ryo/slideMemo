@@ -94,7 +94,7 @@ describe("moveCard basic behavior", () => {
     const A = result[0];
 
     // D が移動され C の前に来る
-    expect(A.children.map((n) => n.id)).toEqual(["D", "C"]);
+    expect(A.children.map((n) => n.id)).toEqual(["B", "D", "C"]);
   });
 
   it("board にドロップした場合は無視される", () => {

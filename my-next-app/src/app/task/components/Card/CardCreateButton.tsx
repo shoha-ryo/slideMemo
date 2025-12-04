@@ -1,8 +1,11 @@
+'use client'
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useItemStore } from "../../ItemStore";
 import { Item } from "@/types/item"
+import { addCard } from "./addCard";
 
 interface CardCreateButton {
 	selfItem: Item
@@ -12,20 +15,16 @@ interface CardCreateButton {
 export default function CardCreateButton({ selfItem }: CardCreateButton) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
-	const { setItems } = useItemStore();
+	const {items} = useItemStore();
 
   const handleSubmit = () => {
-		console.log("ボードを取得：", selfItem)
-    if (!title.trim()) return;
-		const newCard = {
-			id: `card-${Date.now()}`, // 一意のIDを生成
-			level: 1,
-			title: title.trim(),
-			details: "",
-			children: [],
-		} // ここにカードの初期データを設定
-		console.log("newカードを取得：", newCard)
-		setItems([...selfItem.children, newCard])
+		if (!title.trim()) return;
+		const newItems = addCard(title, selfItem, items)
+			useItemStore.setState((prev) => ({
+		...prev,
+		items: newItems
+	}))
+
     setTitle("");
     setOpen(false);
   };
