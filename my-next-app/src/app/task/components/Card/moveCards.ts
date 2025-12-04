@@ -120,7 +120,7 @@ function updateLevels(node: Item, baseLevel: number) {
 }
 
 
-// ノードを移動するメイン関数 
+// ノードを移動するメイン関数
 function moveCard(tree: Item[], activeId: string, overId: string, quadrant: Quadrant) {
 
 	// ドロップ先が自分の子孫の場合は何もしない
