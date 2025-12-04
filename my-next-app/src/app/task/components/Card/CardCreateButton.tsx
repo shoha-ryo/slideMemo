@@ -18,6 +18,7 @@ export default function CardCreateButton({ selfItem }: CardCreateButton) {
 	const {items} = useItemStore();
 
   const handleSubmit = () => {
+		if (!title.trim()) return;
 		const newItems = addCard(title, selfItem, items)
 			useItemStore.setState((prev) => ({
 		...prev,
