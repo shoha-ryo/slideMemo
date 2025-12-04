@@ -4,9 +4,7 @@
 import React, { useState } from 'react';
 import { DndContext, DragOverlay, pointerWithin,
 				 useSensor, useSensors, MouseSensor,
-				 DragStartEvent,
-				 DragMoveEvent,
-				 DragEndEvent} from '@dnd-kit/core';
+				 DragStartEvent, DragMoveEvent, DragEndEvent} from '@dnd-kit/core';
 import { getQuadrant } from './lib/quadrantCollisionDetection';
 import Card from './components/Card/Card';
 import BoardList from './components/Board/BoardList';
