@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useItemStore } from "../../ItemStore";
 import { Item } from "@/types/item"
-import { addCard } from "./addCard";
+import { addCard } from "./lib/addCard";
 
 interface CardCreateButton {
 	selfItem: Item

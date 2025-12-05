@@ -9,9 +9,8 @@ import { getQuadrant } from './lib/quadrantCollisionDetection';
 import Card from './components/Card/Card';
 import BoardList from './components/Board/BoardList';
 import Dot from './components/devOnly/Dot';
-import { moveCard } from './components/Card/moveCards';
+import { moveCard } from './components/Card/lib/moveCards';
 import { useMousePointer } from './components/useMousePointer';
-// import { arrayMove } from "@dnd-kit/sortable";
 import { useItemStore } from './ItemStore';
 import { Quadrant } from '@/types/quadrant'
 import { Item } from '@/types/item'
@@ -126,14 +125,6 @@ export default function App() {
       droppableId: null,
       quadrant: null,
     });
-
-		// ダブってるけどこの処理いるん？
-		// if (!over || active.id === over.id) return;
-		// useItemStore.setState((prev) => {
-		// 	const oldIndex = prev.items.findIndex((b) => b.id === active.id);
-		// 	const newIndex = prev.items.findIndex((b) => b.id === over.id);
-		// 	return arrayMove(prev.items, oldIndex, newIndex);
-		// });
 	};
 
 
