@@ -1,11 +1,16 @@
+'use client'
+
 import { useEffect, useRef, useState } from "react";
+import { useSearchNode } from "./lib/searchNode";
 import { useModalStore } from "../../store/ModalStore";
 
-export default function Modal({ initialTitle = "test", initialDetails = "detailTest"}) {
-  const [title, setTitle] = useState(initialTitle);
-  const [details, setDetails] = useState(initialDetails);
-	const { hideModal } = useModalStore()
+export default function Modal({}) {
+  const [title, setTitle] = useState<string>("");
+	const nodeTitle = useSearchNode()?.title
+  const [details, setDetails] = useState<string>("");
+	const nodeDetail = useSearchNode()?.details
 
+	const { hideModal } = useModalStore()
   const titleRef = useRef(null);
 
   // 開いた瞬間にフォーカス
@@ -13,9 +18,13 @@ export default function Modal({ initialTitle = "test", initialDetails = "detailT
     if (titleRef.current) titleRef.current.focus();
   }, []);
 
-  // 背景スクロール禁止
   useEffect(() => {
-    document.body.style.overflow = "hidden";
+		// モーダルの内容を初期化
+		if (nodeTitle) setTitle(nodeTitle)
+		if (nodeDetail) setDetails(nodeDetail)
+
+		// 背景スクロール禁止
+		document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "auto";
     };
