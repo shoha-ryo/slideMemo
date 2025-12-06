@@ -3,7 +3,7 @@
 import { SortableContext } from "@dnd-kit/sortable";
 import BoardCreateButton from "./BoardCreateButton";
 import Board from "./Board";
-import { useItemStore } from "../../ItemStore";
+import { useItemStore } from "../../store/ItemStore";
 
 function BoardList({}) {
 

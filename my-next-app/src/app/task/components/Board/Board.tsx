@@ -4,7 +4,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Card from "../Card/Card";
 import CardCreateButton from "../Card/CardCreateButton";
-import { useItemStore } from "../../ItemStore";
+import { useItemStore } from "../../store/ItemStore";
 import { Item } from '@/types/item'
 
 interface BoardProps {

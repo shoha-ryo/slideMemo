@@ -1,6 +1,6 @@
 // store.js
 import { create } from "zustand";
-import ItemData from './data.json';
+import ItemData from '../data.json';
 import { Item } from '@/types/item'
 
 interface ItemStore {

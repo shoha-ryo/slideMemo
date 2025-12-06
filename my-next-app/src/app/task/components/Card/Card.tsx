@@ -2,6 +2,7 @@
 
 import { useDraggable, useDroppable, useDndContext } from '@dnd-kit/core';
 import { Item } from '@/types/item';
+import { useModalStore } from '../../store/ModalStore';
 
 // Draggable/Droppable コンポーネント
 const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children, useOverlay}) => {
@@ -13,7 +14,6 @@ const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children
 			quadrant: null, // 象限情報をここで保持
 		},
   });
-
 	const { active, over } = useDndContext();
 	const isActive = active?.id === id;
 	const quadrant = over?.id === id ? over?.data?.current?.quadrant : null;
@@ -28,6 +28,7 @@ const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children
 		},
   });
 
+
   // --- 3. スタイリングとネストレベルの決定 ---
 	const draggableStyle = useOverlay ? {
 		outline: '2px solid #00bcd4',
@@ -36,7 +37,6 @@ const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children
 		opacity: isActive? 0.2 : 1,
 		cursor: 'grab',
 	};
-
   const nestingLevel = level - 1;
   const paddingLeft = nestingLevel * 0; // 20px ずつインデント
   const droppableStyle = {
@@ -44,12 +44,20 @@ const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children
   };
 
 
-
   // DraggableとDroppableのrefを両方設定
   const setNodeRef = (node: HTMLElement | null) => {
     setDroppableRef(node);
     setDraggableRef(node);
   };
+
+	// クリックされた時にモーダルを呼び出す
+	const {showModal} = useModalStore()
+	const handleCardClick = (e: React.MouseEvent) => {
+		e.stopPropagation() // 回帰されていても最前面の1回しかイベントを呼び出さないようにする
+		showModal(id)
+	}
+
+
 
   return (
     <div
@@ -69,6 +77,7 @@ const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children
 			className={`card ${isOver ? `q-${quadrant}` : ""}`}
       {...listeners} // ドラッグイベントのリスナー
       {...attributes} // アクセシビリティ属性
+			onClick={handleCardClick}
     >
 
 			<div style={{ paddingLeft: `${paddingLeft + 10}px` }}>

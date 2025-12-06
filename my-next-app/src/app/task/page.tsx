@@ -6,14 +6,20 @@ import { DndContext, DragOverlay, pointerWithin,
 				 useSensor, useSensors, MouseSensor,
 				 DragStartEvent, DragMoveEvent, DragEndEvent} from '@dnd-kit/core';
 import { getQuadrant } from './lib/quadrantCollisionDetection';
-import Card from './components/Card/Card';
-import BoardList from './components/Board/BoardList';
-import Dot from './components/devOnly/Dot';
 import { moveCard } from './components/Card/lib/moveCards';
 import { useMousePointer } from './components/useMousePointer';
-import { useItemStore } from './ItemStore';
+
+import Modal from './components/Card/Modal';
+import BoardList from './components/Board/BoardList';
+import Card from './components/Card/Card';
+import Dot from './components/devOnly/Dot';
+
 import { Quadrant } from '@/types/quadrant'
 import { Item } from '@/types/item'
+
+import { useItemStore } from './store/ItemStore';
+import { useModalStore } from './store/ModalStore'; 
+
 
 
 
@@ -30,7 +36,8 @@ export default function App() {
 	});
 	const [startOffset, setStartOffset] = useState({ x: 0, y: 0 });
 	const [activeId, setActiveId] = useState<string | number | null>(null);
-	const {items} = useItemStore(); // ダミーデータ(Zustandで管理)
+	const {items} = useItemStore() // ダミーデータ(Zustandで管理)
+	const {isShowModal} = useModalStore()
 
 	const [mouse, setMouse] = useState({ x: 0, y: 0 });
 	const [overCenter, setOverCenter] = useState({x: 0, y: 0});
@@ -44,7 +51,6 @@ export default function App() {
   });
 
   const sensors = useSensors(mouseSensor, /* TouchSensorなど */);
-
 
 
 
@@ -70,6 +76,7 @@ export default function App() {
       droppableId: null,
       quadrant: null,
     });
+
   };
 
 
@@ -147,8 +154,11 @@ export default function App() {
   return (
 		// console.log(Math.random(), items),
 		<div style={{ position: 'relative' }}>
-			<Dot x={mouse.x} y={mouse.y} size={20} color='blue'></Dot>
-			<Dot x={overCenter.x} y={overCenter.y} size={10} color='red'></Dot>
+			{isShowModal ? <Modal/> : null }
+
+			{/* <Dot x={mouse.x} y={mouse.y} size={20} color='blue'></Dot>
+			<Dot x={overCenter.x} y={overCenter.y} size={10} color='red'></Dot> */}
+
 			<DndContext
 				collisionDetection={pointerWithin} // ポインタが重なっている要素を検出
 				onDragStart={handleDragStart}
