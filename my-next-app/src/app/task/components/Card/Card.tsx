@@ -3,6 +3,7 @@
 import { useDraggable, useDroppable, useDndContext } from '@dnd-kit/core';
 import { Item } from '@/types/item';
 import { useModalStore } from '../../store/ModalStore';
+import FormattedText from './FormattedText';
 
 // Draggable/Droppable コンポーネント
 const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children, useOverlay}) => {
@@ -80,10 +81,16 @@ const Card: React.FC<Item> = ({ startOffset, id, level, title, details, children
 			onClick={handleCardClick}
     >
 
-			<div style={{ paddingLeft: `${paddingLeft + 10}px` }}>
-				<strong>{title}</strong>
-				<span style={{ fontSize: '0.8em', color: '#666' }}> (階層: {level})</span>
-				<p style={{ fontSize: '0.8em', color: '#666'}}>{details}</p>
+			<div style={{ paddingLeft: `${paddingLeft + 10}px`, paddingBottom:"15px" }}>
+
+				<strong>
+					<FormattedText text={title}></FormattedText>
+				</strong>
+				<FormattedText
+					text={details}
+					style={{ fontSize: '0.8em', color: '#666'}}
+				>
+				</FormattedText>
 			</div>
 
 			{children.length > 0 && (

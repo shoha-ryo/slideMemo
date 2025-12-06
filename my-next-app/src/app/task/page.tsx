@@ -186,7 +186,7 @@ export default function App() {
 
 
 					{/* ↓ 衝突状況の表示領域 */}
-					<div
+					{/* <div
 						style={{
 							marginTop: '20px',
 							padding: '10px',
@@ -207,8 +207,8 @@ export default function App() {
 						) : (
 							<p>ドラッグ中ではありません</p>
 						)}
-					</div>
-					<pre style={{
+					</div> */}
+					{/* <pre style={{
 						backgroundColor: '#f4f4f4',
 						padding: '15px',
 						borderRadius: '5px',
@@ -217,7 +217,7 @@ export default function App() {
 						<code>
 							{JSON.stringify(items, null, 2)}
 						</code>
-					</pre>
+					</pre> */}
 				</div>
 			</DndContext>
 		</div>
