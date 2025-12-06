@@ -1,5 +1,6 @@
 import { Item } from "@/types/item";
 
+// 新しいノードに置換したツリーを返す
 export const replaceNodeById = (
   items: Item[],
   idToReplace: string | null,
@@ -7,11 +8,15 @@ export const replaceNodeById = (
 ): Item[] => {
   if (!idToReplace) return items;
 
+	let isReplaced: boolean = false
+
   // 1. .map() を使って新しい配列を生成する（不変性の確保）
-  return items.map(item => {
+  const newTree = items.map(item => {
+
     if (item.id === idToReplace) {
       // IDが一致した場合: 古いノードを新しいノードに置き換える
       // 注意: childrenはそのまま引き継ぐ（Modalでは編集されないため）
+			isReplaced = true
       return { ...newNode, children: item.children };
     }
 
@@ -22,10 +27,16 @@ export const replaceNodeById = (
 
       // childrenの内容が変わっていた場合のみ、親ノードも新しいオブジェクトとして返す
       if (newChildren !== item.children) {
+				isReplaced = true
         return { ...item, children: newChildren };
       }
     }
-
     return item;
   });
+
+	// 置換されなかったら元のツリーを返す
+	if (isReplaced)
+		return newTree
+	else
+		return items
 };

@@ -3,7 +3,7 @@ import { useItemStore } from "@/app/task/store/ItemStore";
 import { useModalStore } from "@/app/task/store/ModalStore";
 
 
-const findNodeById = (id: string | null, items: Item[]): Item | null => {
+export const findNodeById = (id: string | null, items: Item[]): Item | null => {
   if (!id) return null; // IDがない場合は検索しない
 
   for (const item of items) {
