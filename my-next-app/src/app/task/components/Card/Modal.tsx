@@ -1,37 +1,77 @@
 'use client'
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useSearchNode } from "./lib/searchNode";
+import { replaceNodeById } from "./lib/replaceNode"
 import { useModalStore } from "../../store/ModalStore";
+import { useItemStore } from "../../store/ItemStore";
+import { Item } from "@/types/item"
+
 
 export default function Modal({}) {
+  // --- 状態とストアからのデータ取得 ---
+  // フック呼び出しをトップレベルで1回に整理
+  const activeNode = useSearchNode();
+
+  // 更新に必要なストアのアクション/データを取得
+  const { hideModal, activeId } = useModalStore();
+  const { items, setItems } = useItemStore();
+
+  // UIの状態
   const [title, setTitle] = useState<string>("");
-	const nodeTitle = useSearchNode()?.title
   const [details, setDetails] = useState<string>("");
-	const nodeDetail = useSearchNode()?.details
+  const titleRef = useRef<HTMLInputElement>(null);
 
-	const { hideModal } = useModalStore()
-  const titleRef = useRef(null);
+  // --- useEffect: 初期化とスクロール禁止 ---
+  useEffect(() => {
+    // モーダルの内容を初期化
+    if (activeNode?.title) {
+        setTitle(activeNode.title);
+    } else {
+        setTitle(""); // ノードがない場合は空
+    }
 
-  // 開いた瞬間にフォーカス
+    if (activeNode?.details) {
+        setDetails(activeNode.details);
+    } else {
+        setDetails("");
+    }
+
+    // 背景スクロール禁止
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [activeNode]); // ★ activeNode に依存させることで、IDが変わるたびに初期化される
+
   useEffect(() => {
     if (titleRef.current) titleRef.current.focus();
   }, []);
 
-  useEffect(() => {
-		// モーダルの内容を初期化
-		if (nodeTitle) setTitle(nodeTitle)
-		if (nodeDetail) setDetails(nodeDetail)
+  // --- 保存処理 ---
+  const onSave = () => {
+    if (!activeNode || !activeId) return; // IDがない場合は保存しない
 
-		// 背景スクロール禁止
-		document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "auto";
+    // 1. 新しいノード（変更部分のみ）を作成
+    const updatedNode: Item = {
+      ...activeNode, // 古いデータをコピー (id, level, childrenなどを保持)
+      title: title,   // inputから取得した新しいタイトルで上書き
+      details: details, // textareaから取得した新しい詳細で上書き
     };
-  }, []);
 
-  const handleBackgroundClick = (e) => {
+    // 2. ツリーの中から古いノードを新しいノードに置き換える
+    const newItems = replaceNodeById(items, activeId, updatedNode);
+
+    // 3. ストアの状態を更新
+    setItems(newItems);
+
+    // 4. モーダルを非表示にする
+    hideModal();
+  };
+
+  const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target.id === "modal-background") {
+      hideModal()
     }
   };
 
@@ -112,7 +152,7 @@ export default function Modal({}) {
         </div>
 
         <button
-          // onClick={() => onSave(title, details)}
+          onClick={() => onSave()}
           style={{
             marginTop: "20px",
             width: "100%",
