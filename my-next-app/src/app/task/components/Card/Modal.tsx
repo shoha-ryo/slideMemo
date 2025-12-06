@@ -28,7 +28,7 @@ export default function Modal({}) {
     if (activeNode?.title) {
         setTitle(activeNode.title);
     } else {
-        setTitle(""); // ノードがない場合は空
+        setTitle("");
     }
 
     if (activeNode?.details) {
@@ -45,8 +45,11 @@ export default function Modal({}) {
   }, [activeNode]); // ★ activeNode に依存させることで、IDが変わるたびに初期化される
 
   useEffect(() => {
-    if (titleRef.current) titleRef.current.focus();
-  }, []);
+    if (titleRef.current) {
+			titleRef.current.focus();
+			resizeTitleHeight()
+		}
+  }, [title]);
 
   // --- 保存処理 ---
   const onSave = () => {
@@ -69,13 +72,28 @@ export default function Modal({}) {
     hideModal();
   };
 
-  const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleBackgroundClick = (e: React.MouseEvent<HTMLTextAreaElement>) => {
     if (e.target.id === "modal-background") {
       hideModal()
     }
   };
 
-  return (
+	const resizeTitleHeight = () => {
+		// DOM要素の現在値を取得（refを使用）
+		const textarea = titleRef.current;
+		const MAX_HEIGHT_FOR_ONE_LINE = 64;
+
+		if (textarea) {
+			textarea.style.height = 'auto'; // 高さをリセットして、入力内容に合わせた正確なscrollHeightを取得する
+			textarea.style.height = `${textarea.scrollHeight}px` // 一回挟まないと何故かできない。要検証。
+			if (textarea.scrollHeight < MAX_HEIGHT_FOR_ONE_LINE)
+				textarea.style.height = `40px`; // 1行の時には40pxで固定する
+			else
+				textarea.style.height = `${textarea.scrollHeight}px`; // scrollHeight（コンテンツ全体を表示するために必要な高さ）をセットする
+  }
+};
+
+return (
     <div
       id="modal-background"
       onClick={handleBackgroundClick}
@@ -96,11 +114,12 @@ export default function Modal({}) {
           background: "#fff",
           padding: "20px",
           borderRadius: "8px",
-          width: "400px",
+          width: "600px",
           boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
           position: "relative",
           pointerEvents: "auto",
         }}
+        onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={hideModal}
@@ -110,8 +129,11 @@ export default function Modal({}) {
             top: "10px",
             border: "none",
             background: "transparent",
-            fontSize: "18px",
+            fontSize: "36px",
+            fontWeight: "bold",
             cursor: "pointer",
+            lineHeight: "1", // 中央揃えを改善
+            color: "#666",
           }}
         >
           ×
@@ -121,16 +143,23 @@ export default function Modal({}) {
 
         <div style={{ marginTop: "15px" }}>
           <label>タイトル</label>
-          <input
+          <textarea
             ref={titleRef}
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            // 変更点：新しいハンドラを呼び出す
+            onChange={(e) => {
+							setTitle(e.target.value);
+						}}
             style={{
               width: "100%",
+              minHeight: "40px",
               padding: "8px",
               marginTop: "4px",
               borderRadius: "4px",
               border: "1px solid #ccc",
+              resize: "none",
+              height: '40px',
+              overflowY: 'hidden',
             }}
           />
         </div>
