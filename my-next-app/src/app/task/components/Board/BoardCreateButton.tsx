@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { useItemStore } from "../../store/ItemStore";
-import { Item } from "@/types/item";
 
 // BoardCreateButton: ボード追加用コンポーネント
 export default function BoardCreateButton({}) {

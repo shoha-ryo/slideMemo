@@ -40,6 +40,10 @@ jobs:
     # 6時間も待たされないようにタイムアウトを設定
     timeout-minutes: 10 # テスト時間に応じて調整してください
 
+    defaults:
+      run:
+        working-directory: my-next-app
+
     # ジョブレベルで必要最小限のパーミッションを定義
     permissions:
       contents: read
@@ -62,12 +66,13 @@ jobs:
           node-version: '23.5.0'
           # キャッシュを利用して依存関係のインストール時間を短縮
           cache: 'npm' # 使用しているパッケージマネージャに合わせて 'yarn', 'pnpm' などに変更
+          cache-dependency-path: my-next-app/package-lock.json
 
       # ----------------------------------------------------
       # 3. 依存関係のインストール
       # ----------------------------------------------------
       - name: Install Dependencies
-        run: npm Install
+        run: npm ci
 
       # ----------------------------------------------------
       # 4. テストの実行 (Unit/Integration Test)

@@ -7,7 +7,6 @@ import FormattedText from "./FormattedText";
 
 // Draggable/Droppable コンポーネント
 const Card: React.FC<Item> = ({
-  startOffset,
   id,
   level,
   title,
@@ -20,7 +19,6 @@ const Card: React.FC<Item> = ({
     attributes,
     listeners,
     setNodeRef: setDraggableRef,
-    transform,
   } = useDraggable({
     id: id,
     data: {

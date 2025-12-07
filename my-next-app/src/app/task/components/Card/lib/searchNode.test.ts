@@ -76,7 +76,7 @@ describe("useSearchNode フックのテスト", () => {
     // useModalStore の activeId を初期値 (null) に設定
     act(() => {
       // モーダルストアの初期化に必要な全ての状態を含めます
-      useModalStore.setState({ activeId: null, isShowModal: false });
+      useModalStore.setState({ clickedActiveId: null, isShowModal: false });
     });
   });
 
@@ -89,7 +89,7 @@ describe("useSearchNode フックのテスト", () => {
     const { result } = renderHook(() => useSearchNode());
 
     act(() => {
-      useModalStore.setState({ activeId: "root-2" });
+      useModalStore.setState({ clickedActiveId: "root-2" });
     });
 
     expect(result.current?.id).toBe("root-2");
@@ -101,7 +101,7 @@ describe("useSearchNode フックのテスト", () => {
 
     // 1. activeId を 'new-node-id' に設定 (まだストアに存在しない)
     act(() => {
-      useModalStore.setState({ activeId: "new-node-id" });
+      useModalStore.setState({ clickedActiveId: "new-node-id" });
     });
     expect(result.current).toBeNull();
 

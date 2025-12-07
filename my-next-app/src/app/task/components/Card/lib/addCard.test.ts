@@ -98,13 +98,8 @@ describe("addCard function", () => {
   });
 
   it("元の `items` 配列が変更されていないこと (不変性の確認)", () => {
-    const newTitle = "Check Immutability";
-
     // 実行前の items のコピー
     const initialCopy = JSON.parse(JSON.stringify(initialItems));
-
-    // Board B に追加
-    const result = addCard(newTitle, selfItemBoardB, initialItems);
 
     // 実行後の initialItems が初期状態と同じであることを確認
     expect(initialItems).toEqual(initialCopy);

@@ -1,12 +1,6 @@
 import { describe, it, expect } from "vitest";
 // 実際のファイルからのインポート
-import {
-  moveItem,
-  getNode,
-  collectDescendantIds,
-  isDroppingIntoOwnDescendant,
-  removeNode,
-} from "./moveItem";
+import { moveItem, isDroppingIntoOwnDescendant, removeNode } from "./moveItem";
 import { Item } from "@/types/item";
 
 // ---------------------------------------------
@@ -188,13 +182,13 @@ describe("moveItem Board Logic (using moveBoard)", () => {
     expect(result[0].id).toBe("board-2");
   });
 
-	it.only("Active Card と Over Board のドラッグでカードをボードの子に移動させる", () => {
-		const tree = createTreeWithBoards()
+  it("Active Card と Over Board のドラッグでカードをボードの子に移動させる", () => {
+    const tree = createTreeWithBoards();
 
-		const result = moveItem(tree, "card-A", "board-2", "bottomLeft")
+    const result = moveItem(tree, "card-A", "board-2", "bottomLeft");
 
-		expect(result.map((n) => n.id)).toEqual(["board-1", "board-2"])
-		expect(result[1].id).toBe("board-2");
-		expect(result[1].children[0].id).toBe("card-A");
-	})
+    expect(result.map((n) => n.id)).toEqual(["board-1", "board-2"]);
+    expect(result[1].id).toBe("board-2");
+    expect(result[1].children[0].id).toBe("card-A");
+  });
 });

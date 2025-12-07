@@ -20,7 +20,7 @@ import { useMousePointer } from "./components/useMousePointer";
 import Modal from "./components/Card/Modal";
 import BoardList from "./components/Board/BoardList";
 import Card from "./components/Card/Card";
-import Dot from "./components/devOnly/Dot";
+// import Dot from "./components/devOnly/Dot";
 
 import { Quadrant } from "@/types/quadrant";
 import { Item } from "@/types/item";
@@ -42,10 +42,10 @@ export default function App() {
   const [startOffset, setStartOffset] = useState({ x: 0, y: 0 });
   const [activeId, setActiveId] = useState<string | number | null>(null);
   const { items } = useItemStore(); // ダミーデータ(Zustandで管理)
-  const { isShowModal } = useModalStore();
+  const { isShowModal, clickedActiveId } = useModalStore();
 
-  const [mouse, setMouse] = useState({ x: 0, y: 0 });
-  const [overCenter, setOverCenter] = useState({ x: 0, y: 0 });
+  // const [mouse, setMouse] = useState({ x: 0, y: 0 });
+  // const [overCenter, setOverCenter] = useState({ x: 0, y: 0 });
   const { x, y } = useMousePointer();
 
   const mouseSensor = useSensor(MouseSensor, {
@@ -96,10 +96,10 @@ export default function App() {
     const quadrant = getQuadrant(pointer, over.rect);
 
     // マウスの座標を保存する（Dotコンポーネント専用）
-    setMouse({ x: x, y: y });
-    const midX = over.rect.left + over.rect.width / 2;
-    const midY = over.rect.top + over.rect.height / 2;
-    setOverCenter({ x: midX, y: midY });
+    // setMouse({ x: x, y: y });
+    // const midX = over.rect.left + over.rect.width / 2;
+    // const midY = over.rect.top + over.rect.height / 2;
+    // setOverCenter({ x: midX, y: midY });
 
     setHoverInfo({
       activeId: active.id,
@@ -149,9 +149,8 @@ export default function App() {
   const activeItem = activeId ? findItem(activeId, items) : null;
 
   return (
-    // console.log(Math.random(), items),
     <div style={{ position: "relative" }}>
-      {isShowModal ? <Modal /> : null}
+      {isShowModal ? <Modal key={clickedActiveId} /> : null}
 
       {/* <Dot x={mouse.x} y={mouse.y} size={20} color='blue'></Dot>
 			<Dot x={overCenter.x} y={overCenter.y} size={10} color='red'></Dot> */}
@@ -192,7 +191,7 @@ export default function App() {
               textAlign: "center",
             }}
           >
-            {hoverInfo.activeId ? (
+            {/* {hoverInfo.activeId ? (
               <>
                 <p>
                   🟦 ドラッグ中(ID): <strong>{hoverInfo.activeId}</strong>
@@ -212,7 +211,7 @@ export default function App() {
               </>
             ) : (
               <p>ドラッグ中ではありません</p>
-            )}
+            )} */}
           </div>
           {/* <pre style={{
 						backgroundColor: '#f4f4f4',
