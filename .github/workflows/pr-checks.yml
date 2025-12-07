@@ -40,6 +40,10 @@ jobs:
     # 6時間も待たされないようにタイムアウトを設定
     timeout-minutes: 10 # テスト時間に応じて調整してください
 
+    defaults:
+      run:
+        working-directory: my-next-app
+
     # ジョブレベルで必要最小限のパーミッションを定義
     permissions:
       contents: read
