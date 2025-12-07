@@ -192,7 +192,7 @@ export default function App() {
               textAlign: "center",
             }}
           >
-            {hoverInfo.activeId ? (
+            {/* {hoverInfo.activeId ? (
               <>
                 <p>
                   🟦 ドラッグ中(ID): <strong>{hoverInfo.activeId}</strong>
@@ -212,7 +212,7 @@ export default function App() {
               </>
             ) : (
               <p>ドラッグ中ではありません</p>
-            )}
+            )} */}
           </div>
           {/* <pre style={{
 						backgroundColor: '#f4f4f4',
