@@ -6,7 +6,7 @@ import { DndContext, DragOverlay, pointerWithin,
 				 useSensor, useSensors, MouseSensor,
 				 DragStartEvent, DragMoveEvent, DragEndEvent} from '@dnd-kit/core';
 import { getQuadrant } from './lib/quadrantCollisionDetection';
-import { moveCard } from './components/Card/lib/moveCards';
+import { moveItem } from './components/Card/lib/moveItem';
 import { useMousePointer } from './components/useMousePointer';
 
 import Modal from './components/Card/Modal';
@@ -122,7 +122,7 @@ export default function App() {
 		if (typeof quadrant !== "string" ) return
 		useItemStore.setState((prev) => ({
 			...prev,
-			items: moveCard(prev.items, activeId, overId, quadrant)
+			items: moveItem(prev.items, activeId, overId, quadrant)
 		}));
 
 		setActiveId(null);
@@ -186,7 +186,7 @@ export default function App() {
 
 
 					{/* ↓ 衝突状況の表示領域 */}
-					{/* <div
+					<div
 						style={{
 							marginTop: '20px',
 							padding: '10px',
@@ -207,7 +207,7 @@ export default function App() {
 						) : (
 							<p>ドラッグ中ではありません</p>
 						)}
-					</div> */}
+					</div>
 					{/* <pre style={{
 						backgroundColor: '#f4f4f4',
 						padding: '15px',

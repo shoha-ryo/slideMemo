@@ -1,5 +1,6 @@
 import { Item } from '@/types/item'
 import { Quadrant } from '@/types/quadrant'
+import { moveBoard } from '../../Board/lib/moveBoard'
 
 
 // ツリー構造のノード移動ロジック
@@ -36,17 +37,18 @@ function isDroppingIntoOwnDescendant(
   return descendants.includes(overId)  // 自分の子孫に drop しようとしているかを判定
 }
 
-// ドロップ先がボードかどうか判定する
-function isDroppingOnBoard(
-	overId: string
+// ドロップ先がボードかカードかどうか判定する
+function isItemOfKind(
+	id: string,
+	itemKinds: "board" | "card"
 ): boolean {
-	return overId.startsWith('board-');
+	return id.startsWith(itemKinds);
 }
 
 
 
 // ノードをツリーから削除するヘルパー関数
-function removeNode(tree: Item[], targetId: string) {
+function removeNode(tree: Item[], targetId: string): {newTree: Item[], removed: Item | null} {
   let removed = null;
 
   const walk = (nodes: Item[]) => {
@@ -111,31 +113,46 @@ function insertSibling(newTree: Item[], targetId: string, activeNode: Item, quad
   return walk(newTree);
 }
 
-
-
 // 親レベル情報を元に子レベルを更新するヘルパー関数
 function updateLevels(node: Item, baseLevel: number) {
   node.level = baseLevel;
   node.children.forEach((child) => updateLevels(child, baseLevel + 1));
+	return node
 }
 
 
+
+
+
+
+
+
+
+
+
 // ノードを移動するメイン関数
-function moveCard(tree: Item[], activeId: string, overId: string, quadrant: Quadrant) {
+function moveItem(tree: Item[], activeId: string, overId: string, quadrant: Quadrant) {
+
+	// ボードをドラッグ中はドロップ先の親のボードを取得する。
+	const {movedBoardTree, isUpdated} = moveBoard(tree, activeId, overId)
+	if (isUpdated) return movedBoardTree
 
 	// ドロップ先が自分の子孫の場合は何もしない
 	if (isDroppingIntoOwnDescendant(tree, activeId, overId)) return tree
-	if (isDroppingOnBoard(overId)) return tree
+	if (isItemOfKind(overId, "board")) return tree
   // ① 「active以外のノード」と「activeノード」を分離
   const { newTree, removed: activeNode } = removeNode(tree, activeId);
   if (!activeNode) return tree; // 想定外の時は何もしない
 
   // ② active を over の子として挿入※象限次第で処理を分岐
 	let insertedTree;
+	let levelOffset
 	if (quadrant.includes('Right')) {
 		insertedTree = insertUnder(newTree, overId, activeNode);
+		levelOffset = 1
 	} else if (quadrant.includes('Left')) {
 		insertedTree = insertSibling(newTree, overId, activeNode, quadrant);
+		levelOffset = 0
 	}
 
   // ③ over のレベルを取得するための検索
@@ -152,11 +169,11 @@ function moveCard(tree: Item[], activeId: string, overId: string, quadrant: Quad
   const overLevel = findLevel(insertedTree, overId);
 
   // ④ active の level を “overLevel + 1” に変更
-	if (!overLevel) return tree
-  updateLevels(activeNode, overLevel + 1);
+	if (!overLevel || levelOffset == undefined) return tree
+  updateLevels(activeNode, overLevel + levelOffset);
 
   return insertedTree;
 }
 
 
-export { moveCard };
+export { moveItem, collectDescendantIds, getNode, isItemOfKind, isDroppingIntoOwnDescendant, removeNode };
