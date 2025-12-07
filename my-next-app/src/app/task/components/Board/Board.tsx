@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Card from "../Card/Card";
 import CardCreateButton from "../Card/CardCreateButton";
 import { useItemStore } from "../../store/ItemStore";
-import { Item } from '@/types/item'
+import { Item } from "@/types/item";
 
 interface BoardProps {
   id: string;
@@ -14,10 +14,10 @@ interface BoardProps {
 }
 
 export default function Board({ id, selfItem, children }: BoardProps) {
+  const {} = useItemStore();
 
-	const {} = useItemStore();
-
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -26,8 +26,8 @@ export default function Board({ id, selfItem, children }: BoardProps) {
     background: "#f5f5f5",
     borderRadius: 8,
     display: "flex",
-		flexDirection: "column",
-		width: 800,
+    flexDirection: "column",
+    width: 800,
     gap: 12,
   };
 
@@ -36,7 +36,7 @@ export default function Board({ id, selfItem, children }: BoardProps) {
       {children.map((c) => (
         <Card key={c.id} {...c} />
       ))}
-			<CardCreateButton selfItem={selfItem} />
+      <CardCreateButton selfItem={selfItem} />
     </div>
   );
 }

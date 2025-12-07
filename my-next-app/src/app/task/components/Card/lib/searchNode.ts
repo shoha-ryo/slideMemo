@@ -2,7 +2,6 @@ import { Item } from "@/types/item";
 import { useItemStore } from "@/app/task/store/ItemStore";
 import { useModalStore } from "@/app/task/store/ModalStore";
 
-
 export const findNodeById = (id: string | null, items: Item[]): Item | null => {
   if (!id) return null; // IDがない場合は検索しない
 
@@ -24,9 +23,7 @@ export const findNodeById = (id: string | null, items: Item[]): Item | null => {
   return null; // 見つからなかった場合
 };
 
-
 export const useSearchNode = (): Item | null => {
-
   const { items } = useItemStore(); // 全てのアイテムを取得
   const { activeId } = useModalStore(); // 現在モーダルで表示すべきIDを取得
 

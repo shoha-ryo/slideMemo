@@ -1,44 +1,44 @@
-import { Item } from '@/types/item'
-import { arrayMove } from '@dnd-kit/sortable'
-import { isItemOfKind } from '../../Card/lib/moveItem';
+import { Item } from "@/types/item";
+import { arrayMove } from "@dnd-kit/sortable";
+import { isItemOfKind } from "../../Card/lib/moveItem";
 
-
-
-const moveBoard = (tree: Item[], activeId: string, overId: string): {movedBoardTree: Item[], isUpdated: boolean} => {
-
+const moveBoard = (
+  tree: Item[],
+  activeId: string,
+  overId: string,
+): { movedBoardTree: Item[]; isUpdated: boolean } => {
   const isActiveBoard = isItemOfKind(activeId, "board");
-	const isOverBoard = isItemOfKind(overId, "board")
+  const isOverBoard = isItemOfKind(overId, "board");
   const isOverCard = isItemOfKind(overId, "card");
   let movedBoardTree = [...tree];
-	let isUpdated = false
+  let isUpdated = false;
 
-	// Activeがボード、Overがカードなら親のボードを取得し、ボードを移動させる
+  // Activeがボード、Overがカードなら親のボードを取得し、ボードを移動させる
   if (isActiveBoard && isOverCard) {
     // Over Card の親ボードを取得
     const overParentBoard = findNodeParent(movedBoardTree, overId);
     if (overParentBoard) {
       // Active Board を親ボードの位置に移動
       movedBoardTree = moveNodes(movedBoardTree, activeId, overParentBoard.id);
-			isUpdated = true
+      isUpdated = true;
     }
   }
 
-	// 両方ボードならそのまま移動する
-	if (isActiveBoard && isOverBoard) {
-		movedBoardTree = moveNodes(movedBoardTree, activeId, overId)
-		isUpdated = true
-	}
+  // 両方ボードならそのまま移動する
+  if (isActiveBoard && isOverBoard) {
+    movedBoardTree = moveNodes(movedBoardTree, activeId, overId);
+    isUpdated = true;
+  }
 
   return { movedBoardTree, isUpdated };
 };
 
 // ノードを新しい位置へ移動させる (arrayMoveを使用)
 const moveNodes = (tree: Item[], activeId: string, overId: string): Item[] => {
-
   // 移動元 (activeId) の現在のインデックスを取得
-  const oldIndex = tree.findIndex(item => item.id === activeId);
+  const oldIndex = tree.findIndex((item) => item.id === activeId);
   // 移動先 (overId) のインデックスを取得
-  const newIndex = tree.findIndex(item => item.id === overId);
+  const newIndex = tree.findIndex((item) => item.id === overId);
 
   if (oldIndex === -1 || newIndex === -1) {
     return [...tree];
@@ -70,4 +70,4 @@ const findNodeParent = (tree: Item[], targetId: string): Item | null => {
   return null;
 };
 
-export { moveBoard, moveNodes, findNodeParent }
+export { moveBoard, moveNodes, findNodeParent };

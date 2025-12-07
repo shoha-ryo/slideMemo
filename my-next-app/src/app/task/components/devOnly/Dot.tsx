@@ -1,26 +1,26 @@
-'use client'
+"use client";
 
-import React from 'react';
+import React from "react";
 
 interface DotProps {
   x: number;
   y: number;
   size?: number; // 円の直径、デフォルト20px
-	color?: string;
+  color?: string;
 }
 
 const Dot: React.FC<DotProps> = ({ x, y, size = 20, color = "red" }) => {
   return (
     <div
       style={{
-        position: 'absolute',
+        position: "absolute",
         left: x - size / 2, // 中心に合わせる
-        top: y - size / 2,  // 中心に合わせる
+        top: y - size / 2, // 中心に合わせる
         width: size,
         height: size,
-        borderRadius: '50%',
+        borderRadius: "50%",
         backgroundColor: color,
-        pointerEvents: 'none', // マウスイベントを透過
+        pointerEvents: "none", // マウスイベントを透過
         zIndex: 9999,
       }}
     />

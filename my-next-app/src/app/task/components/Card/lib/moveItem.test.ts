@@ -1,9 +1,13 @@
 import { describe, it, expect } from "vitest";
 // 実際のファイルからのインポート
-import { moveItem, getNode, collectDescendantIds, isDroppingIntoOwnDescendant, removeNode } from "./moveItem";
+import {
+  moveItem,
+  getNode,
+  collectDescendantIds,
+  isDroppingIntoOwnDescendant,
+  removeNode,
+} from "./moveItem";
 import { Item } from "@/types/item";
-
-
 
 // ---------------------------------------------
 // テスト用初期データ
@@ -12,33 +16,62 @@ import { Item } from "@/types/item";
 // ケース1: カードのみのツリー (A -> B(D), C)
 function createInitialTree(): Item[] {
   return [
-    { id: "card-A", title: "card-A", details: "", level: 1, children: [
-      { id: "card-B", title: "card-B", details: "", level: 2, children: [
-        { id: "card-D", title: "card-D", details: "", level: 3, children: [] },
-      ]},
-      { id: "card-C", title: "card-C", details: "", level: 2, children: [] },
-    ]},
+    {
+      id: "card-A",
+      title: "card-A",
+      details: "",
+      level: 1,
+      children: [
+        {
+          id: "card-B",
+          title: "card-B",
+          details: "",
+          level: 2,
+          children: [
+            {
+              id: "card-D",
+              title: "card-D",
+              details: "",
+              level: 3,
+              children: [],
+            },
+          ],
+        },
+        { id: "card-C", title: "card-C", details: "", level: 2, children: [] },
+      ],
+    },
   ];
 }
 
 // ケース2: ボードとカードのツリー (Board-1, Board-2)
 function createTreeWithBoards(): Item[] {
   return [
-    { id: "board-1", title: "Board 1", level: 0, details: "", children: [
-      { id: "card-A", title: "card-A", level: 1, details: "", children: [] },
-    ]},
-    { id: "board-2", title: "Board 2", level: 0, details: "", children: [
-      { id: "card-X", title: "X", level: 1, details: "", children: [] },
-    ]},
+    {
+      id: "board-1",
+      title: "Board 1",
+      level: 0,
+      details: "",
+      children: [
+        { id: "card-A", title: "card-A", level: 1, details: "", children: [] },
+      ],
+    },
+    {
+      id: "board-2",
+      title: "Board 2",
+      level: 0,
+      details: "",
+      children: [
+        { id: "card-X", title: "X", level: 1, details: "", children: [] },
+      ],
+    },
   ];
 }
-
 
 // ---------------------------------------------
 // ヘルパー関数のテスト
 // ---------------------------------------------
-describe('Helper Functions', () => {
-  it('isDroppingIntoOwnDescendant: 自分の子孫にドロップしようとした場合は true を返す', () => {
+describe("Helper Functions", () => {
+  it("isDroppingIntoOwnDescendant: 自分の子孫にドロップしようとした場合は true を返す", () => {
     const tree = createInitialTree();
     // B の子孫は D
     expect(isDroppingIntoOwnDescendant(tree, "card-B", "card-D")).toBe(true);
@@ -46,28 +79,26 @@ describe('Helper Functions', () => {
     expect(isDroppingIntoOwnDescendant(tree, "card-B", "card-C")).toBe(false);
   });
 
-  it('removeNode: ターゲットノードを正しく削除し、分離したノードを返す', () => {
+  it("removeNode: ターゲットノードを正しく削除し、分離したノードを返す", () => {
     const tree = createInitialTree();
     const { newTree, removed } = removeNode(tree, "card-B");
 
     // newTree に B が存在しないことを確認
-    const A_children = newTree[0].children.map(n => n.id);
+    const A_children = newTree[0].children.map((n) => n.id);
     expect(A_children).toEqual(["card-C"]);
 
-		expect(removed).not.toBeNull()
+    expect(removed).not.toBeNull();
 
     // 削除されたノードが B であることを確認
-			expect(removed!.id).toBe("card-B");
-			expect(removed!.children.map(n => n.id)).toEqual(["card-D"]);
+    expect(removed!.id).toBe("card-B");
+    expect(removed!.children.map((n) => n.id)).toEqual(["card-D"]);
   });
 });
-
 
 // ---------------------------------------------
 // moveItem メインロジックのテスト
 // ---------------------------------------------
 describe("moveItem Card Logic (moveBoard returns null)", () => {
-
   // 兄弟挿入 (Left: topLeft/bottomLeft)
   it("兄弟として C の前に D を移動（topLeft → 挿入前）する", () => {
     const tree = createInitialTree(); // D は B の子
@@ -79,9 +110,8 @@ describe("moveItem Card Logic (moveBoard returns null)", () => {
     expect(A_children_ids).toEqual(["card-B", "card-D", "card-C"]); // D が B の子から A の子になり、C の前に挿入される
 
     // level の更新チェック (C: level 2 なので activeNode D のレベルは 2)
-    const D = result[0].children.find(n => n.id === "card-D");
+    const D = result[0].children.find((n) => n.id === "card-D");
     expect(D?.level).toBe(2);
-
   });
 
   it("兄弟として C の後に D を移動（bottomLeft → 挿入後）する", () => {
@@ -131,7 +161,6 @@ describe("moveItem Card Logic (moveBoard returns null)", () => {
     expect(result).toEqual(tree);
   });
 });
-
 
 // ---------------------------------------------
 // moveItem ボード移動ロジックのテスト

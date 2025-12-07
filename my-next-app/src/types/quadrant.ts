@@ -1,1 +1,1 @@
-export type Quadrant = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
+export type Quadrant = "topLeft" | "topRight" | "bottomLeft" | "bottomRight";
