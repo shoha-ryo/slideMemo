@@ -188,7 +188,7 @@ describe("moveItem Board Logic (using moveBoard)", () => {
     expect(result[0].id).toBe("board-2");
   });
 
-	it.only("Active Card と Over Board のドラッグでカードをボードの子に移動させる", () => {
+	it("Active Card と Over Board のドラッグでカードをボードの子に移動させる", () => {
 		const tree = createTreeWithBoards()
 
 		const result = moveItem(tree, "card-A", "board-2", "bottomLeft")
