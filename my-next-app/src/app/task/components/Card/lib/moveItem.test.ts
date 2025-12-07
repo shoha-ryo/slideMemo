@@ -184,14 +184,17 @@ describe("moveItem Board Logic (using moveBoard)", () => {
     // Active: Board-2, Over: A (Card, 親は Board-1)
     const result = moveItem(tree, "board-2", "card-A", "topRight");
 
-    // moveBoard は 'Board-2' と 'Board-1' の移動として処理するはず
-    // moveBoard のモックは board-2 と board-1 の移動に対応していないため、nullが返るはず。
-    // ※ 実際の moveBoard ロジック次第だが、今回はテストの正確性を期すため、
-    //    moveBoard が board-2, board-1 の移動を処理すると仮定してテスト
-    // (Board-2, 'Board-1') の移動結果を期待
-    // 期待結果: [Board-2, Board-1]
-
     expect(result.map((n) => n.id)).toEqual(["board-2", "board-1"]);
     expect(result[0].id).toBe("board-2");
   });
+
+	it.only("Active Card と Over Board のドラッグでカードをボードの子に移動させる", () => {
+		const tree = createTreeWithBoards()
+
+		const result = moveItem(tree, "card-A", "board-2", "bottomLeft")
+
+		expect(result.map((n) => n.id)).toEqual(["board-1", "board-2"])
+		expect(result[1].id).toBe("board-2");
+		expect(result[1].children[0].id).toBe("card-A");
+	})
 });

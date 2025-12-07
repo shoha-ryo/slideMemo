@@ -135,7 +135,8 @@ function moveItem(
 
   // ドロップ先が自分の子孫の場合は何もしない
   if (isDroppingIntoOwnDescendant(tree, activeId, overId)) return tree;
-  if (isItemOfKind(overId, "board")) return tree;
+  // if (isItemOfKind(overId, "board")) return tree;　途中でカードが消える
+
   // ① 「active以外のノード」と「activeノード」を分離
   const { newTree, removed: activeNode } = removeNode(tree, activeId);
   if (!activeNode) return tree; // 想定外の時は何もしない
@@ -143,18 +144,19 @@ function moveItem(
   // ② active を over の子として挿入※象限次第で処理を分岐
   let insertedTree;
   let levelOffset;
-  if (quadrant.includes("Right")) {
+	if (quadrant.includes("Right") || isItemOfKind(overId, "board")) {
     insertedTree = insertUnder(newTree, overId, activeNode);
     levelOffset = 1;
   } else if (quadrant.includes("Left")) {
-    insertedTree = insertSibling(newTree, overId, activeNode, quadrant);
+		insertedTree = insertSibling(newTree, overId, activeNode, quadrant);
     levelOffset = 0;
   }
+	//console.log("追加したツリー(ここで消えてる)", ...insertedTree);
 
   // ③ over のレベルを取得するための検索
   const findLevel = (nodes: Item[], id: string): number | null => {
-    for (const n of nodes) {
-      if (n.id === id) return n.level;
+		for (const n of nodes) {
+			if (n.id === id) return n.level;
       const r = findLevel(n.children, id);
       if (r !== null) return r;
     }
@@ -165,7 +167,7 @@ function moveItem(
   const overLevel = findLevel(insertedTree, overId);
 
   // ④ active の level を “overLevel + 1” に変更
-  if (!overLevel || levelOffset == undefined) return tree;
+  if (overLevel == null || levelOffset == undefined) return tree;
   updateLevels(activeNode, overLevel + levelOffset);
 
   return insertedTree;

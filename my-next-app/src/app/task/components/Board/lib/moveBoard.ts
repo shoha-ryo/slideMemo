@@ -9,6 +9,7 @@ const moveBoard = (
 ): { movedBoardTree: Item[]; isUpdated: boolean } => {
   const isActiveBoard = isItemOfKind(activeId, "board");
   const isOverBoard = isItemOfKind(overId, "board");
+	const isActiveCard = isItemOfKind(activeId, "card")
   const isOverCard = isItemOfKind(overId, "card");
   let movedBoardTree = [...tree];
   let isUpdated = false;
@@ -29,6 +30,8 @@ const moveBoard = (
     movedBoardTree = moveNodes(movedBoardTree, activeId, overId);
     isUpdated = true;
   }
+
+	// カードをボードに載せる場合の処理
 
   return { movedBoardTree, isUpdated };
 };
