@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchNode } from "./lib/searchNode";
 import { replaceNodeById } from "./lib/replaceNode";
 import { useModalStore } from "../../store/ModalStore";
@@ -13,28 +13,31 @@ export default function Modal({}) {
   const activeNode = useSearchNode();
 
   // 更新に必要なストアのアクション/データを取得
-  const { hideModal, activeId } = useModalStore();
+  const { hideModal, clickedActiveId } = useModalStore();
   const { items, setItems } = useItemStore();
 
   // UIの状態
-  const [title, setTitle] = useState<string>("");
-  const [details, setDetails] = useState<string>("");
+  const [title, setTitle] = useState<string>(activeNode?.title || "");
+  const [details, setDetails] = useState<string>(activeNode?.details || "");
   const titleRef = useRef<HTMLInputElement>(null);
+
+  const resizeTitleHeight = () => {
+    // DOM要素の現在値を取得（refを使用）
+    const textarea = titleRef.current;
+    const MAX_HEIGHT_FOR_ONE_LINE = 64;
+
+    if (textarea) {
+      textarea.style.height = "auto"; // 高さをリセットして、入力内容に合わせた正確なscrollHeightを取得する
+      textarea.style.height = `${textarea.scrollHeight}px`; // 一回挟まないと何故かできない。要検証。
+      if (textarea.scrollHeight < MAX_HEIGHT_FOR_ONE_LINE)
+        textarea.style.height = `40px`; // 1行の時には40pxで固定する
+      else textarea.style.height = `${textarea.scrollHeight}px`; // scrollHeight（コンテンツ全体を表示するために必要な高さ）をセットする
+    }
+  };
 
   // --- useEffect: 初期化とスクロール禁止 ---
   useEffect(() => {
     // モーダルの内容を初期化
-    if (activeNode?.title) {
-      setTitle(activeNode.title);
-    } else {
-      setTitle("");
-    }
-
-    if (activeNode?.details) {
-      setDetails(activeNode.details);
-    } else {
-      setDetails("");
-    }
 
     // 背景スクロール禁止
     document.body.style.overflow = "hidden";
@@ -52,7 +55,7 @@ export default function Modal({}) {
 
   // --- 保存処理 ---
   const onSave = () => {
-    if (!activeNode || !activeId) return; // IDがない場合は保存しない
+    if (!activeNode || !clickedActiveId) return; // IDがない場合は保存しない
 
     // 1. 新しいノード（変更部分のみ）を作成
     const updatedNode: Item = {
@@ -62,7 +65,7 @@ export default function Modal({}) {
     };
 
     // 2. ツリーの中から古いノードを新しいノードに置き換える
-    const newItems = replaceNodeById(items, activeId, updatedNode);
+    const newItems = replaceNodeById(items, clickedActiveId, updatedNode);
 
     // 3. ストアの状態を更新
     setItems(newItems);
@@ -74,20 +77,6 @@ export default function Modal({}) {
   const handleBackgroundClick = (e: React.MouseEvent<HTMLTextAreaElement>) => {
     if (e.target.id === "modal-background") {
       hideModal();
-    }
-  };
-
-  const resizeTitleHeight = () => {
-    // DOM要素の現在値を取得（refを使用）
-    const textarea = titleRef.current;
-    const MAX_HEIGHT_FOR_ONE_LINE = 64;
-
-    if (textarea) {
-      textarea.style.height = "auto"; // 高さをリセットして、入力内容に合わせた正確なscrollHeightを取得する
-      textarea.style.height = `${textarea.scrollHeight}px`; // 一回挟まないと何故かできない。要検証。
-      if (textarea.scrollHeight < MAX_HEIGHT_FOR_ONE_LINE)
-        textarea.style.height = `40px`; // 1行の時には40pxで固定する
-      else textarea.style.height = `${textarea.scrollHeight}px`; // scrollHeight（コンテンツ全体を表示するために必要な高さ）をセットする
     }
   };
 

@@ -25,10 +25,10 @@ export const findNodeById = (id: string | null, items: Item[]): Item | null => {
 
 export const useSearchNode = (): Item | null => {
   const { items } = useItemStore(); // 全てのアイテムを取得
-  const { activeId } = useModalStore(); // 現在モーダルで表示すべきIDを取得
+  const { clickedActiveId } = useModalStore(); // 現在モーダルで表示すべきIDを取得
 
   // 検索を実行
-  const activeNode = findNodeById(activeId, items);
+  const activeNode = findNodeById(clickedActiveId, items);
 
   // 見つかったノードを返す
   return activeNode;

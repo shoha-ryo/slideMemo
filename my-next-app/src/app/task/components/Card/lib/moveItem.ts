@@ -144,19 +144,19 @@ function moveItem(
   // ② active を over の子として挿入※象限次第で処理を分岐
   let insertedTree;
   let levelOffset;
-	if (quadrant.includes("Right") || isItemOfKind(overId, "board")) {
+  if (quadrant.includes("Right") || isItemOfKind(overId, "board")) {
     insertedTree = insertUnder(newTree, overId, activeNode);
     levelOffset = 1;
   } else if (quadrant.includes("Left")) {
-		insertedTree = insertSibling(newTree, overId, activeNode, quadrant);
+    insertedTree = insertSibling(newTree, overId, activeNode, quadrant);
     levelOffset = 0;
   }
-	//console.log("追加したツリー(ここで消えてる)", ...insertedTree);
+  //console.log("追加したツリー(ここで消えてる)", ...insertedTree);
 
   // ③ over のレベルを取得するための検索
   const findLevel = (nodes: Item[], id: string): number | null => {
-		for (const n of nodes) {
-			if (n.id === id) return n.level;
+    for (const n of nodes) {
+      if (n.id === id) return n.level;
       const r = findLevel(n.children, id);
       if (r !== null) return r;
     }

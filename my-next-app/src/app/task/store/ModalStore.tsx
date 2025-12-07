@@ -2,26 +2,26 @@ import { create } from "zustand";
 
 interface ModalStore {
   isShowModal: boolean;
-  activeId: string | null;
+  clickedActiveId: string | null;
   showModal: (id: string) => void;
   hideModal: () => void;
 }
 
 export const useModalStore = create<ModalStore>()((set) => ({
   isShowModal: false,
-  activeId: null,
+  clickedActiveId: null,
 
   // idからノードを取得してモーダルを表示する
   showModal: (id) =>
-    set((state) => ({
+    set(() => ({
       isShowModal: true,
-      activeId: id,
+      clickedActiveId: id,
     })),
 
   // モーダルを非表示にする
   hideModal: () =>
     set(() => ({
       isShowModal: false,
-      activeId: null,
+      clickedActiveId: null,
     })),
 }));
