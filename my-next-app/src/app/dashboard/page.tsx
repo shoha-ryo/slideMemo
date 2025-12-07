@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -6,7 +6,7 @@ import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 
 export default function DashboardPage() {
-  const [user, setUser] = useState< User | null >(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -75,8 +75,8 @@ export default function DashboardPage() {
             <p className="text-gray-600 mb-4">
               あなたのタスクをここで管理しましょう。
             </p>
-						{/* ここに/taskにルーティングさせるボタンを作成 */}
-						<button
+            {/* ここに/taskにルーティングさせるボタンを作成 */}
+            <button
               onClick={() => router.push("/task")}
               className="bg-green-500 text-white px-6 py-3 rounded-full hover:bg-green-600 transition shadow-lg mt-4"
             >

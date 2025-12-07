@@ -6,26 +6,25 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 
 export default function SignUpPage() {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [error, setError] = useState<string | null>(null);
-	const [loading, setLoading] = useState(false);
-	const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault(); // 再読み込みを停止させる（状態リセットや非同期処理の中断を防ぐため）
-		setError(null); // エラーメッセージをリセット（前回のエラーを表示させない）
-		setLoading(true);
-		try {
-			await signInWithEmailAndPassword(auth, email, password);
-			router.push("/dashboard");
-		} catch (err) {
-			setError(err.message);
-		} finally {
-			setLoading(false);
-		}
-	};
-
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // 再読み込みを停止させる（状態リセットや非同期処理の中断を防ぐため）
+    setError(null); // エラーメッセージをリセット（前回のエラーを表示させない）
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push("/dashboard");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-50">
