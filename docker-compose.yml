@@ -21,3 +21,23 @@ services:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - next_app
+
+  # MySQLデータベースサービス
+  db:
+    image: mysql:8.0 # 使用するMySQLのバージョン
+    container_name: nextjs-prisma-mysql
+    restart: always
+    environment:
+      # 環境変数: データベースの認証情報と初期設定
+      MYSQL_ROOT_PASSWORD: root_password # ルートユーザーのパスワード
+      MYSQL_DATABASE: nextjs_db # 作成するデータベース名
+      MYSQL_USER: user # 作成する一般ユーザー名
+      MYSQL_PASSWORD: user_password # 一般ユーザーのパスワード
+    ports:
+      - "3306:3306" # ホスト(左)のポートをコンテナ(右)のポートにマッピング
+    volumes:
+      # データを永続化するためのボリューム
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data: # データを永続化するボリュームの定義

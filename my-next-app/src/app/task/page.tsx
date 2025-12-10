@@ -165,7 +165,6 @@ export default function App() {
       >
         {/* Draggable および Droppable コンポーネント */}
         <div style={{ width: "auto", margin: "20px auto" }}>
-          <h2>ネスト可能なアイテムリスト</h2>
           <BoardList />
 
           {/* Overlay */}
