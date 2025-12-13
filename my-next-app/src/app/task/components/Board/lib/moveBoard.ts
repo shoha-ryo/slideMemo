@@ -1,6 +1,6 @@
-import { Item } from "@/types/item";
+import { Item } from "@/types/task";
 import { arrayMove } from "@dnd-kit/sortable";
-import { isItemOfKind } from "../../Card/lib/moveItem";
+import { isItemOfKind } from "../../../store/taskStore/moveTask/applyMoveLogic";
 
 const moveBoard = (
   tree: Item[],

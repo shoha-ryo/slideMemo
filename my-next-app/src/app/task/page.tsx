@@ -1,6 +1,5 @@
 "use client";
 
-// App.js や 親コンポーネント
 import React, { useState } from "react";
 import {
   DndContext,
@@ -13,55 +12,62 @@ import {
   DragMoveEvent,
   DragEndEvent,
 } from "@dnd-kit/core";
-import { getQuadrant } from "./lib/quadrantCollisionDetection";
-import { moveItem } from "./components/Card/lib/moveItem";
-import { useMousePointer } from "./components/useMousePointer";
 
+// 必要なコンポーネントとライブラリ
+import { getQuadrant } from "./lib/quadrantCollisionDetection";
+import { useMousePointer } from "./components/useMousePointer";
 import Modal from "./components/Card/Modal";
 import BoardList from "./components/Board/BoardList";
 import Card from "./components/Card/Card";
-// import Dot from "./components/devOnly/Dot";
 
-import { Quadrant } from "@/types/quadrant";
-import { Item } from "@/types/item";
-
-import { useItemStore } from "./store/ItemStore";
+// ★ Storeと型のインポート変更
+import { useTaskStore } from "./store/taskStore/taskStore"; // パスは環境に合わせてください
 import { useModalStore } from "./store/ModalStore";
+import { Payload } from "@/types/task"; // または types/task
+
+// 象限の型定義（Payloadの一部として使う文字列リテラル）
+type QuadrantValue = "topLeft" | "topRight" | "bottomLeft" | "bottomRight";
 
 export default function App() {
-  // 表示用の状態保持
+  // ★ TaskStoreからアクションと状態を取得
+  // cardsはOverlay表示判定などに使う
+  const moveTask = useTaskStore(state => state.moveTask)
+	const cards = useTaskStore(state => state.cards)
+
+  const { isShowModal, clickedActiveId } = useModalStore();
+  const { x, y } = useMousePointer();
+
+  // 表示・制御用のローカルステート
   const [hoverInfo, setHoverInfo] = useState<{
-    droppableId: string | number | null;
-    activeId: string | number | null;
-    quadrant: Quadrant | null;
+    droppableId: string | null;
+    activeId: string | null;
+    quadrant: QuadrantValue | null;
   }>({
     droppableId: null,
     activeId: null,
     quadrant: null,
   });
+
   const [startOffset, setStartOffset] = useState({ x: 0, y: 0 });
-  const [activeId, setActiveId] = useState<string | number | null>(null);
-  const { items } = useItemStore(); // ダミーデータ(Zustandで管理)
-  const { isShowModal, clickedActiveId } = useModalStore();
+  const [activeId, setActiveId] = useState<string | null>(null);
 
-  // const [mouse, setMouse] = useState({ x: 0, y: 0 });
-  // const [overCenter, setOverCenter] = useState({ x: 0, y: 0 });
-  const { x, y } = useMousePointer();
-
+  // センサー設定
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
-      delay: 250, // 100ms ホールドでドラッグ開始
       distance: 5, // 5px以内のわずかな移動は無視
+			tolerance: 1000,
     },
   });
+  const sensors = useSensors(mouseSensor);
 
-  const sensors = useSensors(mouseSensor /* TouchSensorなど */);
+  // --- ハンドラー ---
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
-    setActiveId(active.id);
+    const currentActiveId = String(active.id);
+    setActiveId(currentActiveId);
 
-    // ポインタと図形の左上を合わせるためのオフセット計算
+    // オフセット計算（マウス位置と要素位置のズレ補正）
     const e = event.activatorEvent;
     if (e instanceof MouseEvent) {
       const el = document.elementFromPoint(e.clientX, e.clientY);
@@ -74,9 +80,9 @@ export default function App() {
         });
       }
     }
+
     setHoverInfo({
-      // ドラッグ開始時に状態をリセット
-      activeId: active.id,
+      activeId: currentActiveId,
       droppableId: null,
       quadrant: null,
     });
@@ -84,50 +90,57 @@ export default function App() {
 
   const handleDragMove = (event: DragMoveEvent) => {
     const { active, over } = event;
+    
     if (!over) {
-      setHoverInfo({ activeId: null, droppableId: null, quadrant: null });
+      setHoverInfo({ 
+        activeId: String(active.id), 
+        droppableId: null, 
+        quadrant: null 
+      });
       return;
     }
 
-    // 動的に象限を判定して状態更新
+    // マウスイベント以外（キーボード等）の場合は象限判定をスキップなどのガードが必要なら追加
     const e = event.activatorEvent;
     if (!(e instanceof MouseEvent)) return;
-    const pointer = { x: x, y: y };
-    const quadrant = getQuadrant(pointer, over.rect);
 
-    // マウスの座標を保存する（Dotコンポーネント専用）
-    // setMouse({ x: x, y: y });
-    // const midX = over.rect.left + over.rect.width / 2;
-    // const midY = over.rect.top + over.rect.height / 2;
-    // setOverCenter({ x: midX, y: midY });
+    // 動的に象限を判定
+    const pointer = { x: x, y: y };
+    // getQuadrantは "topLeft" | "topRight" ... を返すと仮定
+    const quadrant = getQuadrant(pointer, over.rect) as QuadrantValue;
 
     setHoverInfo({
-      activeId: active.id,
-      droppableId: over.id,
+      activeId: String(active.id),
+      droppableId: String(over.id),
       quadrant: quadrant,
     });
-
-    if (over?.data?.current) {
-      over.data.current.quadrant = quadrant;
-    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    const activeId = active.id;
-    const overId = over?.id;
-    const quadrant = hoverInfo.quadrant;
+    const currentActiveId = String(active.id);
+    const currentOverId = over ? String(over.id) : null;
+    const currentQuadrant = hoverInfo.quadrant;
 
-    // 象限に紐づいてカードの位置変更処理を実行する
-    if (typeof activeId !== "string" || typeof overId !== "string") return;
-    if (typeof quadrant !== "string") return;
-    useItemStore.setState((prev) => ({
-      ...prev,
-      items: moveItem(prev.items, activeId, overId, quadrant),
-    }));
+    // バリデーション: 必要な情報が揃っているか
+    if (!currentActiveId || !currentOverId || !currentQuadrant) {
+      // リセットして終了
+      setActiveId(null);
+      setHoverInfo({ activeId: null, droppableId: null, quadrant: null });
+      return;
+    }
 
+    // ★ moveTask アクションの実行
+    const payload: Payload = {
+      activeId: currentActiveId,
+      overId: currentOverId,
+      quadrant: currentQuadrant,
+    };
+
+    moveTask(payload);
+
+    // 状態リセット
     setActiveId(null);
-
     setHoverInfo({
       activeId: null,
       droppableId: null,
@@ -135,51 +148,31 @@ export default function App() {
     });
   };
 
-  // 取得関数：ID を指定してそのアイテムだけを返す（Overlay用）
-  const findItem = (id: string | number, list: Item[]): Item | null => {
-    for (const item of list) {
-      if (item.id === id) return item;
-      if (item.children?.length) {
-        const deep = findItem(id, item.children);
-        if (deep) return deep;
-      }
-    }
-    return null;
-  };
-  const activeItem = activeId ? findItem(activeId, items) : null;
-
   return (
     <div style={{ position: "relative" }}>
       {isShowModal ? <Modal key={clickedActiveId} /> : null}
 
-      {/* <Dot x={mouse.x} y={mouse.y} size={20} color='blue'></Dot>
-			<Dot x={overCenter.x} y={overCenter.y} size={10} color='red'></Dot> */}
-
       <DndContext
-        collisionDetection={pointerWithin} // ポインタが重なっている要素を検出
+        collisionDetection={pointerWithin}
         onDragStart={handleDragStart}
         onDragMove={handleDragMove}
-        // onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
         sensors={sensors}
       >
-        {/* Draggable および Droppable コンポーネント */}
         <div style={{ width: "auto", margin: "20px auto" }}>
+
+          {/* ボードリストの表示（内部でuseTaskStoreを参照している前提） */}
           <BoardList />
 
-          {/* Overlay */}
+          {/* DragOverlay: ドラッグ中のアイテム表示 */}
           <DragOverlay>
-            {activeItem ? (
-              // ⭐ 子は渡さない → 安定する（見た目だけ子を渡したい）
-              <Card
-                {...activeItem}
-                startOffset={startOffset}
-                useOverlay={true} // transform補正のために渡す
-              />
+            {activeId && cards[activeId] ? (
+              // CardコンポーネントがIDを受け取って自己描画する設計の場合
+              <Card cardId={activeId} />
             ) : null}
           </DragOverlay>
 
-          {/* ↓ 衝突状況の表示領域 */}
+          {/* デバッグ用: 衝突状況の表示領域 */}
           <div
             style={{
               marginTop: "20px",
@@ -188,40 +181,19 @@ export default function App() {
               borderRadius: "8px",
               background: "#fafafa",
               textAlign: "center",
+              fontSize: "0.9rem"
             }}
           >
-            {/* {hoverInfo.activeId ? (
+            {hoverInfo.activeId ? (
               <>
-                <p>
-                  🟦 ドラッグ中(ID): <strong>{hoverInfo.activeId}</strong>
-                </p>
-                <p>
-                  📍 現在カード(ID): <strong>{hoverInfo.droppableId}</strong>
-                </p>
-                <p>
-                  🧭 象限: <strong>{hoverInfo.quadrant}</strong>
-                </p>
-                <p>
-                  X座標: <strong>{startOffset.x}</strong>
-                </p>
-                <p>
-                  Y座標: <strong>{startOffset.y}</strong>
-                </p>
+                <p>🟦 Active: <strong>{hoverInfo.activeId}</strong></p>
+                <p>📍 Over: <strong>{hoverInfo.droppableId}</strong></p>
+                <p>🧭 Quadrant: <strong>{hoverInfo.quadrant}</strong></p>
               </>
             ) : (
-              <p>ドラッグ中ではありません</p>
-            )} */}
+              <p style={{ color: "#888" }}>ドラッグして移動を開始してください</p>
+            )}
           </div>
-          {/* <pre style={{
-						backgroundColor: '#f4f4f4',
-						padding: '15px',
-						borderRadius: '5px',
-						overflowX: 'auto' // 横スクロールが必要な場合に備える
-					}}>
-						<code>
-							{JSON.stringify(items, null, 2)}
-						</code>
-					</pre> */}
         </div>
       </DndContext>
     </div>

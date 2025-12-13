@@ -1,23 +1,26 @@
 "use client";
 
-import { useSortable } from "@dnd-kit/sortable";
+import {
+  useSortable,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Card from "../Card/Card";
 import CardCreateButton from "../Card/CardCreateButton";
-import { useItemStore } from "../../store/ItemStore";
-import { Item } from "@/types/item";
+import { BoardType } from "@/types/task";
 
-interface BoardProps {
-  id: string;
-  selfItem: Item;
-  children: Item[];
-}
+// interface BoardProps {
+//   id: string;
+//   selfItem: Item;
+//   children: Item[];
+// }
 
-export default function Board({ id, selfItem, children }: BoardProps) {
-  const {} = useItemStore();
+export default function Board({ board }: { board: BoardType }) {
+  // const {} = useItemStore();
 
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id });
+    useSortable({ id: board.id });
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -33,10 +36,15 @@ export default function Board({ id, selfItem, children }: BoardProps) {
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      {children.map((c) => (
-        <Card key={c.id} {...c} />
-      ))}
-      <CardCreateButton selfItem={selfItem} />
+      <div>{board.id}</div>
+      <SortableContext
+        items={board.cardIds}
+        strategy={verticalListSortingStrategy}
+      >
+        {board.cardIds.map((cardId: string) => (
+          <Card key={cardId} cardId={cardId} />
+        ))}
+      </SortableContext>
     </div>
   );
 }

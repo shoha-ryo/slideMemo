@@ -5,8 +5,8 @@ import { useSearchNode } from "./lib/searchNode";
 import { replaceNodeById } from "./lib/replaceNode";
 import { useModalStore } from "../../store/ModalStore";
 import { useItemStore } from "../../store/ItemStore";
-import { Item } from "@/types/item";
-import { sendTreeDataToApi } from "@/lib/sendTreeDataToApi"
+import { Item } from "@/types/task";
+import { sendTreeDataToApi } from "@/lib/sendTreeDataToApi";
 
 export default function Modal({}) {
   // --- 状態とストアからのデータ取得 ---
@@ -56,39 +56,38 @@ export default function Modal({}) {
 
   // --- 保存処理 ---
   const onSave = async () => {
-		if (!activeNode || !clickedActiveId) return;
+    if (!activeNode || !clickedActiveId) return;
 
-		// 1. 新しいノード（変更部分のみ）を作成
-		const updatedNode: Item = {
-			...activeNode,
-			title: title,
-			details: details,
-		};
+    // 1. 新しいノード（変更部分のみ）を作成
+    const updatedNode: Item = {
+      ...activeNode,
+      title: title,
+      details: details,
+    };
 
-		// 2. ツリーの中から古いノードを新しいノードに置き換える
-		const newItems = replaceNodeById(items, clickedActiveId, updatedNode);
+    // 2. ツリーの中から古いノードを新しいノードに置き換える
+    const newItems = replaceNodeById(items, clickedActiveId, updatedNode);
 
-		// 3. ストアの状態を更新 (PC側で即時画面反映)
-		setItems(newItems);
+    // 3. ストアの状態を更新 (PC側で即時画面反映)
+    setItems(newItems);
 
-		// 4. ★ 抽出したAPI関数を呼び出す ★
-		try {
-			await sendTreeDataToApi(newItems); // API送信の完了を待つ
-			
-			// 5. モーダルを非表示にする (API送信後に閉じる)
-			hideModal();
+    // 4. ★ 抽出したAPI関数を呼び出す ★
+    try {
+      await sendTreeDataToApi(newItems); // API送信の完了を待つ
 
-		} catch (error) {
-			// sendTreeDataToApi 内で再スローされたエラーをここでキャッチ
-			// ユーザーへの通知などを行う
-			console.log("エラーによりモーダルを閉じません。");
-		}
-	};
+      // 5. モーダルを非表示にする (API送信後に閉じる)
+      hideModal();
+    } catch (error) {
+      // sendTreeDataToApi 内で再スローされたエラーをここでキャッチ
+      // ユーザーへの通知などを行う
+      console.log("エラーによりモーダルを閉じません。");
+    }
+  };
 
-	const handleBackgroundClick = (e: React.MouseEvent<HTMLTextAreaElement>) => {
-		if (e.target.id === "modal-background") {
-			hideModal();
-		}
+  const handleBackgroundClick = (e: React.MouseEvent<HTMLTextAreaElement>) => {
+    if (e.target.id === "modal-background") {
+      hideModal();
+    }
   };
 
   return (

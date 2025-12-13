@@ -1,6 +1,6 @@
 // replaceNodeById.test.ts
 import { describe, it, expect } from "vitest";
-import { Item } from "@/types/item";
+import { Item } from "@/types/task";
 import { replaceNodeById } from "./replaceNode";
 import { findNodeById } from "./searchNode";
 

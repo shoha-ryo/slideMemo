@@ -1,4 +1,4 @@
-import { Item } from "@/types/item";
+import { Item } from "@/types/task";
 
 // 新しいノードに置換したツリーを返す
 export const replaceNodeById = (

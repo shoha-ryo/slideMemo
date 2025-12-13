@@ -1,4 +1,4 @@
-import { Item } from "@/types/item";
+import { Item } from "@/types/task";
 import { useItemStore } from "@/app/task/store/ItemStore";
 import { useModalStore } from "@/app/task/store/ModalStore";
 

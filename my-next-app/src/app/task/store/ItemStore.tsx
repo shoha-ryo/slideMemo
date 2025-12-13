@@ -1,7 +1,7 @@
 // store.js
 import { create } from "zustand";
 import ItemData from "../data.json";
-import { Item } from "@/types/item";
+import { Item } from "@/types/task";
 
 interface ItemStore {
   items: Item[];

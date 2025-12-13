@@ -1,20 +1,20 @@
 // app/api/save-tree/route.ts
 
 import { NextResponse, NextRequest } from "next/server";
-import { treeToFlat, Item } from "@/lib/treeToFlat"; 
+import { treeToFlat, Item } from "@/lib/treeToFlat";
 // ファイルシステム操作のために 'fs/promises' をインポート
-import { writeFile } from 'fs/promises'; 
+import { writeFile } from "fs/promises";
 
 /**
  * DB保存処理を実行する POST エンドポイント (Route Handler)
  */
 export async function POST(request: NextRequest) {
-
-	console.log("ー".repeat(100));
+  console.log("ー".repeat(100));
 
   // 🚨 開発環境でのファイルパス（本番環境では動作しない）
-  const TARGET_PATH = '/Users/shoharyo/Desktop/dev/slideMemo/my-next-app/src/app/task/treeData.json';
-  
+  const TARGET_PATH =
+    "/Users/shoharyo/Desktop/dev/slideMemo/my-next-app/src/app/task/treeData.json";
+
   try {
     // 1. リクエストボディからツリー構造データを受信
     const body = await request.json();
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     // 3. ★ 受信/変換後のデータを指定パスに保存する処理 ★
     const jsonContent = JSON.stringify(flatData, null, 2); // 整形してJSON文字列化
-    
+
     // Node.jsのwriteFile関数でデータをファイルに書き込む
     await writeFile(TARGET_PATH, jsonContent);
 
@@ -45,7 +45,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: "Data successfully saved to file and job registered.",
     });
-    
   } catch (error) {
     console.error("API processing error or File writing failed:", error);
     // ファイル書き込みエラーもここでキャッチされる

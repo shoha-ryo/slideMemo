@@ -1,4 +1,4 @@
-import { Item } from "@/types/item"
+import { Item } from "@/types/task";
 
 /**
  * 変更されたツリー構造データをバックエンドAPIに送信する関数
@@ -7,10 +7,10 @@ import { Item } from "@/types/item"
  */
 export const sendTreeDataToApi = async (data: Item[]): Promise<boolean> => {
   try {
-    const response = await fetch('/api/save-tree', {
-      method: 'POST',
+    const response = await fetch("/api/save-tree", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       // 送信するデータは、ローカルで最新のツリー構造全体です
       body: JSON.stringify({ items: data }),
@@ -18,14 +18,15 @@ export const sendTreeDataToApi = async (data: Item[]): Promise<boolean> => {
 
     if (!response.ok) {
       // API側でエラーが発生した場合（例: 500 Internal Server Error）
-      throw new Error(`API save failed: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `API save failed: ${response.status} ${response.statusText}`,
+      );
     }
 
     console.log("保存処理のリクエストに成功しました");
     return true;
-
   } catch (error) {
-    console.error('保存処理に失敗しました：', error);
+    console.error("保存処理に失敗しました：", error);
     // 呼び出し元でキャッチできるようにエラーを再スローします
     throw error;
   }

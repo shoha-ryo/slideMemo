@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useItemStore } from "../../store/ItemStore";
-import { Item } from "@/types/item";
+import { Item } from "@/types/task";
 import { addCard } from "./lib/addCard";
 
 interface CardCreateButton {

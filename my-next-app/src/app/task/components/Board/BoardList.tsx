@@ -1,15 +1,21 @@
 "use client";
 
+import { useShallow } from "zustand/shallow";
 import { SortableContext } from "@dnd-kit/sortable";
 import BoardCreateButton from "./BoardCreateButton";
 import Board from "./Board";
-import { useItemStore } from "../../store/ItemStore";
+import { useTaskStore } from "../../store/taskStore/taskStore";
 
 function BoardList({}) {
-  const { items } = useItemStore();
+	// シャローコピーしないと「代入＞再レンダー＞再代入...」が無限ループする
+  const { boardOrder, boards } = useTaskStore(
+		useShallow((state) => ({
+			boardOrder: state.boardOrder,
+			boards: state.boards
+	})));
 
   return (
-    <SortableContext items={items}>
+    <SortableContext items={boardOrder}>
       <div
         style={{
           display: "inline-flex",
@@ -22,8 +28,8 @@ function BoardList({}) {
           // outline: '1px solid #ccc',
         }}
       >
-        {items.map((item) => (
-          <Board key={item.id} selfItem={item} {...item} />
+        {boardOrder.map((boardId) => (
+          <Board key={boardId} board={boards[boardId]} />
         ))}
         <BoardCreateButton />
       </div>

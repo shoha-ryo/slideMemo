@@ -8,7 +8,7 @@ import { useSearchNode, findNodeById } from "../lib/searchNode";
 
 import { useItemStore } from "@/app/task/store/ItemStore";
 import { useModalStore } from "@/app/task/store/ModalStore";
-import { Item } from "@/types/item";
+import { Item } from "@/types/task";
 
 // --- テストデータ ---
 // Item 型の簡略化されたモック関数 (テストデータ生成用)

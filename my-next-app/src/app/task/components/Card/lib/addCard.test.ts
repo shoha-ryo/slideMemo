@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { addCard } from "./addCard"; // ファイル名に合わせてパスを修正してください
-import { Item } from "@/types/item";
+import { Item } from "@/types/task";
 
 // ---------------------------------------------
 // テスト用の初期データ
