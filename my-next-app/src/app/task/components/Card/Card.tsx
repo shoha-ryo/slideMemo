@@ -1,6 +1,7 @@
 "Card.tsx"
 "use client";
 
+import { useEffect, useState } from "react";
 import { useDraggable, useDroppable, useDndContext } from "@dnd-kit/core";
 import { useModalStore } from "../../store/ModalStore";
 import FormattedText from "./FormattedText";
@@ -34,8 +35,9 @@ const Card = ({ cardId }: { cardId: string }) => {
 		}))
 	)
   const card = cards[cardId];
-
-  // --- 2. Droppableの設定 ---
+	const isSameId = activeId === overId
+	const [showInfo, setShowInfo] = useState(false)
+	  // --- 2. Droppableの設定 ---
   const { isOver, setNodeRef: setDroppableRef } = useDroppable({
     id: cardId, // Draggableと同じIDを使用
     data: {
@@ -53,11 +55,11 @@ const Card = ({ cardId }: { cardId: string }) => {
       }
     : {
         opacity: isActive ? 0.2 : 1,
-        cursor: "grab",
+        cursor: isActive ? "grabbing" : "grab",
       };
 
   const droppableStyle = {
-    backgroundColor: isOver ? "#e0f7fa" : "white", // isOver のとき色を変える
+    backgroundColor: isOver ? "white" : "white", // isOver のとき色を変える
   };
 
   // DraggableとDroppableのrefを両方設定
@@ -72,6 +74,40 @@ const Card = ({ cardId }: { cardId: string }) => {
     e.stopPropagation(); // 回帰されていても最前面の1回しかイベントを呼び出さないようにする
     showModal(cardId);
   };
+
+	// Infoの表示を遅延させてチラつき防止
+	useEffect(() => {
+		let timer: NodeJS.Timeout;
+		// 「同じIDではない」かつ「ホバー中」の場合のみタイマー開始
+		if (!isSameId && isOver) {
+			// 30 ms 後に表示を許可する
+			timer = setTimeout(() => {
+				setShowInfo(true);
+			}, 30);
+		} else {
+			// それ以外（ホバー外れた、または同じIDになった）なら即座に非表示
+			setShowInfo(false);
+		}
+
+		// クリーンアップ関数（連打された時などに前のタイマーを消す）
+		return () => {
+			if (timer) clearTimeout(timer);
+		};
+	}, [isSameId, isOver]); // 監視対象
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   return (
     <div
@@ -95,7 +131,7 @@ const Card = ({ cardId }: { cardId: string }) => {
     >
 			{/* 表示アシスト */}
 				{/* ホバーされた時だけ点線で３分割の表示 */}
-				{isOver && (
+				{showInfo && (
 					<DroppedActionsInfo></DroppedActionsInfo>
 				)}
 
