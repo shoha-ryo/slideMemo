@@ -24,6 +24,7 @@ import Card from "./components/Card/Card";
 import { useTaskStore } from "./store/taskStore/taskStore"; // パスは環境に合わせてください
 import { useModalStore } from "./store/ModalStore";
 import { Payload } from "@/types/task"; // または types/task
+import { useShallow } from "zustand/shallow";
 
 // 象限の型定義（Payloadの一部として使う文字列リテラル）
 type QuadrantValue = "topLeft" | "topRight" | "bottomLeft" | "bottomRight";
@@ -32,24 +33,24 @@ export default function App() {
   // ★ TaskStoreからアクションと状態を取得
   // cardsはOverlay表示判定などに使う
   const moveTask = useTaskStore(state => state.moveTask)
-	const cards = useTaskStore(state => state.cards)
+	// const cards = useTaskStore(state => state.cards) // ボードも必要そうだが？
+	// const setActiveId = useTaskStore(state => state.setActiveId)
+	const {activeId, overId, quadrant, cards, boards, setActiveId, setHoverInfo} = useTaskStore(
+		useShallow((state) =>
+		({
+			activeId: state.activeId,
+			overId: state.overId,
+			quadrant: state.quadrant,
+			cards: state.cards,
+			boards: state.boards,
+			setActiveId: state.setActiveId,
+			setOverId: state.setOverId,
+			setHoverInfo: state.setPayload
+		})
+	))
 
   const { isShowModal, clickedActiveId } = useModalStore();
   const { x, y } = useMousePointer();
-
-  // 表示・制御用のローカルステート
-  const [hoverInfo, setHoverInfo] = useState<{
-    droppableId: string | null;
-    activeId: string | null;
-    quadrant: QuadrantValue | null;
-  }>({
-    droppableId: null,
-    activeId: null,
-    quadrant: null,
-  });
-
-  const [startOffset, setStartOffset] = useState({ x: 0, y: 0 });
-  const [activeId, setActiveId] = useState<string | null>(null);
 
   // センサー設定
   const mouseSensor = useSensor(MouseSensor, {
@@ -74,16 +75,13 @@ export default function App() {
       const cardEl = el?.closest(".card");
       const rect = cardEl?.getBoundingClientRect();
       if (rect) {
-        setStartOffset({
-          x: e.clientX - rect.left,
-          y: e.clientY - rect.top,
-        });
+
       }
     }
 
     setHoverInfo({
       activeId: currentActiveId,
-      droppableId: null,
+      overId: null,
       quadrant: null,
     });
   };
@@ -94,7 +92,7 @@ export default function App() {
     if (!over) {
       setHoverInfo({ 
         activeId: String(active.id), 
-        droppableId: null, 
+        overId: null, 
         quadrant: null 
       });
       return;
@@ -111,7 +109,7 @@ export default function App() {
 
     setHoverInfo({
       activeId: String(active.id),
-      droppableId: String(over.id),
+      overId: String(over.id),
       quadrant: quadrant,
     });
   };
@@ -120,13 +118,12 @@ export default function App() {
     const { active, over } = event;
     const currentActiveId = String(active.id);
     const currentOverId = over ? String(over.id) : null;
-    const currentQuadrant = hoverInfo.quadrant;
+    const currentQuadrant = quadrant;
 
     // バリデーション: 必要な情報が揃っているか
     if (!currentActiveId || !currentOverId || !currentQuadrant) {
       // リセットして終了
-      setActiveId(null);
-      setHoverInfo({ activeId: null, droppableId: null, quadrant: null });
+      setHoverInfo({ activeId: null, overId: null, quadrant: null });
       return;
     }
 
@@ -140,10 +137,9 @@ export default function App() {
     moveTask(payload);
 
     // 状態リセット
-    setActiveId(null);
     setHoverInfo({
       activeId: null,
-      droppableId: null,
+      overId: null,
       quadrant: null,
     });
   };
@@ -184,11 +180,11 @@ export default function App() {
               fontSize: "0.9rem"
             }}
           >
-            {hoverInfo.activeId ? (
+            {activeId ? (
               <>
-                <p>🟦 Active: <strong>{hoverInfo.activeId}</strong></p>
-                <p>📍 Over: <strong>{hoverInfo.droppableId}</strong></p>
-                <p>🧭 Quadrant: <strong>{hoverInfo.quadrant}</strong></p>
+                <p>🟦 Active: <strong>{activeId}</strong></p>
+                <p>📍 Over: <strong>{overId}</strong></p>
+                <p>🧭 Quadrant: <strong>{quadrant}</strong></p>
               </>
             ) : (
               <p style={{ color: "#888" }}>ドラッグして移動を開始してください</p>

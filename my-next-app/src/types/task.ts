@@ -16,10 +16,11 @@
 // 	simpleView: boolean  // シンプル表示の切り替え
 // }
 
-export interface TaskStore extends AppState {
-  setBoardOrder: (
-    boradOrder: Pick<AppState, "boardOrder">["boardOrder"],
-  ) => void;
+export interface TaskStore extends AppState, Payload{
+	setActiveId: (activeId: Pick<Payload, "activeId">["activeId"]) => void,
+	setOverId: (overId: Pick<Payload, "overId">["overId"]) => void,
+	setPayload: (payload: Payload) => void;
+  setBoardOrder: (boradOrder: Pick<AppState, "boardOrder">["boardOrder"],) => void;
   setBoards: (boards: Pick<AppState, "boards">["boards"]) => void;
   setCards: (cards: Pick<AppState, "cards">["cards"]) => void;
   moveTask: (payload: Payload) => void;
@@ -28,14 +29,13 @@ export interface TaskStore extends AppState {
 export type Payload = {
   activeId: string | null;
   overId: string | null;
-  quadrant: "topLeft" | "topRight" | "bottomLeft" | "bottomRight";
+  quadrant: "topLeft" | "topRight" | "bottomLeft" | "bottomRight" | null;
 };
 
 export interface CardType {
   id: string;
   parentId: string | null;
   boardId: string;
-  // orderは削除しました
   title: string;
   details: string;
   status: "active" | "archived";

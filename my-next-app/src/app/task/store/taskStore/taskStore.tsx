@@ -6,7 +6,22 @@ import { taskActions } from "./taskActions";
 
 import { TaskStore } from "@/types/task";
 
+
 export const useTaskStore = create<TaskStore>((set, get) => ({
+
+	activeId: null,
+	overId: null,
+	quadrant: null,
+	setActiveId: (activeId) => set({activeId}),
+	setOverId: (overId) => set({overId}),
+	setPayload: ({activeId, overId, quadrant}) => set(
+		{
+			activeId: activeId,
+			overId: overId,
+			quadrant: quadrant
+		}
+	),
+
   // サンプルの初期値(後でDBと接続)
   boardOrder: sampleAppState.boardOrder,
   boards: sampleAppState.boards,
