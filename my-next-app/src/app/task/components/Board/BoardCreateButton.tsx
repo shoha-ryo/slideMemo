@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { useItemStore } from "../../store/ItemStore";
 
 // BoardCreateButton: ボード追加用コンポーネント
 export default function BoardCreateButton({}) {
-  const { items } = useItemStore();
+  // const { items } = useItemStore();
 
   const handleSubmit = () => {
     const newBoard = {
@@ -11,12 +10,12 @@ export default function BoardCreateButton({}) {
       level: 0,
       children: [],
     };
-    console.log(items);
-    //useItemStore.setState([...items, newBoard]);
-    useItemStore.setState((prev) => ({
-      ...prev,
-      items: [...prev.items, newBoard],
-    }));
+
+    // //useItemStore.setState([...items, newBoard]);
+    // useItemStore.setState((prev) => ({
+    //   ...prev,
+    //   items: [...prev.items, newBoard],
+    // }));
   };
 
   return (

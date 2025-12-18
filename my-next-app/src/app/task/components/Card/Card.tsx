@@ -8,6 +8,7 @@ import FormattedText from "./FormattedText";
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import DroppedActionsInfo from "./DroppedActionsInfo";
 import { useShallow } from "zustand/shallow";
+import CardCreateFromCardButton from "./CardCreateFromCardButton";
 
 // Draggable/Droppable コンポーネント
 const Card = ({ cardId }: { cardId: string }) => {
@@ -136,15 +137,25 @@ const Card = ({ cardId }: { cardId: string }) => {
 				)}
 
 			{/* カードの内容を表示 */}
-      <div style={{ paddingLeft: `10px`, paddingBottom: "15px" }}>
-        <strong>
-          <FormattedText text={card.title}></FormattedText>
-        </strong>
-        <div>{card.id}</div>
-        <FormattedText
-          text={card.details}
-          style={{ fontSize: "0.8em", color: "#666" }}
-        ></FormattedText>
+      <div 
+				style={{ paddingLeft: `10px`, paddingBottom: "15px" }}
+				className="flex justify-between"
+			>
+        {/* 文字用エリア */}
+				<div>
+					<strong>
+						<FormattedText text={card.title}/>
+					</strong>
+					<div>{card.id}</div>
+					<FormattedText
+						text={card.details}
+						style={{ fontSize: "0.8em", color: "#666" }}
+					/>
+				</div>
+				{/* ユーティリティ用エリア ホバー時のみ表示 */}
+				<div>
+					<CardCreateFromCardButton card={card}/>
+				</div>
       </div>
 
 			{/* カードの子孫を表示 */}

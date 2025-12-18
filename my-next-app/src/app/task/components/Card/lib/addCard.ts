@@ -1,39 +1,33 @@
-import { Item } from "@/types/task";
+import { v4 as uuidv4 } from "uuid"
+import { CardType, BoardType } from "@/types/task";
 
-function createNewCard(title: string) {
-  return {
-    id: `card-${Date.now()}`, // 一意のIDを生成
-    level: 1,
-    title: title.trim(),
+// 新しいカードの情報を作成
+function createNewCard(title: string, boardId: string) {
+  const newCard: CardType = {
+    id: `card-${uuidv4()}`, // 一意のIDを生成
+		parentId: null,         // 今後、カード内から追加の際は考慮が必要
+		boardId: `${boardId}`,            // 引数で受け取り
+    title: title.trim(),    // 引数で受け取り
     details: "",
-    children: [],
+		status: "active",
+		progress: "todo",
+		startAt: null,
+		dueAt: null,
+		simpleView: false,
+		childrenIds: []
   };
+	return newCard
 }
 
-function findTargetIndex(items: Item[], boardId: string) {
-  return items.findIndex((item) => item.id === boardId);
-}
 
 // メイン関数
-export function addCard(title: string, selfItem: Item, items: Item[]) {
-  if (!title.trim()) return items;
+export function addCardFromBoard(title: string, board: BoardType) {
+  if (!title.trim()) return;
 
-  const targetIndex = findTargetIndex(items, selfItem.id);
-  if (targetIndex === -1) {
-    return items; // 対象ボードが見つからない場合は元の配列を返す
-  }
+	const boardId: string = board.id
+  const newCard = createNewCard(title, boardId);
 
-  const newCard = createNewCard(title);
-  const updatedSelfItem: Item = {
-    ...selfItem, // selfItem のプロパティをコピー
-    children: [...selfItem.children, newCard], // children を新しい配列で上書き
-  };
+	
 
-  const newItems = [
-    ...items.slice(0, targetIndex),
-    updatedSelfItem,
-    ...items.slice(targetIndex + 1),
-  ];
-
-  return newItems;
+  return newCard;
 }

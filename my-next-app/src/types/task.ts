@@ -24,6 +24,7 @@ export interface TaskStore extends AppState, Payload{
   setBoards: (boards: Pick<AppState, "boards">["boards"]) => void;
   setCards: (cards: Pick<AppState, "cards">["cards"]) => void;
   moveTask: (payload: Payload) => void;
+	addTask: (title: string, source: Source) => void
 }
 
 export type Payload = {
@@ -31,6 +32,11 @@ export type Payload = {
   overId: string | null;
   quadrant: "topLeft" | "topRight" | "bottomLeft" | "bottomRight" | null;
 };
+
+export type Source =
+	| { type: "board"; data: BoardType }
+	| { type: "card"; data: CardType }
+
 
 export interface CardType {
   id: string;

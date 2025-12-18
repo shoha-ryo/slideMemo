@@ -146,7 +146,7 @@ export default function App() {
 
   return (
     <div style={{ position: "relative" }}>
-      {isShowModal ? <Modal key={clickedActiveId} /> : null}
+      {isShowModal ? <Modal/> : null}
 
       <DndContext
         collisionDetection={pointerWithin}
@@ -158,7 +158,7 @@ export default function App() {
         <div style={{ width: "auto", margin: "20px auto" }}>
 
           {/* ボードリストの表示（内部でuseTaskStoreを参照している前提） */}
-          <BoardList />
+          <BoardList/>
 
           {/* DragOverlay: ドラッグ中のアイテム表示 */}
           <DragOverlay>

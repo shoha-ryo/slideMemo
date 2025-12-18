@@ -1,55 +1,61 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useSearchNode } from "./lib/searchNode";
-import { replaceNodeById } from "./lib/replaceNode";
+
 import { useModalStore } from "../../store/ModalStore";
-import { useItemStore } from "../../store/ItemStore";
-import { Item } from "@/types/task";
-import { sendTreeDataToApi } from "@/lib/sendTreeDataToApi";
+import { useTaskStore } from "../../store/taskStore/taskStore";
+// import { updateCardApi } from "@/lib/api"; // ※必要に応じてAPI関数をインポート
+
+import { CardType } from "@/types/task";
 
 export default function Modal({}) {
   // --- 状態とストアからのデータ取得 ---
-  // フック呼び出しをトップレベルで1回に整理
-  const activeNode = useSearchNode();
-
-  // 更新に必要なストアのアクション/データを取得
+  
+  // モーダルとタスクの状態を取得
   const { hideModal, clickedActiveId } = useModalStore();
-  const { items, setItems } = useItemStore();
+  const { cards, setCards } = useTaskStore();
+
+  // フラット構造なので、IDを使って直接カードを特定
+  const activeNode: CardType | null = clickedActiveId ? cards[clickedActiveId] : null;
 
   // UIの状態
-  const [title, setTitle] = useState<string>(activeNode?.title || "");
-  const [details, setDetails] = useState<string>(activeNode?.details || "");
-  const titleRef = useRef<HTMLInputElement>(null);
+  const [title, setTitle] = useState<string>("");
+  const [details, setDetails] = useState<string>("");
+  const titleRef = useRef<HTMLTextAreaElement>(null); // inputではなくtextareaだったので修正
 
+  // --- 高さ調整ロジック ---
   const resizeTitleHeight = () => {
-    // DOM要素の現在値を取得（refを使用）
     const textarea = titleRef.current;
     const MAX_HEIGHT_FOR_ONE_LINE = 64;
 
     if (textarea) {
-      textarea.style.height = "auto"; // 高さをリセットして、入力内容に合わせた正確なscrollHeightを取得する
-      textarea.style.height = `${textarea.scrollHeight}px`; // 一回挟まないと何故かできない。要検証。
+      textarea.style.height = "auto"; 
+      textarea.style.height = `${textarea.scrollHeight}px`; 
       if (textarea.scrollHeight < MAX_HEIGHT_FOR_ONE_LINE)
-        textarea.style.height = `40px`; // 1行の時には40pxで固定する
-      else textarea.style.height = `${textarea.scrollHeight}px`; // scrollHeight（コンテンツ全体を表示するために必要な高さ）をセットする
+        textarea.style.height = `40px`; 
+      else textarea.style.height = `${textarea.scrollHeight}px`; 
     }
   };
 
   // --- useEffect: 初期化とスクロール禁止 ---
   useEffect(() => {
     // モーダルの内容を初期化
+    if (activeNode) {
+      setTitle(activeNode.title);
+      setDetails(activeNode.details || "");
+    }
 
     // 背景スクロール禁止
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [activeNode]); // ★ activeNode に依存させることで、IDが変わるたびに初期化される
+  }, [clickedActiveId, cards]); // IDまたはcardsデータ自体が変わった時に再同期
 
   useEffect(() => {
     if (titleRef.current) {
-      titleRef.current.focus();
+      // フォーカス制御はUXによるので、必要であれば解除または条件付きにする
+      // titleRef.current.focus(); 
       resizeTitleHeight();
     }
   }, [title]);
@@ -58,37 +64,47 @@ export default function Modal({}) {
   const onSave = async () => {
     if (!activeNode || !clickedActiveId) return;
 
-    // 1. 新しいノード（変更部分のみ）を作成
-    const updatedNode: Item = {
+    // 1. 新しいノード（変更部分のみ更新）を作成
+    const updatedNode: CardType = {
       ...activeNode,
       title: title,
       details: details,
     };
 
-    // 2. ツリーの中から古いノードを新しいノードに置き換える
-    const newItems = replaceNodeById(items, clickedActiveId, updatedNode);
+    // 2. フラットなオブジェクト構造を更新 (再帰処理は不要)
+    // IDをキーにして上書きするだけです
+    const newCards = {
+      ...cards,
+      [updatedNode.id]: updatedNode
+    };
 
     // 3. ストアの状態を更新 (PC側で即時画面反映)
-    setItems(newItems);
+    setCards(newCards);
 
-    // 4. ★ 抽出したAPI関数を呼び出す ★
+    // 4. API関数を呼び出す
     try {
-      await sendTreeDataToApi(newItems); // API送信の完了を待つ
+      // ※注意: バックエンドもフラット構造に対応したAPIに変更する必要があります。
+      // 例: 全データ送信ではなく、変更されたカード単体を送るのが一般的です。
+      // await updateCardApi(updatedNode); 
+      console.log("API送信（仮）:", updatedNode);
 
-      // 5. モーダルを非表示にする (API送信後に閉じる)
+      // 5. モーダルを非表示にする
       hideModal();
     } catch (error) {
-      // sendTreeDataToApi 内で再スローされたエラーをここでキャッチ
-      // ユーザーへの通知などを行う
-      console.log("エラーによりモーダルを閉じません。");
+      console.error("API Error:", error);
+      console.log("エラーのためモーダルを閉じません。");
     }
   };
 
-  const handleBackgroundClick = (e: React.MouseEvent<HTMLTextAreaElement>) => {
-    if (e.target.id === "modal-background") {
+  const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // e.targetの型チェック
+    if ((e.target as HTMLElement).id === "modal-background") {
       hideModal();
     }
   };
+
+  // 編集対象がない場合は何も表示しない（安全策）
+  if (!activeNode) return null;
 
   return (
     <div
@@ -129,7 +145,7 @@ export default function Modal({}) {
             fontSize: "36px",
             fontWeight: "bold",
             cursor: "pointer",
-            lineHeight: "1", // 中央揃えを改善
+            lineHeight: "1",
             color: "#666",
           }}
         >
@@ -143,7 +159,6 @@ export default function Modal({}) {
           <textarea
             ref={titleRef}
             value={title}
-            // 変更点：新しいハンドラを呼び出す
             onChange={(e) => {
               setTitle(e.target.value);
             }}
@@ -157,6 +172,7 @@ export default function Modal({}) {
               resize: "none",
               height: "40px",
               overflowY: "hidden",
+              fontFamily: "inherit"
             }}
           />
         </div>
@@ -170,9 +186,11 @@ export default function Modal({}) {
               width: "100%",
               height: "100px",
               padding: "8px",
+              marginTop: "4px",
               borderRadius: "4px",
               border: "1px solid #ccc",
               resize: "vertical",
+              fontFamily: "inherit"
             }}
           />
         </div>

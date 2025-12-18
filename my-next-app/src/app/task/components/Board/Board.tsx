@@ -7,19 +7,13 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Card from "../Card/Card";
-import CardCreateButton from "../Card/CardCreateButton";
+import CardCreateButton from "./CardCreateFromBoardButton";
 import { BoardType } from "@/types/task";
 
-// interface BoardProps {
-//   id: string;
-//   selfItem: Item;
-//   children: Item[];
-// }
 
 export default function Board({ board }: { board: BoardType }) {
-  // const {} = useItemStore();
 
-  const { attributes, listeners, setNodeRef, transform, transition } =
+	const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: board.id });
 
   const style: React.CSSProperties = {
@@ -45,6 +39,7 @@ export default function Board({ board }: { board: BoardType }) {
           <Card key={cardId} cardId={cardId} />
         ))}
       </SortableContext>
+			<CardCreateButton board={board}></CardCreateButton>
     </div>
   );
 }

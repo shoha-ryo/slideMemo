@@ -31,7 +31,7 @@ function BoardList({}) {
         {boardOrder.map((boardId) => (
           <Board key={boardId} board={boards[boardId]} />
         ))}
-        <BoardCreateButton />
+        {/* <BoardCreateButton /> */}
       </div>
     </SortableContext>
   );

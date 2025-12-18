@@ -1,24 +1,30 @@
 "taskActions.ts"
 
 import { TaskStore } from "@/types/task";
-import { Payload } from "@/types/task";
+import { Payload, Source } from "@/types/task";
 
 import { applyMoveLogic } from "./moveTask/applyMoveLogic";
+import { addCardLogic } from "./addTask/addTask";
 
 export const taskActions = (set: Function, get: () => TaskStore) => ({
   moveTask: (payload: Payload) => {
     // storeの状態を取得
     const state = get();
-
     // 移動ロジックを実行
     const newState = applyMoveLogic(payload, state);
-		console.log(newState);
-
     // storeの状態を更新
     set(newState);
   },
 
-  // addTask()
+  addTask: (title: string, source: Source) => {
+		// storeの状態を取得
+    const state = get();
+		// 追加ロジックを実行
+		const newState = addCardLogic(title, source, state)
+
+		// storeの状態を更新
+    set(newState);
+	},
 
   // deleteTask()
 });

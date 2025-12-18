@@ -3,28 +3,23 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useItemStore } from "../../store/ItemStore";
-import { addCard } from "./lib/addCard";
-import { CardType } from "@/types/task";
+import { addCardFromBoard } from "../Card/lib/addCard";
+import { BoardType } from "@/types/task";
+import { useTaskStore } from "../../store/taskStore/taskStore";
 
 interface CardCreateButton {
-  selfItem: CardType;
+  board: BoardType;
 }
 
-// BoardCreateButton: ボード追加用コンポーネント
-export default function CardCreateButton({ selfItem }: CardCreateButton) {
+
+export default function addCardFromBoardButton({ board }: CardCreateButton) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
-  const { items } = useItemStore();
+	const addTask = useTaskStore(state => state.addTask)
 
   const handleSubmit = () => {
     if (!title.trim()) return;
-    const newItems = addCard(title, selfItem, items);
-    useItemStore.setState((prev) => ({
-      ...prev,
-      items: newItems,
-    }));
-
+    addTask(title, {type: "board", data: board});
     setTitle("");
     setOpen(false);
   };

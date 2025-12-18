@@ -3,8 +3,7 @@ services:
     image: next-app
     build:
       context: ./my-next-app/
-      dockerfile: Dockerfile.dev
-      ### 開発用を読み込み ###
+      dockerfile: Dockerfile.dev  ### 開発用を読み込み ###
     container_name: next_app
     ports:
       - "3000:3000"
