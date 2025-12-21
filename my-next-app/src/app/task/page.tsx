@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react"; // useState削除 (Store管理のため不要なら)
 import {
   DndContext,
   DragOverlay,
@@ -13,50 +13,47 @@ import {
   DragEndEvent,
 } from "@dnd-kit/core";
 
-// 必要なコンポーネントとライブラリ
-import { getQuadrant } from "./lib/quadrantCollisionDetection";
+// 必要なコンポーネント
+import { getDropPosition } from "./lib/getDropPosition";
 import { useMousePointer } from "./components/useMousePointer";
 import Modal from "./components/Card/Modal";
 import BoardList from "./components/Board/BoardList";
 import Card from "./components/Card/Card";
+import TrashDropArea, { TRASH_ID } from "./components/TrashArea/TrashDropArea"; // ★ 追加
 
-// ★ Storeと型のインポート変更
-import { useTaskStore } from "./store/taskStore/taskStore"; // パスは環境に合わせてください
+// Store
+import { useTaskStore } from "./store/taskStore/taskStore";
 import { useModalStore } from "./store/ModalStore";
-import { Payload } from "@/types/task"; // または types/task
+import { Payload } from "@/types/task";
 import { useShallow } from "zustand/shallow";
 
-// 象限の型定義（Payloadの一部として使う文字列リテラル）
-type QuadrantValue = "topLeft" | "topRight" | "bottomLeft" | "bottomRight";
-
 export default function App() {
-  // ★ TaskStoreからアクションと状態を取得
-  // cardsはOverlay表示判定などに使う
-  const moveTask = useTaskStore(state => state.moveTask)
-	// const cards = useTaskStore(state => state.cards) // ボードも必要そうだが？
-	// const setActiveId = useTaskStore(state => state.setActiveId)
-	const {activeId, overId, quadrant, cards, boards, setActiveId, setHoverInfo} = useTaskStore(
-		useShallow((state) =>
-		({
-			activeId: state.activeId,
-			overId: state.overId,
-			quadrant: state.quadrant,
-			cards: state.cards,
-			boards: state.boards,
-			setActiveId: state.setActiveId,
-			setOverId: state.setOverId,
-			setHoverInfo: state.setPayload
-		})
-	))
+  // ★ deleteTask アクションを追加取得
+  const { 
+    activeId, overId, dropPosition, cards, setActiveId, setHoverInfo, 
+    moveTask, deleteTask 
+  } = useTaskStore(
+    useShallow((state) => ({
+      activeId: state.activeId,
+      overId: state.overId,
+      dropPosition: state.dropPosition,
+      cards: state.cards,
+      boards: state.boards,
+      setActiveId: state.setActiveId,
+      setOverId: state.setOverId,
+      setHoverInfo: state.setPayload,
+      moveTask: state.moveTask,
+      deleteTask: state.deleteTask,
+    }))
+  );
 
-  const { isShowModal, clickedActiveId } = useModalStore();
+  const { isShowModal } = useModalStore();
   const { x, y } = useMousePointer();
 
-  // センサー設定
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
-      distance: 5, // 5px以内のわずかな移動は無視
-			tolerance: 1000,
+      distance: 5,
+      tolerance: 1000,
     },
   });
   const sensors = useSensors(mouseSensor);
@@ -67,86 +64,86 @@ export default function App() {
     const { active } = event;
     const currentActiveId = String(active.id);
     setActiveId(currentActiveId);
-
-    // オフセット計算（マウス位置と要素位置のズレ補正）
-    const e = event.activatorEvent;
-    if (e instanceof MouseEvent) {
-      const el = document.elementFromPoint(e.clientX, e.clientY);
-      const cardEl = el?.closest(".card");
-      const rect = cardEl?.getBoundingClientRect();
-      if (rect) {
-
-      }
-    }
-
-    setHoverInfo({
-      activeId: currentActiveId,
-      overId: null,
-      quadrant: null,
-    });
+    setHoverInfo({ activeId: currentActiveId, overId: null, dropPosition: null });
   };
 
   const handleDragMove = (event: DragMoveEvent) => {
     const { active, over } = event;
     
     if (!over) {
+      setHoverInfo({ activeId: String(active.id), overId: null, dropPosition: null });
+      return;
+    }
+
+    // ★ 追加: ゴミ箱の上にいる場合は象限計算などは不要なのでスキップ
+    if (over.id === TRASH_ID) {
       setHoverInfo({ 
         activeId: String(active.id), 
-        overId: null, 
-        quadrant: null 
+        overId: TRASH_ID, // Store状のoverIdをゴミ箱IDにする
+        dropPosition: null 
       });
       return;
     }
 
-    // マウスイベント以外（キーボード等）の場合は象限判定をスキップなどのガードが必要なら追加
     const e = event.activatorEvent;
     if (!(e instanceof MouseEvent)) return;
 
-    // 動的に象限を判定
     const pointer = { x: x, y: y };
-    // getQuadrantは "topLeft" | "topRight" ... を返すと仮定
-    const quadrant = getQuadrant(pointer, over.rect) as QuadrantValue;
+    const dropPosition = getDropPosition(pointer, over.rect);
 
     setHoverInfo({
       activeId: String(active.id),
       overId: String(over.id),
-      quadrant: quadrant,
+      dropPosition: dropPosition,
     });
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     const currentActiveId = String(active.id);
-    const currentOverId = over ? String(over.id) : null;
-    const currentQuadrant = quadrant;
-
-    // バリデーション: 必要な情報が揃っているか
-    if (!currentActiveId || !currentOverId || !currentQuadrant) {
-      // リセットして終了
-      setHoverInfo({ activeId: null, overId: null, quadrant: null });
+    
+    // ドロップ先がない場合はリセットして終了
+    if (!over) {
+      setHoverInfo({ activeId: null, overId: null, dropPosition: null });
       return;
     }
 
-    // ★ moveTask アクションの実行
+    // ドロップ先がゴミ箱IDと一致する場合
+    if (over.id === TRASH_ID) {
+      // 削除アクションを実行
+      deleteTask(currentActiveId);
+      // 状態リセットして早期リターン (moveTaskを実行させない)
+      setHoverInfo({ activeId: null, overId: null, dropPosition: null });
+      return;
+    }
+
+    // --- 以下、通常の移動ロジック ---
+    const currentOverId = String(over.id);
+    const currentDropPosition = dropPosition;
+
+    if (!currentActiveId || !currentOverId || !currentDropPosition) {
+      setHoverInfo({ activeId: null, overId: null, dropPosition: null });
+      return;
+    }
+
     const payload: Payload = {
       activeId: currentActiveId,
       overId: currentOverId,
-      quadrant: currentQuadrant,
+      dropPosition: currentDropPosition,
     };
 
     moveTask(payload);
 
-    // 状態リセット
     setHoverInfo({
       activeId: null,
       overId: null,
-      quadrant: null,
+      dropPosition: null,
     });
   };
 
   return (
     <div style={{ position: "relative" }}>
-      {isShowModal ? <Modal/> : null}
+      {isShowModal ? <Modal /> : null}
 
       <DndContext
         collisionDetection={pointerWithin}
@@ -155,20 +152,20 @@ export default function App() {
         onDragEnd={handleDragEnd}
         sensors={sensors}
       >
+        {/* ★ 追加: 削除エリア (DndContextの中に配置する必要があります) */}
+        {/* activeIdが存在する(=ドラッグ中)ときだけスライドダウン表示 */}
+        <TrashDropArea isVisible={!!activeId} />
+
         <div style={{ width: "auto", margin: "20px auto" }}>
+          <BoardList />
 
-          {/* ボードリストの表示（内部でuseTaskStoreを参照している前提） */}
-          <BoardList/>
-
-          {/* DragOverlay: ドラッグ中のアイテム表示 */}
           <DragOverlay>
             {activeId && cards[activeId] ? (
-              // CardコンポーネントがIDを受け取って自己描画する設計の場合
               <Card cardId={activeId} />
             ) : null}
           </DragOverlay>
 
-          {/* デバッグ用: 衝突状況の表示領域 */}
+          {/* デバッグ表示 */}
           <div
             style={{
               marginTop: "20px",
@@ -177,14 +174,14 @@ export default function App() {
               borderRadius: "8px",
               background: "#fafafa",
               textAlign: "center",
-              fontSize: "0.9rem"
+              fontSize: "0.9rem",
             }}
           >
             {activeId ? (
               <>
                 <p>🟦 Active: <strong>{activeId}</strong></p>
-                <p>📍 Over: <strong>{overId}</strong></p>
-                <p>🧭 Quadrant: <strong>{quadrant}</strong></p>
+                <p>📍 Over: <strong>{overId === TRASH_ID ? "🗑️ ゴミ箱" : overId}</strong></p>
+                <p>🧭 dropPosition: <strong>{dropPosition}</strong></p>
               </>
             ) : (
               <p style={{ color: "#888" }}>ドラッグして移動を開始してください</p>

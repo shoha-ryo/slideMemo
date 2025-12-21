@@ -8,12 +8,22 @@ import FormattedText from "./FormattedText";
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import DroppedActionsInfo from "./DroppedActionsInfo";
 import { useShallow } from "zustand/shallow";
-import CardCreateFromCardButton from "./CardCreateFromCardButton";
+import CardCreateButton from "./CardCreateButton";
 
 // Draggable/Droppable コンポーネント
 const Card = ({ cardId }: { cardId: string }) => {
-  // --- 1. Draggableの設定 ---
-  const {
+
+	const [isNew, setIsNew] = useState(true); // 初期表示時はtrue
+
+  // マウントから一定時間後にアニメーションフラグを落とす
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsNew(false);
+    }, 1500); // アニメーション時間と合わせる
+    return () => clearTimeout(timer);
+  }, []);
+
+	const {
 		isDragging,
     attributes,
     listeners,
@@ -21,12 +31,16 @@ const Card = ({ cardId }: { cardId: string }) => {
   } = useDraggable({
     id: cardId,
     data: {
-      quadrant: null, // 象限情報をここで保持
+      quadrant: null,
     },
   });
-  const { active, over } = useDndContext();
-  const isActive = active?.id === cardId;
-  const quadrant = over?.id === cardId ? over?.data?.current?.quadrant : null;
+
+	const { isOver, setNodeRef: setDroppableRef } = useDroppable({
+		id: cardId, // Draggableと同じIDを使用
+    data: {
+			quadrant: null,
+    },
+  });
 
 	const {activeId, overId, cards} = useTaskStore(
 		useShallow(state => ({
@@ -35,33 +49,28 @@ const Card = ({ cardId }: { cardId: string }) => {
 			cards: state.cards
 		}))
 	)
-  const card = cards[cardId];
-	const isSameId = activeId === overId
+	const card = cards[cardId];
+
+
+  const { active, over } = useDndContext();
 	const [showInfo, setShowInfo] = useState(false)
-	  // --- 2. Droppableの設定 ---
-  const { isOver, setNodeRef: setDroppableRef } = useDroppable({
-    id: cardId, // Draggableと同じIDを使用
-    data: {
-      quadrant: null, // 象限情報をここで保持
-    },
-  });
+
+  const isActive = active?.id === cardId;
+  const quadrant = over?.id === cardId ? over?.data?.current?.quadrant : null;
+	const isSameId = activeId === overId
 
 
 
-  // --- 3. スタイリングとネストレベルの決定 ---
+
+  // --- スタイリングとネストレベルの決定 ---
   const draggableStyle = isDragging
     ? {
         outline: "2px solid #00bcd4",
         cursor: "grabbing",
-      }
-    : {
+      } : {
         opacity: isActive ? 0.2 : 1,
         cursor: isActive ? "grabbing" : "grab",
       };
-
-  const droppableStyle = {
-    backgroundColor: isOver ? "white" : "white", // isOver のとき色を変える
-  };
 
   // DraggableとDroppableのrefを両方設定
   const setNodeRef = (node: HTMLElement | null) => {
@@ -76,37 +85,32 @@ const Card = ({ cardId }: { cardId: string }) => {
     showModal(cardId);
   };
 
-	// Infoの表示を遅延させてチラつき防止
-	useEffect(() => {
-		let timer: NodeJS.Timeout;
-		// 「同じIDではない」かつ「ホバー中」の場合のみタイマー開始
-		if (!isSameId && isOver) {
-			// 30 ms 後に表示を許可する
-			timer = setTimeout(() => {
-				setShowInfo(true);
-			}, 30);
-		} else {
-			// それ以外（ホバー外れた、または同じIDになった）なら即座に非表示
-			setShowInfo(false);
-		}
+	// // Infoの表示を遅延させてチラつき防止
+	// useEffect(() => {
+	// 	let timer: NodeJS.Timeout;
+	// 	// 「同じIDではない」かつ「ホバー中」の場合のみタイマー開始
+	// 	if (!isSameId && isOver) {
+	// 		// 30 ms 後に表示を許可する
+	// 		timer = setTimeout(() => {
+	// 			setShowInfo(true);
+	// 		}, 30);
+	// 	} else {
+	// 		// それ以外（ホバー外れた、または同じIDになった）なら即座に非表示
+	// 		setShowInfo(false);
+	// 	}
 
-		// クリーンアップ関数（連打された時などに前のタイマーを消す）
-		return () => {
-			if (timer) clearTimeout(timer);
-		};
-	}, [isSameId, isOver]); // 監視対象
-
-
+	// 	// クリーンアップ関数（連打された時などに前のタイマーを消す）
+	// 	return () => {
+	// 		if (timer) clearTimeout(timer);
+	// 	};
+	// }, [isSameId, isOver, !!card]); // 監視対象
 
 
 
-
-
-
-
-
-
-
+	// カード削除後の再レンダリング防止
+	if (!card) {
+		return null;
+	}
 
 
 
@@ -116,16 +120,15 @@ const Card = ({ cardId }: { cardId: string }) => {
       style={{
         padding: "10px",
         paddingLeft: `$10px`,
-        marginBottom: "4px",
         border: "1px solid #ccc",
-        borderRadius: "4px",
+        borderRadius: "10px",
         transition: "background-color 0.2s, outline 0.2s",
         position: "relative", // transformがなくても常にrelative固定
         ...draggableStyle,
-        ...droppableStyle,
-        marginLeft: "50px",
+				marginBottom: "5px",
+				marginLeft: "10px",
       }}
-      className={`card ${isOver ? `q-${quadrant}` : ""}`}
+      className={`card ${isOver ? `q-${quadrant}` : ""} ${isNew ? 'animate-highlight' : ''} bg-white`}
       {...listeners} // ドラッグイベントのリスナー
       {...attributes} // アクセシビリティ属性
       onClick={handleCardClick}
@@ -133,12 +136,12 @@ const Card = ({ cardId }: { cardId: string }) => {
 			{/* 表示アシスト */}
 				{/* ホバーされた時だけ点線で３分割の表示 */}
 				{showInfo && (
-					<DroppedActionsInfo></DroppedActionsInfo>
+					a
 				)}
 
 			{/* カードの内容を表示 */}
       <div 
-				style={{ paddingLeft: `10px`, paddingBottom: "15px" }}
+				style={{ paddingLeft: `10px` }}
 				className="flex justify-between"
 			>
         {/* 文字用エリア */}
@@ -153,17 +156,19 @@ const Card = ({ cardId }: { cardId: string }) => {
 					/>
 				</div>
 				{/* ユーティリティ用エリア ホバー時のみ表示 */}
-				<div>
-					<CardCreateFromCardButton card={card}/>
+				<div onClick={(e) => e.stopPropagation()}>
+					<CardCreateButton source={{ type: "card", data: card}}/>
 				</div>
       </div>
 
 			{/* カードの子孫を表示 */}
       {card.childrenIds.length > 0 && (
         <div>
+					<div className="h-3"></div>
           {card.childrenIds.map((childId) => (
             <Card key={childId} cardId={childId} />
           ))}
+					<div className="h-3"></div>
         </div>
       )}
     </div>

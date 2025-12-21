@@ -5,20 +5,21 @@ import { sampleAppState } from "../../flatData"; // サンプルデータ取得
 import { taskActions } from "./taskActions";
 
 import { TaskStore } from "@/types/task";
+import { Droplet } from "lucide-react";
 
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
 
 	activeId: null,
 	overId: null,
-	quadrant: null,
+	dropPosition: null,
 	setActiveId: (activeId) => set({activeId}),
 	setOverId: (overId) => set({overId}),
-	setPayload: ({activeId, overId, quadrant}) => set(
+	setPayload: ({activeId, overId, dropPosition}) => set(
 		{
 			activeId: activeId,
 			overId: overId,
-			quadrant: quadrant
+			dropPosition: dropPosition
 		}
 	),
 

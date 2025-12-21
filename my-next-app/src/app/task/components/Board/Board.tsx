@@ -7,7 +7,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Card from "../Card/Card";
-import CardCreateButton from "./CardCreateFromBoardButton";
+import CardCreateButton from "../Card/CardCreateButton";
 import { BoardType } from "@/types/task";
 
 
@@ -39,7 +39,7 @@ export default function Board({ board }: { board: BoardType }) {
           <Card key={cardId} cardId={cardId} />
         ))}
       </SortableContext>
-			<CardCreateButton board={board}></CardCreateButton>
+			<CardCreateButton source={{ type: "board", data: board}}></CardCreateButton>
     </div>
   );
 }

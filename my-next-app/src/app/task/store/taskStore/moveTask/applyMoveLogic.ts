@@ -3,7 +3,7 @@ import { AppState, CardType, BoardType } from "@/types/task";
 
 export const applyMoveLogic = (payload: Payload, state: AppState) => {
   // 必要なデータの読み込み
-  const { activeId, overId, quadrant } = payload;
+  const { activeId, overId, dropPosition } = payload;
   const { boardOrder, boards, cards } = state;
 
   if (!activeId || !overId || activeId === overId) return state;
@@ -79,16 +79,16 @@ export const applyMoveLogic = (payload: Payload, state: AppState) => {
   } else {
     // B. 他のカードの上にドロップした場合
 
-    // 右側(Right) -> 「子要素」としてネスト (nestCard)
-    if (quadrant === "topRight" || quadrant === "bottomRight") {
+    // center -> 「子要素」としてネスト (nestCard)
+    if (dropPosition === "center") {
       nestCard(activeId, overId, newCards, newBoards, dirtyCardIds, dirtyBoardIds);
     }
-    // 左側(Left) -> 「兄弟要素」として並び替え (reorderSibling)
+    // top, botoom -> 「兄弟要素」として並び替え (reorderSibling)
     else {
       reorderSibling(
         activeId,
         overId,
-        quadrant,
+        dropPosition,
         newCards,
         newBoards,
         dirtyCardIds,
@@ -227,7 +227,7 @@ const nestCard = (
 const reorderSibling = (
   activeId: string,
   overId: string, // 兄弟となるカード
-  quadrant: "topLeft" | "bottomLeft", // 上に入れるか下に入れるか
+  dropPosition: "top" | "bottom", // 上に入れるか下に入れるか
   newCards: { [id: string]: CardType },
   newBoards: { [id: string]: BoardType },
   dirtyCardIds: Set<string>,
@@ -248,7 +248,7 @@ const reorderSibling = (
       parentCard.childrenIds,
       activeId,
       overId,
-      quadrant,
+      dropPosition,
     );
 
     newCards[parentId] = { ...parentCard, childrenIds: newChildren };
@@ -261,7 +261,7 @@ const reorderSibling = (
       board.cardIds,
       activeId,
       overId,
-      quadrant,
+      dropPosition,
     );
 
     newBoards[boardId] = { ...board, cardIds: newCardIds };
@@ -300,15 +300,14 @@ const insertIntoArray = (
   array: string[],
   activeId: string,
   overId: string,
-  quadrant: "topLeft" | "bottomLeft",
+  dropPosition: "top" | "bottom",
 ): string[] => {
   const newArray = [...array];
   const overIndex = newArray.indexOf(overId);
 
   if (overIndex === -1) return [...newArray, activeId]; // 万が一見つからない場合
 
-  // topLeftならoverの前、bottomLeftならoverの後ろ
-  if (quadrant === "topLeft") {
+  if (dropPosition === "top") {
     newArray.splice(overIndex, 0, activeId);
   } else {
     newArray.splice(overIndex + 1, 0, activeId);

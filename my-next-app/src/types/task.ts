@@ -1,20 +1,4 @@
-// export interface Board {
-// 	id: string
-// 	projectId: string
-// 	order: number
-// }
-// export interface Card {
-// 	id: string
-// 	title: string
-// 	details: string | null
-// 	parentId: string | null  // 親カードのID
-// 	boardId: string
-// 	status: "active" | "archived"
-// 	progress: "todo" | "doing" | "done"
-// 	startAt: number | null // 開始日
-// 	dueAt: number | null  // 完了期限
-// 	simpleView: boolean  // シンプル表示の切り替え
-// }
+// type/task.ts
 
 export interface TaskStore extends AppState, Payload{
 	setActiveId: (activeId: Pick<Payload, "activeId">["activeId"]) => void,
@@ -25,12 +9,13 @@ export interface TaskStore extends AppState, Payload{
   setCards: (cards: Pick<AppState, "cards">["cards"]) => void;
   moveTask: (payload: Payload) => void;
 	addTask: (title: string, source: Source) => void
+	deleteTask: (cardId: string) => void;
 }
 
 export type Payload = {
   activeId: string | null;
   overId: string | null;
-  quadrant: "topLeft" | "topRight" | "bottomLeft" | "bottomRight" | null;
+  dropPosition: "top" | "bottom" | "center" | null;
 };
 
 export type Source =
