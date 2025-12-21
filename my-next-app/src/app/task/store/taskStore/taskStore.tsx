@@ -23,6 +23,9 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 		}
 	),
 
+	isTaskCreating: false,
+	setIsTaskCreating: (isTaskCreating) => set({isTaskCreating}),
+
   // サンプルの初期値(後でDBと接続)
   boardOrder: sampleAppState.boardOrder,
   boards: sampleAppState.boards,

@@ -10,6 +10,9 @@ export interface TaskStore extends AppState, Payload{
   moveTask: (payload: Payload) => void;
 	addTask: (title: string, source: Source) => void
 	deleteTask: (cardId: string) => void;
+
+	isTaskCreating: boolean
+	setIsTaskCreating: (isTaskCreating: boolean) => void
 }
 
 export type Payload = {
@@ -27,7 +30,7 @@ export interface CardType {
   id: string;
   parentId: string | null;
   boardId: string;
-  title: string;
+  title: string | undefined;
   details: string;
   status: "active" | "archived";
   progress: "todo" | "doing" | "done";

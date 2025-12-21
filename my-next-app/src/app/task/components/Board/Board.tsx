@@ -7,7 +7,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Card from "../Card/Card";
-import CardCreateButton from "../Card/CardCreateButton";
+import CardCreateButton from "../Card/DraftCard";
 import { BoardType } from "@/types/task";
 
 
@@ -24,8 +24,8 @@ export default function Board({ board }: { board: BoardType }) {
     borderRadius: 8,
     display: "flex",
     flexDirection: "column",
-    width: 800,
-    gap: 12,
+    width: 400,
+    gap: 3,
   };
 
   return (
@@ -39,7 +39,7 @@ export default function Board({ board }: { board: BoardType }) {
           <Card key={cardId} cardId={cardId} />
         ))}
       </SortableContext>
-			<CardCreateButton source={{ type: "board", data: board}}></CardCreateButton>
+			{/* <CardCreateButton source={{ type: "board", data: board}}></CardCreateButton> */}
     </div>
   );
 }

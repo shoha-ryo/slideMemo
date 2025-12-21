@@ -9,7 +9,6 @@ type FormattedTextProps = {
 
 // Reactの関数コンポーネントとしてProps（{ title }）を受け取る
 const FormattedText = ({ text, style }: FormattedTextProps) => {
-  // 💡 エラー回避: title が undefined の場合は空の文字列にフォールバック
   const safeTitle = text || "";
 
   return (

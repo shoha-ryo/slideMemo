@@ -1,68 +1,59 @@
-"Card.tsx"
 "use client";
 
 import { useEffect, useState } from "react";
 import { useDraggable, useDroppable, useDndContext } from "@dnd-kit/core";
+import { useTaskStore } from "../../store/taskStore/taskStore";
 import { useModalStore } from "../../store/ModalStore";
 import FormattedText from "./FormattedText";
-import { useTaskStore } from "../../store/taskStore/taskStore";
-import DroppedActionsInfo from "./DroppedActionsInfo";
+import { Button } from "@/components/ui/button";
 import { useShallow } from "zustand/shallow";
-import CardCreateButton from "./CardCreateButton";
+// import CardCreateButton from "./CardCreateButton"; // 不要であれば削除
+import DraftCard from "./DraftCard"; // 上記で作成したDraftCardをインポート
 
 // Draggable/Droppable コンポーネント
 const Card = ({ cardId }: { cardId: string }) => {
 
-	const [isNew, setIsNew] = useState(true); // 初期表示時はtrue
+  const [isNew, setIsNew] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+  // ★追加: 下書きモードかどうかを管理するステート
+  const [isDrafting, setIsDrafting] = useState(false);
 
-  // マウントから一定時間後にアニメーションフラグを落とす
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsNew(false);
-    }, 1500); // アニメーション時間と合わせる
+    }, 1500);
     return () => clearTimeout(timer);
   }, []);
 
-	const {
-		isDragging,
+  const {
+    isDragging,
     attributes,
     listeners,
     setNodeRef: setDraggableRef,
   } = useDraggable({
     id: cardId,
-    data: {
-      quadrant: null,
-    },
   });
 
-	const { isOver, setNodeRef: setDroppableRef } = useDroppable({
-		id: cardId, // Draggableと同じIDを使用
-    data: {
-			quadrant: null,
-    },
+  const { isOver, setNodeRef: setDroppableRef } = useDroppable({
+    id: cardId,
   });
 
-	const {activeId, overId, cards} = useTaskStore(
-		useShallow(state => ({
-			activeId: state.activeId,
-			overId: state.overId,
-			cards: state.cards
-		}))
-	)
-	const card = cards[cardId];
-
+  const { activeId, overId, cards } = useTaskStore(
+    useShallow(state => ({
+      activeId: state.activeId,
+      overId: state.overId,
+      cards: state.cards,
+      addTask: state.addTask,
+      deleteTask: state.deleteTask,
+    }))
+  );
+  const card = cards[cardId];
 
   const { active, over } = useDndContext();
-	const [showInfo, setShowInfo] = useState(false)
-
+  
   const isActive = active?.id === cardId;
   const quadrant = over?.id === cardId ? over?.data?.current?.quadrant : null;
-	const isSameId = activeId === overId
 
-
-
-
-  // --- スタイリングとネストレベルの決定 ---
   const draggableStyle = isDragging
     ? {
         outline: "2px solid #00bcd4",
@@ -72,105 +63,102 @@ const Card = ({ cardId }: { cardId: string }) => {
         cursor: isActive ? "grabbing" : "grab",
       };
 
-  // DraggableとDroppableのrefを両方設定
   const setNodeRef = (node: HTMLElement | null) => {
     setDroppableRef(node);
     setDraggableRef(node);
   };
 
-  // クリックされた時にモーダルを呼び出す
   const { showModal } = useModalStore();
   const handleCardClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // 回帰されていても最前面の1回しかイベントを呼び出さないようにする
+    e.stopPropagation();
     showModal(cardId);
   };
 
-	// // Infoの表示を遅延させてチラつき防止
-	// useEffect(() => {
-	// 	let timer: NodeJS.Timeout;
-	// 	// 「同じIDではない」かつ「ホバー中」の場合のみタイマー開始
-	// 	if (!isSameId && isOver) {
-	// 		// 30 ms 後に表示を許可する
-	// 		timer = setTimeout(() => {
-	// 			setShowInfo(true);
-	// 		}, 30);
-	// 	} else {
-	// 		// それ以外（ホバー外れた、または同じIDになった）なら即座に非表示
-	// 		setShowInfo(false);
-	// 	}
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
 
-	// 	// クリーンアップ関数（連打された時などに前のタイマーを消す）
-	// 	return () => {
-	// 		if (timer) clearTimeout(timer);
-	// 	};
-	// }, [isSameId, isOver, !!card]); // 監視対象
-
-
-
-	// カード削除後の再レンダリング防止
-	if (!card) {
-		return null;
-	}
-
-
+  if (!card) {
+    return null;
+  }
 
   return (
     <div
-      ref={setNodeRef} // 両方のrefを設定
+      ref={setNodeRef}
       style={{
         padding: "10px",
-        paddingLeft: `$10px`,
+        paddingLeft: `10px`,
         border: "1px solid #ccc",
         borderRadius: "10px",
         transition: "background-color 0.2s, outline 0.2s",
-        position: "relative", // transformがなくても常にrelative固定
+        position: "relative",
         ...draggableStyle,
-				marginBottom: "5px",
-				marginLeft: "10px",
+        marginBottom: "5px",
+        marginLeft: "0px",
       }}
       className={`card ${isOver ? `q-${quadrant}` : ""} ${isNew ? 'animate-highlight' : ''} bg-white`}
-      {...listeners} // ドラッグイベントのリスナー
-      {...attributes} // アクセシビリティ属性
+      {...listeners}
+      {...attributes}
       onClick={handleCardClick}
     >
-			{/* 表示アシスト */}
-				{/* ホバーされた時だけ点線で３分割の表示 */}
-				{showInfo && (
-					a
-				)}
+        <>
+          <div 
+            className="relative" // ボタンのabsoluteの基準点にする
+            onMouseEnter={handleMouseEnter} 
+            onMouseLeave={handleMouseLeave}
+          >
+            <div className="flex justify-between p-2">
+              <div className="min-w-0 flex-1">
+                <strong className="block"><FormattedText text={card.title}/></strong>
+                <div className="text-xs text-gray-400">{card.id}</div>
+                <div className="text-sm text-gray-500">
+                  <FormattedText text={card.details} />
+                </div>
+              </div>
+              <div className="w-12 shrink-0" />
+            </div>
 
-			{/* カードの内容を表示 */}
-      <div 
-				style={{ paddingLeft: `10px` }}
-				className="flex justify-between"
-			>
-        {/* 文字用エリア */}
-				<div>
-					<strong>
-						<FormattedText text={card.title}/>
-					</strong>
-					<div>{card.id}</div>
-					<FormattedText
-						text={card.details}
-						style={{ fontSize: "0.8em", color: "#666" }}
-					/>
-				</div>
-				{/* ユーティリティ用エリア ホバー時のみ表示 */}
-				<div onClick={(e) => e.stopPropagation()}>
-					<CardCreateButton source={{ type: "card", data: card}}/>
-				</div>
-      </div>
+            {/* 自身にホバー時のみ表示 */}
+            {isHovered && (
+              <div
+                className="absolute inset-y-0 right-0 flex ml-auto items-start
+                  pl-15
+                  bg-linear-to-r from-transparent from-0% via-white via-20% to-white to-100%"
+              >
+                {/* ★追加: カード追加ボタン */}
+                <Button
+									onClick={(e) => {e.stopPropagation(); setIsDrafting(true)}} // モーダル表示をブロックする。
+                  variant="ghost"
+                  className="mt-2 mr-2 h-8 w-8 rounded-full border bg-white"
+                >
+                  ＋
+                </Button>
+              </div>
+            )}
+          </div>
 
-			{/* カードの子孫を表示 */}
-      {card.childrenIds.length > 0 && (
-        <div>
-					<div className="h-3"></div>
-          {card.childrenIds.map((childId) => (
-            <Card key={childId} cardId={childId} />
-          ))}
-					<div className="h-3"></div>
-        </div>
-      )}
+          {/* ★追加: isDrafting=trueになると<DraftCard>が表示される */}
+          {isDrafting && (
+            <DraftCard 
+              source={{ type: "card", data: card }} 
+              onClose={() => setIsDrafting(false)} 
+            />
+          )}
+					
+          {/* 子カードのレンダリングエリア */}
+          {card.childrenIds.length > 0 && (
+            <div>
+              <div className="h-3"></div>
+              {card.childrenIds.map((childId) => (
+                <Card key={childId} cardId={childId} />
+              ))}
+              <div className="h-3"></div>
+            </div>
+          )}
+        </>
     </div>
   );
 };
