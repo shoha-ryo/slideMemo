@@ -62,6 +62,10 @@ export default function Modal({}) {
 
   // --- 保存処理 ---
   const onSave = async () => {
+		if (!title.trim()) {
+			setTitle("")
+			return
+		}
     if (!activeNode || !clickedActiveId) return;
 
     // 1. 新しいノード（変更部分のみ更新）を作成
@@ -159,6 +163,7 @@ export default function Modal({}) {
           <textarea
             ref={titleRef}
             value={title}
+						placeholder="タイトルを入力してください"
             onChange={(e) => {
               setTitle(e.target.value);
             }}

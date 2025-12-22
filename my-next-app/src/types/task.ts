@@ -30,7 +30,7 @@ export interface CardType {
   id: string;
   parentId: string | null;
   boardId: string;
-  title: string | undefined;
+  title: string;
   details: string;
   status: "active" | "archived";
   progress: "todo" | "doing" | "done";
