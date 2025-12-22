@@ -216,7 +216,7 @@ const nestCard = (
   const overCard = newCards[overId];
   newCards[overId] = {
     ...overCard,
-    childrenIds: [...overCard.childrenIds, activeId],
+    childrenIds: [activeId, ...overCard.childrenIds],
   };
   dirtyCardIds.add(overId);
 }
@@ -227,7 +227,7 @@ const nestCard = (
 const reorderSibling = (
   activeId: string,
   overId: string, // 兄弟となるカード
-  dropPosition: "top" | "bottom", // 上に入れるか下に入れるか
+  dropPosition: "top" | "bottom" | "center" | null, // 上に入れるか下に入れるか
   newCards: { [id: string]: CardType },
   newBoards: { [id: string]: BoardType },
   dirtyCardIds: Set<string>,
@@ -300,7 +300,7 @@ const insertIntoArray = (
   array: string[],
   activeId: string,
   overId: string,
-  dropPosition: "top" | "bottom",
+  dropPosition: "top" | "bottom" | "center" | null,
 ): string[] => {
   const newArray = [...array];
   const overIndex = newArray.indexOf(overId);

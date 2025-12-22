@@ -54,7 +54,7 @@ export function addCardLogic(title: string, source: Source, state: AppState): Ap
 				...cards,
 				[targetCard.id]: { // 親カードを更新
 					...targetCard,
-					childrenIds: [...targetCard.childrenIds, newCard.id]
+					childrenIds: [newCard.id, ...targetCard.childrenIds]
 				},
 				[newCard.id]: newCard // 新しいカードを追加
 			}

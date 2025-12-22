@@ -98,7 +98,7 @@ const Card = ({ cardId }: { cardId: string }) => {
 				${isNew ? 'animate-highlight' : ''}
 				${draggableStyle}
 				${droppableStyle}
-				`}
+			`}
       {...listeners}
       {...attributes}
       onClick={handleCardClick}
@@ -154,7 +154,6 @@ const Card = ({ cardId }: { cardId: string }) => {
               {card.childrenIds.map((childId) => (
                 <Card key={childId} cardId={childId} />
               ))}
-              <div className="h-3"></div>
             </div>
           )}
         </>
