@@ -7,8 +7,7 @@ import { useModalStore } from "../../store/ModalStore";
 import FormattedText from "./FormattedText";
 import { Button } from "@/components/ui/button";
 import { useShallow } from "zustand/shallow";
-// import CardCreateButton from "./CardCreateButton"; // 不要であれば削除
-import DraftCard from "./DraftCard"; // 上記で作成したDraftCardをインポート
+import DraftCard from "./DraftCard";
 
 // Draggable/Droppable コンポーネント
 const Card = ({ cardId }: { cardId: string }) => {
@@ -38,30 +37,33 @@ const Card = ({ cardId }: { cardId: string }) => {
     id: cardId,
   });
 
-  const { activeId, overId, cards } = useTaskStore(
+  const { activeId, overId, cards, dropPosition } = useTaskStore(
     useShallow(state => ({
       activeId: state.activeId,
       overId: state.overId,
       cards: state.cards,
-      addTask: state.addTask,
-      deleteTask: state.deleteTask,
+			dropPosition: state.dropPosition,
     }))
   );
   const card = cards[cardId];
 
   const { active, over } = useDndContext();
-  
+
   const isActive = active?.id === cardId;
   const quadrant = over?.id === cardId ? over?.data?.current?.quadrant : null;
 
-  const draggableStyle = isDragging
-    ? {
-        outline: "2px solid #00bcd4",
-        cursor: "grabbing",
-      } : {
-        opacity: isActive ? 0.2 : 1,
-        cursor: isActive ? "grabbing" : "grab",
-      };
+	const draggableStyle = isDragging
+		? "ring-2 ring-gray-300 bg-gray-100" // 移動元
+		: isActive
+			? "opacity-20 cursor-grabbing" // 掴んでいる時
+			: "cursor-grab" // 掴んでいない時
+	const droppableStyle = isOver && !isActive
+		? dropPosition === "top"
+			? "border-t-10 border-t-cyan-500 bg-cyan-50" // 上部に青線
+			: dropPosition === "bottom"
+				? "border-b-10 border-b-cyan-500 bg-cyan-50" // 下部に青線
+				: "ring-3 ring-cyan-300 bg-cyan-50"        // center（真ん中）
+		: "bg-white border-gray-300"; // ホバーしていない、または自分が動いている時
 
   const setNodeRef = (node: HTMLElement | null) => {
     setDroppableRef(node);
@@ -88,32 +90,29 @@ const Card = ({ cardId }: { cardId: string }) => {
   return (
     <div
       ref={setNodeRef}
-      style={{
-        padding: "10px",
-        paddingLeft: `10px`,
-        border: "1px solid #ccc",
-        borderRadius: "10px",
-        transition: "background-color 0.2s, outline 0.2s",
-        position: "relative",
-        ...draggableStyle,
-        marginBottom: "5px",
-        marginLeft: "0px",
-      }}
-      className={`card ${isOver ? `q-${quadrant}` : ""} ${isNew ? 'animate-highlight' : ''} bg-white`}
+      className={`card relative
+				p-[10px] pl-[10px] mb-[5px]
+				border rounded-lg
+				transition-all duration-200
+				${isOver ? `q-${quadrant}` : ""}
+				${isNew ? 'animate-highlight' : ''}
+				${draggableStyle}
+				${droppableStyle}
+				`}
       {...listeners}
       {...attributes}
       onClick={handleCardClick}
     >
         <>
-          <div 
+          <div
             className="relative" // ボタンのabsoluteの基準点にする
-            onMouseEnter={handleMouseEnter} 
+            onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
             <div className="flex justify-between p-2">
               <div className="min-w-0 flex-1">
                 <strong className="block"><FormattedText text={card.title}/></strong>
-                <div className="text-xs text-gray-400">{card.id}</div>
+                {/* <div className="text-xs text-gray-400">{card.id}</div> */}
                 <div className="text-sm text-gray-500">
                   <FormattedText text={card.details} />
                 </div>
@@ -142,12 +141,12 @@ const Card = ({ cardId }: { cardId: string }) => {
 
           {/* ★追加: isDrafting=trueになると<DraftCard>が表示される */}
           {isDrafting && (
-            <DraftCard 
-              source={{ type: "card", data: card }} 
-              onClose={() => setIsDrafting(false)} 
+            <DraftCard
+              source={{ type: "card", data: card }}
+              onClose={() => setIsDrafting(false)}
             />
           )}
-					
+
           {/* 子カードのレンダリングエリア */}
           {card.childrenIds.length > 0 && (
             <div>
