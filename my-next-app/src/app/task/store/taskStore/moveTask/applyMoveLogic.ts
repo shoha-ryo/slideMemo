@@ -8,7 +8,7 @@ export const applyMoveLogic = (payload: Payload, state: AppState) => {
 
   if (!activeId || !overId || activeId === overId) return state;
 
-	// --- 【追加】循環参照（自分自身の子孫への移動）防止チェック ---
+	// --- 循環参照（自分自身の子孫への移動）防止チェック ---
   // overIdがボードではなく、かつactiveIdの子孫である場合は無効な操作として無視する
   const isOverBoardToCheck = !!boards[overId];
   if (!isOverBoardToCheck) {

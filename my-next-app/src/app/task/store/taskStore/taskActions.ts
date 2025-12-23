@@ -5,6 +5,9 @@ import { TaskStore, Payload, Source } from "@/types/task";
 import { applyMoveLogic } from "./moveTask/applyMoveLogic";
 import { addCardLogic } from "./addTask/addTask";
 import { deleteCardLogic } from "./deleteTask/deleteTask";
+import { moveBoardLogic } from "./moveBoard/moveBoard";
+import { addBoardLogic } from "./addBoard/addBoard";
+import { deleteBoardLogic } from "./deleteBoard/deleteBoard";
 
 export const taskActions = (set: Function, get: () => TaskStore) => ({
   moveTask: (payload: Payload) => {
@@ -33,4 +36,32 @@ export const taskActions = (set: Function, get: () => TaskStore) => ({
     // storeの状態を更新
     set(newState);
   },
+
+  moveBoard: (payload: Payload) => {
+    // storeの状態を取得
+    const state = get();
+    // 移動ロジックを実行
+    const newState = moveBoardLogic(payload, state);
+    // storeの状態を更新
+    set(newState);
+  },
+
+	addBoard: (title: string) => {
+		// storeの状態を取得
+    const state = get();
+		// 追加ロジックを実行
+		const newState = addBoardLogic(title, state)
+		// storeの状態を更新
+    set(newState);
+	},
+
+	  deleteBoard: (cardId: string) => {
+    // storeの状態を取得
+    const state = get();
+    // 削除ロジックを実行
+    const newState = deleteBoardLogic(cardId, state);
+    // storeの状態を更新
+    set(newState);
+  },
+
 });

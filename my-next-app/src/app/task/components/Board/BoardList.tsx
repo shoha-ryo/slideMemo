@@ -1,10 +1,12 @@
 "use client";
-
+ 
+import { useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { SortableContext } from "@dnd-kit/sortable";
-import BoardCreateButton from "./BoardCreateButton";
-import Board from "./Board";
 import { useTaskStore } from "../../store/taskStore/taskStore";
+import Board from "./Board";
+import { Button } from "@/components/ui/button";
+import DraftTask from "../Card/DraftTask";
 
 function BoardList({}) {
 	// シャローコピーしないと「代入＞再レンダー＞再代入...」が無限ループする
@@ -14,24 +16,36 @@ function BoardList({}) {
 			boards: state.boards
 	})));
 
+	const [isDrafting, setIsDrafting] = useState(false)
+
   return (
     <SortableContext items={boardOrder}>
       <div
         style={{
           display: "inline-flex",
-          // background: "#bbb",
           padding: 12,
           margin: 20,
           borderRadius: 8,
           gap: 12,
           flexShrink: 0,
-          // outline: '1px solid #ccc',
         }}
       >
         {boardOrder.map((boardId) => (
           <Board key={boardId} board={boards[boardId]} />
         ))}
-        {/* <BoardCreateButton /> */}
+				{isDrafting ? (
+					<DraftTask
+						source={{ type: "boardList", data: null }}
+						onClose={() => setIsDrafting(false)}
+					/>
+				):(
+				<Button
+					onClick={(e) => {e.stopPropagation(); setIsDrafting(true)}} // モーダル表示をブロックする。
+					className="mt-2 mr-2 h-8 w-40 rounded-full border bg-neutral-800"
+				>
+					＋ボードを追加
+				</Button>
+				)}
       </div>
     </SortableContext>
   );

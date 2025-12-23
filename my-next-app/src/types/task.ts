@@ -10,6 +10,10 @@ export interface TaskStore extends AppState, Payload{
   moveTask: (payload: Payload) => void;
 	addTask: (title: string, source: Source) => void
 	deleteTask: (cardId: string) => void;
+	moveBoard: (payload: Payload) => void;
+	addBoard: (title: string) => void
+	deleteBoard: (boardId: string) => void;
+
 
 	isTaskCreating: boolean
 	setIsTaskCreating: (isTaskCreating: boolean) => void
@@ -24,6 +28,7 @@ export type Payload = {
 export type Source =
 	| { type: "board"; data: BoardType }
 	| { type: "card"; data: CardType }
+	| { type: "boardList"; data: null}
 
 
 export interface CardType {
@@ -37,8 +42,6 @@ export interface CardType {
   startAt: number | null;
   dueAt: number | null;
   simpleView: boolean;
-
-  // ▼ 構造管理用に追加
   childrenIds: string[];
 }
 
@@ -46,8 +49,6 @@ export interface BoardType {
   id: string;
   projectId?: string;
   title?: string;
-
-  // ▼ 構造管理用に追加
   cardIds: string[];
 }
 

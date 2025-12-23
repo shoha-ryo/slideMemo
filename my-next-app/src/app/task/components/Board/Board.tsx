@@ -1,36 +1,79 @@
 "use client";
 
+import { useState } from "react";
 import {
   useSortable,
   SortableContext,
   verticalListSortingStrategy,
+	defaultAnimateLayoutChanges,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import Card from "../Card/Card";
-import CardCreateButton from "../Card/DraftCard";
+import { CSS } from "@dnd-kit/utilities";
+import { Button } from "@/components/ui/button";
 import { BoardType } from "@/types/task";
+import DraftTask from "../Card/DraftTask";
+import { useTaskStore } from "../../store/taskStore/taskStore";
+import { useShallow } from "zustand/shallow";
 
 
 export default function Board({ board }: { board: BoardType }) {
+	const { attributes, listeners, setNodeRef, isDragging, isOver } =
+    useSortable({
+			id: board.id,
+		});
 
-	const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: board.id });
+	const { activeId, overId, cards, dropPosition } = useTaskStore(
+    useShallow(state => ({
+      activeId: state.activeId,
+      overId: state.overId,
+      cards: state.cards,
+			dropPosition: state.dropPosition,
+    }))
+  );
 
-  const style: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    padding: 12,
-    background: "#f5f5f5",
-    borderRadius: 8,
-    display: "flex",
-    flexDirection: "column",
-    width: 400,
-    gap: 3,
-  };
+
+	const style = "flex flex-col self-start "
+		+ "w-[400px] gap-[3px] p-3 "
+		+ "bg-gray-100 rounded-lg "
+
+	const [isHovered, setIsHovered] = useState(false);
+	const isActive = activeId?.includes(board.id)
+
+	const draggableStyle = isDragging
+		? "ring-2 ring-gray-300 bg-gray-100" // 移動元
+		: isActive
+			? "opacity-20 cursor-grabbing" // 掴んでいる時
+			: "cursor-grab" // 掴んでいない時
+	const droppableStyle = isOver && !isActive
+		? "ring-2 ring-cyan-500"
+		: ""
+	const hoveredStyle = isHovered
+		? "shadow-xl"
+		: ""
+
+
+	const [isDrafting, setIsDrafting] = useState(false)
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <div>{board.id}</div>
+    <div
+			ref={setNodeRef}
+			className={`
+				${style}
+				${hoveredStyle}
+				${draggableStyle}
+				${droppableStyle}
+				`}
+			{...attributes}
+			{...listeners}
+			onMouseEnter={() => (setIsHovered(true))}
+			onMouseLeave={() => (setIsHovered(false))}
+		>
+
+      <div
+				className="font-black text-center"
+			>
+				{board.title}
+			</div>
       <SortableContext
         items={board.cardIds}
         strategy={verticalListSortingStrategy}
@@ -39,7 +82,20 @@ export default function Board({ board }: { board: BoardType }) {
           <Card key={cardId} cardId={cardId} />
         ))}
       </SortableContext>
-			{/* <CardCreateButton source={{ type: "board", data: board}}></CardCreateButton> */}
+
+			{isDrafting ? (
+				<DraftTask
+					source={{ type: "board", data: board }}
+					onClose={() => setIsDrafting(false)}
+				/>
+			):(
+			<Button
+				onClick={(e) => {e.stopPropagation(); setIsDrafting(true)}} // モーダル表示をブロックする。
+				className="mt-2 mr-2 h-8 rounded-full border bg-neutral-800"
+			>
+				＋カードを追加
+			</Button>
+			)}
     </div>
   );
 }

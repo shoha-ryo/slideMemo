@@ -11,6 +11,7 @@ import {
   DragStartEvent,
   DragMoveEvent,
   DragEndEvent,
+	CollisionDetection
 } from "@dnd-kit/core";
 
 // 必要なコンポーネント
@@ -19,6 +20,7 @@ import { useMousePointer } from "./components/useMousePointer";
 import Modal from "./components/Card/Modal";
 import BoardList from "./components/Board/BoardList";
 import Card from "./components/Card/Card";
+import Board from "./components/Board/Board";
 import TrashDropArea, { TRASH_ID } from "./components/TrashArea/TrashDropArea"; // ★ 追加
 
 // Store
@@ -30,8 +32,8 @@ import { useShallow } from "zustand/shallow";
 export default function App() {
   // ★ deleteTask アクションを追加取得
   const { 
-    activeId, overId, dropPosition, cards, setActiveId, setHoverInfo, 
-    moveTask, deleteTask 
+    activeId, overId, dropPosition, cards, boards, setActiveId, setHoverInfo, 
+    moveTask, deleteTask, moveBoard, deleteBoard,
   } = useTaskStore(
     useShallow((state) => ({
       activeId: state.activeId,
@@ -44,6 +46,8 @@ export default function App() {
       setHoverInfo: state.setPayload,
       moveTask: state.moveTask,
       deleteTask: state.deleteTask,
+			moveBoard: state.moveBoard,
+			deleteBoard: state.deleteBoard
     }))
   );
 
@@ -58,8 +62,10 @@ export default function App() {
   });
   const sensors = useSensors(mouseSensor);
 
-  // --- ハンドラー ---
 
+
+
+  // --- ハンドラー ---
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     const currentActiveId = String(active.id);
@@ -111,7 +117,13 @@ export default function App() {
     // ドロップ先がゴミ箱IDと一致する場合
     if (over.id === TRASH_ID) {
       // 削除アクションを実行
-      deleteTask(currentActiveId);
+      if (activeId?.includes("card-")) {
+				deleteTask(currentActiveId);
+			} else {
+				deleteBoard(currentActiveId)
+			}
+
+
       // 状態リセットして早期リターン (moveTaskを実行させない)
       setHoverInfo({ activeId: null, overId: null, dropPosition: null });
       return;
@@ -132,7 +144,10 @@ export default function App() {
       dropPosition: currentDropPosition,
     };
 
-    moveTask(payload);
+		if (activeId?.includes("card-"))
+	    moveTask(payload);
+		else
+			moveBoard(payload)
 
     setHoverInfo({
       activeId: null,
@@ -141,12 +156,51 @@ export default function App() {
     });
   };
 
+
+
+
+
+	const customCollisionDetection: CollisionDetection = (args) => {
+		const { active, droppableContainers, pointerCoordinates } = args;
+
+		// 1. まずは標準の判定（ポインタの下にある要素を探す）を行う
+		const pointerCollisions = pointerWithin(args);
+
+		// 衝突がない、またはドラッグしているのが「ボード」ではない場合は、標準の結果を返す
+		if (pointerCollisions.length === 0 || !active.id.toString().startsWith("board-")) {
+			return pointerCollisions;
+		}
+
+		// 2. ドラッグ中の要素が「ボード」の場合の特別処理
+		const overId = pointerCollisions[0].id.toString();
+
+		// もしマウスの下にあるのが「ボード」なら、そのまま返す
+		if (overId.startsWith("board-")) {
+			return pointerCollisions;
+		}
+
+		// もしマウスの下にあるのが「カード」なら、「親ボード」を見つけて返す
+		const overCard = cards[overId];
+		if (overCard) {
+			// ここが魔法の処理：ヒットした対象を「親ボード」にすり替える
+			return [{ id: overCard.boardId }];
+		}
+
+		// それ以外（念のため）
+		return pointerCollisions;
+	};
+
+
+
+
+
+
   return (
     <div style={{ position: "relative" }}>
       {isShowModal ? <Modal /> : null}
 
       <DndContext
-        collisionDetection={pointerWithin}
+        collisionDetection={customCollisionDetection}
         onDragStart={handleDragStart}
         onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
@@ -161,8 +215,13 @@ export default function App() {
 
           <DragOverlay>
             {activeId && cards[activeId] ? (
-              <Card cardId={activeId} />
-            ) : null}
+								<Card cardId={activeId} />
+							) : null
+						}
+						{activeId && boards[activeId] ?	(
+								<Board board={boards[activeId]}></Board>
+							) : null
+						}
           </DragOverlay>
 
           {/* デバッグ表示 */}
@@ -191,4 +250,5 @@ export default function App() {
       </DndContext>
     </div>
   );
+	
 }

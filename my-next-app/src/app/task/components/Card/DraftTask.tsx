@@ -7,15 +7,16 @@ import { Source } from "@/types/task";
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import { useShallow } from "zustand/shallow";
 
-interface DraftCardProps {
+interface DraftTaskProps {
   source: Source;
   onClose: () => void;
 }
 
-export default function DraftCard({ source, onClose }: DraftCardProps) {
-  const { addTask } = useTaskStore(
+export default function DraftTask({ source, onClose }: DraftTaskProps) {
+  const { addTask, addBoard } = useTaskStore(
     useShallow((state) => ({
       addTask: state.addTask,
+			addBoard: state.addBoard,
     }))
   );
 
@@ -23,18 +24,26 @@ export default function DraftCard({ source, onClose }: DraftCardProps) {
 
   const handleSubmit = () => {
     if (!draftTitle.trim()) {
-      handleCancel();
       return;
     }
-    addTask(draftTitle, source);
+		if (source.type === "boardList") {
+			console.log("BoardList");
+			addBoard(draftTitle)
+		} else {
+			console.log("AddTask")
+	    addTask(draftTitle, source);
+		}
     setDraftTitle("");
-    onClose();
   };
 
   const handleCancel = () => {
     setDraftTitle("");
     onClose();
   };
+
+	const addBoradStyle = source.type === "boardList"
+		? "w-100 bg-neutral-300 self-start"
+		: "bg-white"
 
   return (
     <>
@@ -49,7 +58,11 @@ export default function DraftCard({ source, onClose }: DraftCardProps) {
 
       {/* 2. 入力フォーム本体 (z-indexを上げてオーバーレイより前に出す) */}
       <div
-        className="relative z-50 p-4 border-2 rounded-lg border-gray-300 bg-white shadow-xl"
+        className={`
+					relative z-50 p-4
+					border-2 rounded-lg	border-gray-300 shadow-xl
+					${addBoradStyle}
+					`}
         onClick={(e) => e.stopPropagation()} // フォーム内クリックで閉じないようにする
       >
         <Input
@@ -58,6 +71,7 @@ export default function DraftCard({ source, onClose }: DraftCardProps) {
           value={draftTitle}
           onChange={(e) => setDraftTitle(e.target.value)}
           onKeyDown={(e) => {
+						if (e.nativeEvent.isComposing) return
             if (e.key === "Enter") handleSubmit();
             if (e.key === "Escape") handleCancel();
           }}

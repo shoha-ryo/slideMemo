@@ -2,19 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { useDraggable, useDroppable, useDndContext } from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities";
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import { useModalStore } from "../../store/ModalStore";
 import FormattedText from "./FormattedText";
 import { Button } from "@/components/ui/button";
 import { useShallow } from "zustand/shallow";
-import DraftCard from "./DraftCard";
+import DraftTask from "./DraftTask";
 
 // Draggable/Droppable コンポーネント
 const Card = ({ cardId }: { cardId: string }) => {
 
   const [isNew, setIsNew] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
-  // ★追加: 下書きモードかどうかを管理するステート
   const [isDrafting, setIsDrafting] = useState(false);
 
   useEffect(() => {
@@ -47,10 +47,8 @@ const Card = ({ cardId }: { cardId: string }) => {
   );
   const card = cards[cardId];
 
-  const { active, over } = useDndContext();
-
+  const { active, over } = useDndContext()
   const isActive = active?.id === cardId;
-  const quadrant = over?.id === cardId ? over?.data?.current?.quadrant : null;
 
 	const draggableStyle = isDragging
 		? "ring-2 ring-gray-300 bg-gray-100" // 移動元
@@ -59,11 +57,14 @@ const Card = ({ cardId }: { cardId: string }) => {
 			: "cursor-grab" // 掴んでいない時
 	const droppableStyle = isOver && !isActive
 		? dropPosition === "top"
-			? "border-t-10 border-t-cyan-500 bg-cyan-50" // 上部に青線
+			? "ring-2 ring-cyan-500 border-t-10 border-t-cyan-500 bg-cyan-50" // 上部に青線
 			: dropPosition === "bottom"
-				? "border-b-10 border-b-cyan-500 bg-cyan-50" // 下部に青線
-				: "ring-3 ring-cyan-300 bg-cyan-50"        // center（真ん中）
+				? "ring-2 ring-cyan-500 border-b-10 border-b-cyan-500 bg-cyan-50" // 下部に青線
+				: "ring-4 ring-cyan-500 bg-cyan-50"        // center（真ん中）
 		: "bg-white border-gray-300"; // ホバーしていない、または自分が動いている時
+	const hoveredStyle = isHovered
+		? "scale-103 shadow-lg"
+		: ""
 
   const setNodeRef = (node: HTMLElement | null) => {
     setDroppableRef(node);
@@ -87,6 +88,7 @@ const Card = ({ cardId }: { cardId: string }) => {
     return null;
   }
 
+
   return (
     <div
       ref={setNodeRef}
@@ -94,8 +96,8 @@ const Card = ({ cardId }: { cardId: string }) => {
 				p-[10px] pl-[10px] mb-[5px]
 				border rounded-lg
 				transition-all duration-200
-				${isOver ? `q-${quadrant}` : ""}
 				${isNew ? 'animate-highlight' : ''}
+				${hoveredStyle}
 				${draggableStyle}
 				${droppableStyle}
 			`}
@@ -111,9 +113,9 @@ const Card = ({ cardId }: { cardId: string }) => {
           >
             <div className="flex justify-between p-2">
               <div className="min-w-0 flex-1">
-                <strong className="block"><FormattedText text={card.title}/></strong>
+                <strong className="block text-sm"><FormattedText text={card.title}/></strong>
                 {/* <div className="text-xs text-gray-400">{card.id}</div> */}
-                <div className="text-sm text-gray-500">
+                <div className="text-xs text-gray-500">
                   <FormattedText text={card.details} />
                 </div>
               </div>
@@ -127,7 +129,7 @@ const Card = ({ cardId }: { cardId: string }) => {
                   pl-15
                   bg-linear-to-r from-transparent from-0% via-white via-20% to-white to-100%"
               >
-                {/* ★追加: カード追加ボタン */}
+                {/* カード追加ボタン */}
                 <Button
 									onClick={(e) => {e.stopPropagation(); setIsDrafting(true)}} // モーダル表示をブロックする。
                   variant="ghost"
@@ -139,9 +141,8 @@ const Card = ({ cardId }: { cardId: string }) => {
             )}
           </div>
 
-          {/* ★追加: isDrafting=trueになると<DraftCard>が表示される */}
           {isDrafting && (
-            <DraftCard
+            <DraftTask
               source={{ type: "card", data: card }}
               onClose={() => setIsDrafting(false)}
             />
@@ -150,7 +151,7 @@ const Card = ({ cardId }: { cardId: string }) => {
           {/* 子カードのレンダリングエリア */}
           {card.childrenIds.length > 0 && (
             <div>
-              <div className="h-3"></div>
+              <div className="h-3" />
               {card.childrenIds.map((childId) => (
                 <Card key={childId} cardId={childId} />
               ))}
