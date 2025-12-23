@@ -5,10 +5,15 @@ import { sampleAppState } from "../../flatData"; // サンプルデータ取得
 import { taskActions } from "./taskActions";
 
 import { TaskStore } from "@/types/task";
-import { Droplet } from "lucide-react";
-
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
+
+	// 初期化用の関数を追加
+  initState: (state: { boardOrder: string[]; boards: any; cards: any }) => set({
+    boardOrder: state.boardOrder,
+    boards: state.boards,
+    cards: state.cards,
+  }),
 
 	activeId: null,
 	overId: null,
@@ -27,9 +32,9 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 	setIsTaskCreating: (isTaskCreating) => set({isTaskCreating}),
 
   // サンプルの初期値(後でDBと接続)
-  boardOrder: sampleAppState.boardOrder,
-  boards: sampleAppState.boards,
-  cards: sampleAppState.cards,
+  boardOrder: [], //sampleAppState.boardOrder,
+  boards: {}, //sampleAppState.boards,
+  cards: {}, //sampleAppState.cards,
   setBoardOrder: (boardOrder) => set({ boardOrder }),
   setBoards: (boards) => set({ boards }),
   setCards: (cards) => set({ cards }),
