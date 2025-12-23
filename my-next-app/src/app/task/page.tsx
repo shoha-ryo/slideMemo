@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react"; // useState削除 (Store管理のため不要なら)
+import { prisma } from "@/lib/prisma";
+
 import {
   DndContext,
   DragOverlay,

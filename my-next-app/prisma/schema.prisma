@@ -1,24 +1,49 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+// Prisma 7+ 仕様: datasourceにurlは書かない
+datasource db {
+  provider = "postgresql"
+	url      = env("DATABASE_URL")
+}
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma" // これ何？
+  provider = "prisma-client-js"
 }
 
-// データソースをMySQLに設定
-datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+// 1. AppStateの boardOrder を管理するための最上位
+model AppConfig {
+  id          Int      @id @default(1)
+  boardOrder  String[] // ボードの並び順（IDの配列）
 }
 
-// モデルの定義
-model User {
-	id    Int     @id @default(autoincrement())
-	email String  @unique
-	name  String?
+// 2. ボード情報
+model Board {
+  id        String   @id @default(uuid())
+  title     String?
+  projectId String?
+  
+  // Cardとの1対多のリレーション
+  cards     Card[]
+}
+
+// 3. カード（タスク）情報
+model Card {
+  id         String   @id @default(uuid())
+  title      String
+  details    String
+  status     String   // "active" | "archived" (Enumにするのもアリ)
+  progress   String   // "todo" | "doing" | "done"
+  startAt    DateTime?
+  dueAt      DateTime?
+  simpleView Boolean  @default(false)
+
+  // 親子関係（自己参照リレーション）
+  parentId   String?
+  parent     Card?    @relation("CardHierarchy", fields: [parentId], references: [id])
+  children   Card[]   @relation("CardHierarchy")
+
+  // ボードとのリレーション
+  boardId    String
+  board      Board    @relation(fields: [boardId], references: [id])
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
