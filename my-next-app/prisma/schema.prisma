@@ -20,27 +20,29 @@ model Board {
   title     String?
   projectId String?
   
-  // Cardとの1対多のリレーション
+  // 追加：カードの並び順（IDの配列）を直接保存する
+  cardIds   String[] 
+  
   cards     Card[]
 }
 
-// 3. カード（タスク）情報
 model Card {
   id         String   @id @default(uuid())
   title      String
   details    String
-  status     String   // "active" | "archived" (Enumにするのもアリ)
-  progress   String   // "todo" | "doing" | "done"
+  status     String   
+  progress   String   
   startAt    DateTime?
   dueAt      DateTime?
   simpleView Boolean  @default(false)
 
-  // 親子関係（自己参照リレーション）
+  // 追加：子カードの並び順（IDの配列）を直接保存する
+  childrenIds String[] 
+
   parentId   String?
   parent     Card?    @relation("CardHierarchy", fields: [parentId], references: [id])
   children   Card[]   @relation("CardHierarchy")
 
-  // ボードとのリレーション
   boardId    String
   board      Board    @relation(fields: [boardId], references: [id])
 

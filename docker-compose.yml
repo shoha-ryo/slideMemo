@@ -10,6 +10,8 @@ services:
     volumes:
       - ./my-next-app:/app
       - /app/node_modules
+      - /app/.next
+    command: sh -c "npx prisma generate && npm run dev" # 開発専用 後で消す
 
   nginx:
     image: nginx:alpine

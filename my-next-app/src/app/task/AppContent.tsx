@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 import {
 	DndContext,
 	DragOverlay,
@@ -27,7 +29,6 @@ import { useTaskStore } from "./store/taskStore/taskStore";
 import { useModalStore } from "./store/ModalStore";
 import { Payload } from "@/types/task";
 import { useShallow } from "zustand/shallow";
-import TaskStoreInitializer from "./store/taskStore/TaskStoreInitializer";
 
 export default function AppContent(initialData) {
 	const {
@@ -54,11 +55,15 @@ export default function AppContent(initialData) {
 		}))
 	);
 
-	const init = initialData.initialData
-	setBoardOrder(init.boardOrder)
-	setBoards(init.boards)
-	setCards(init.cards)
 
+	useEffect(() => {
+    const init = initialData.initialData;
+    if (init) {
+      setBoardOrder(init.boardOrder);
+      setBoards(init.boards);
+      setCards(init.cards);
+    }
+  }, []); // 依存配列を空にする
 
 	const { isShowModal } = useModalStore();
 	const { x, y } = useMousePointer();

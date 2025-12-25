@@ -7,8 +7,6 @@ export default async function TaskPage() {
   const dbConfig = await prisma.appConfig.findUnique({ where: { id: 1 } });
   const dbBoards = await prisma.board.findMany({ include: { cards: true } });
 
-	// console.log("取得状況：", dbConfig, dbBoards)
-
   // ストアが期待する形式（Object形式）に変換
   const boardsObj: any = {};
   const cardsObj: any = {};
@@ -18,7 +16,7 @@ export default async function TaskPage() {
       id: board.id,
       title: board.title,
       projectId: board.projectId,
-      cardIds: board.cards.map(c => c.id) // 以前のインターフェースに合わせる
+      cardIds: board.cards.map(c => c.id)
     };
 	board.cards.forEach((card) => {
 		cardsObj[card.id] = {

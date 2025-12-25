@@ -8,13 +8,6 @@ import { TaskStore } from "@/types/task";
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
 
-	// 初期化用の関数を追加
-  initState: (state: { boardOrder: string[]; boards: any; cards: any }) => set({
-    boardOrder: state.boardOrder,
-    boards: state.boards,
-    cards: state.cards,
-  }),
-
 	activeId: null,
 	overId: null,
 	dropPosition: null,

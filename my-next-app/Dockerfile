@@ -5,9 +5,11 @@ WORKDIR /app
 # 作業ディレクトリを"/app"に設定。
 
 COPY package*.json ./
-# package.jsonとpackage-lock.jsonをコピーし、依存関係をインストール。
-
 RUN npm install
+
+COPY prisma ./prisma/
+RUN npx prisma generate
+
 COPY . .
 RUN npm run build
 # アプリケーションのソースコードをコピーし、ビルドコマンドを実行。

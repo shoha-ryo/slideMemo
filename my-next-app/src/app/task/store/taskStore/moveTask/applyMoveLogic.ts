@@ -1,19 +1,35 @@
 import { Payload } from "@/types/task";
 import { AppState, CardType, BoardType } from "@/types/task";
+import { getObjectDiff } from "@/app/task/actions/getDiff";
 
 export const applyMoveLogic = (payload: Payload, state: AppState) => {
   // 必要なデータの読み込み
   const { activeId, overId, dropPosition } = payload;
   const { boardOrder, boards, cards } = state;
 
-  if (!activeId || !overId || activeId === overId) return state;
+  if (!activeId || !overId || activeId === overId)
+		return {
+			newState: state,
+			diffTasks: {
+				diffBoardOrder: [] as string[],
+				diffBoard: [] as BoardType[],
+				diffCard: [] as CardType[],
+			}
+		};
 
 	// --- 循環参照（自分自身の子孫への移動）防止チェック ---
   // overIdがボードではなく、かつactiveIdの子孫である場合は無効な操作として無視する
   const isOverBoardToCheck = !!boards[overId];
   if (!isOverBoardToCheck) {
     if (isAncestor(activeId, overId, cards)) {
-      return state;
+      return {
+				newState: state,
+				diffTasks: {
+					diffBoardOrder: [] as string[],
+					diffBoard: [] as BoardType[],
+					diffCard: [] as CardType[],
+				}
+			};
     }
   }
   // -------------------------------------------------------
@@ -100,16 +116,29 @@ export const applyMoveLogic = (payload: Payload, state: AppState) => {
   // --- 移動ロジック終了 ---
 
   // 3. APIへの送信準備 (オブジェクトの配列化など)
-  const cardsToUpdate = Array.from(dirtyCardIds).map((id) => newCards[id]);
-  const boardsToUpdate = Array.from(dirtyBoardIds).map((id) => newBoards[id]);
+	const diffCard = Array.from(dirtyCardIds).map((id) => {
+		const updates = getObjectDiff(cards[id], newCards[id]);
+		return { id, ...updates }; // idは確実に返せるように必ず追加
+	});
+	const diffBoard = Array.from(dirtyBoardIds).map((id) => {
+		const updates = getObjectDiff(boards[id], newBoards[id]);
+		return { id, ...updates };
+	});
+	const diffBoardOrder = [] as string[]
 
-  // updateApi(cardsToUpdate, boardsToUpdate);
 
   // 4. Zustandへの返却
   return {
-    cards: newCards,
-    boards: newBoards,
-    boardOrder: newBoardOrder,
+		newState: {
+			cards: newCards,
+			boards: newBoards,
+			boardOrder: newBoardOrder,
+		},
+		diffTasks: {
+			diffBoardOrder: diffBoardOrder,
+			diffBoard: diffBoard,
+			diffCard: diffCard,
+	}
   };
 };
 

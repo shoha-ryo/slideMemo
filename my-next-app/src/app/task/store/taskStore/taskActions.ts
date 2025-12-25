@@ -9,14 +9,18 @@ import { moveBoardLogic } from "./moveBoard/moveBoard";
 import { addBoardLogic } from "./addBoard/addBoard";
 import { deleteBoardLogic } from "./deleteBoard/deleteBoard";
 
+import { toDataBase } from "../../actions/toDataBase";
+
 export const taskActions = (set: Function, get: () => TaskStore) => ({
   moveTask: (payload: Payload) => {
     // storeの状態を取得
     const state = get();
     // 移動ロジックを実行
-    const newState = applyMoveLogic(payload, state);
+    const {newState, diffTasks} = applyMoveLogic(payload, state);
     // storeの状態を更新
     set(newState);
+		// DBへ登録
+		toDataBase({diffTasks})
   },
 
   addTask: (title: string, source: Source) => {
