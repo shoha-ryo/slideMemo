@@ -19,6 +19,7 @@ export const taskActions = (set: Function, get: () => TaskStore) => ({
     const {newState, diffTasks} = applyMoveLogic(payload, state);
     // storeの状態を更新
     set(newState);
+
 		// DBへ登録
 		toDataBase({diffTasks})
   },
@@ -30,6 +31,7 @@ export const taskActions = (set: Function, get: () => TaskStore) => ({
 		const newState = addCardLogic(title, source, state)
 		// storeの状態を更新
     set(newState);
+
 	},
 
   deleteTask: (cardId: string) => {

@@ -13,15 +13,15 @@ export default async function TaskPage() {
 
   dbBoards.forEach((board) => {
     boardsObj[board.id] = {
-      id: board.id,
-      title: board.title,
-      projectId: board.projectId,
-      cardIds: board.cards.map(c => c.id)
+      ...board
+			// id: board.id,
+      // title: board.title,
+      // projectId: board.projectId,
+      // cardIds: board.cardIds
     };
 	board.cards.forEach((card) => {
 		cardsObj[card.id] = {
 			...card,
-			childrenIds: [],
 			// Dateオブジェクトを文字列に変換してシリアライズエラーを防ぐ
 			startAt: card.startAt?.toISOString() || null,
 			dueAt: card.dueAt?.toISOString() || null,

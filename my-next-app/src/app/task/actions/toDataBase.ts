@@ -1,5 +1,6 @@
 "use server"
 
+import { pusherServer } from "@/lib/pusher-server"
 import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 import { BoardType, CardType } from "@/types/task"
@@ -13,7 +14,6 @@ type ToDataBase = {
 }
 
 export async function toDataBase({ diffTasks }: ToDataBase) {
-	console.log("DB登録を開始");
 	
   const { diffBoard, diffCard, diffBoardOrder } = diffTasks
 
@@ -68,7 +68,11 @@ export async function toDataBase({ diffTasks }: ToDataBase) {
         });
       }
     });
-    console.log("DB登録に成功！");
+
+		await pusherServer.trigger("task-board-channel", "task-updated", {
+      timestamp: Date.now(),
+    });
+
     return { success: true };
   } catch (error) {
     console.error("Database sync failed:", error);

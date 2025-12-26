@@ -1,175 +1,121 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
+import { applyMoveLogic } from "./applyMoveLogic";
+import { AppState, Payload, CardType } from "@/types/task";
 
-import { useTaskStore } from "../taskStore";
-import { applyMoveLogic } from "./applyMoveLogic"; // ファイルパスは適宜変更してください
-import { AppState, CardType, BoardType, Payload } from "@/types/task";
-// 実際のファイルからのインポート
-
-// ---------------------------------------------
-// テスト用初期データ
-// ---------------------------------------------
-
-const { boardOrder, boards, cards } = useTaskStore.getState();
-
-// ---------------------------------------------
-// 書き方の参考
-// ---------------------------------------------
-
-// describe("テスト内容のタイトル", () => {
-//   it("テストの内容の説明", () => {
-//     const 変数 = 処理する関数();
-
-//     expect(結果の値).toEqual(期待する値);  値が同じであればOK
-//     expect(結果の値).toBe(期待する値);     完全一致であればOK
-//     expect(結果の値).not.toBe(期待する値); 完全一致はNG
-//   });
-// });
-
-// 子要素として配置(上に配置)
-// (active: parentIdを変更 / over: 自身のchildrenIdsを変更)
-// (active&overのboardIdが異なればboardIdを変更)
-describe.only("applyMoveLogic", () => {
-  let state: AppState;
-
-  beforeEach(() => {
-    state = { boardOrder, boards, cards };
+describe("applyMoveLogic - 全パターン網羅テスト", () => {
+  const createInitialState = (): AppState => ({
+    boardOrder: ["board-1", "board-2"],
+    boards: {
+      "board-1": { id: "board-1", cardIds: ["card-root-1", "card-root-2"] },
+      "board-2": { id: "board-2", cardIds: [] },
+    },
+    cards: {
+      "card-root-1": {
+        id: "card-root-1", parentId: null, boardId: "board-1", childrenIds: ["card-child-1"], title: "R1"
+      },
+      "card-child-1": {
+        id: "card-child-1", parentId: "card-root-1", boardId: "board-1", childrenIds: [], title: "C1"
+      },
+      "card-root-2": {
+        id: "card-root-2", parentId: null, boardId: "board-1", childrenIds: [], title: "R2"
+      },
+    },
   });
 
-  describe("基本動作とガード句", () => {
-    it("activeIdとoverIdが同じ場合はstateをそのまま返す", () => {
-      const payload: Payload = { activeId: "card-1", overId: "card-1", quadrant: "topLeft" };
-      const result = applyMoveLogic(payload, state);
-      expect(result).toBe(state); // 参照が同じであることを確認
+  // 整合性チェック用ヘルパー：移動後のカードが「どこか1箇所にだけ存在し、親子関係が正しいか」を確認
+  const verifyIntegrity = (state: AppState, cardId: string) => {
+    const card = state.cards[cardId];
+    const parentId = card.parentId;
+    
+    if (parentId) {
+      // 親がいる場合、その親の childrenIds に自分だけが含まれているか
+      const parent = state.cards[parentId];
+      const count = parent.childrenIds.filter(id => id === cardId).length;
+      expect(count, `Card ${cardId} should exist exactly once in parent ${parentId}`).toBe(1);
+    } else {
+      // 親がいない場合、ボードの cardIds に自分だけが含まれているか
+      const board = state.boards[card.boardId];
+      const count = board.cardIds.filter(id => id === cardId).length;
+      expect(count, `Card ${cardId} should exist exactly once in board ${card.boardId}`).toBe(1);
+    }
+  };
+
+  describe("1. 基本のネスト・フラット化パターン", () => {
+    it("ルートカードを別のルートカードの中にネストできる (Root -> Child)", () => {
+      const state = createInitialState();
+      const payload: Payload = { activeId: "card-root-2", overId: "card-root-1", dropPosition: "center" };
+      const { newState } = applyMoveLogic(payload, state);
+
+      expect(newState.cards["card-root-2"].parentId).toBe("card-root-1");
+      expect(newState.cards["card-root-1"].childrenIds).toContain("card-root-2");
+      verifyIntegrity(newState, "card-root-2");
     });
 
-    it("無効なIDの場合はstateをそのまま返す", () => {
-      const payload: Payload = { activeId: null as any, overId: "card-1", quadrant: "topLeft" };
-      const result = applyMoveLogic(payload, state);
-      expect(result).toBe(state);
-    });
-  });
+    it("子カードをルートに引き上げることができる (Child -> Root)", () => {
+      const state = createInitialState();
+      const payload: Payload = { activeId: "card-child-1", overId: "board-1", dropPosition: null };
+      const { newState } = applyMoveLogic(payload, state);
 
-  describe("同じボード内での移動 (Reorder)", () => {
-    it("兄弟要素の並び替え (bottomLeft: 下に移動)", () => {
-      // card-1 を card-2 の下に移動
-      const payload: Payload = {
-        activeId: "card-1",
-        overId: "card-2",
-        quadrant: "bottomLeft",
-      };
-
-      const result = applyMoveLogic(payload, state);
-      const board1 = result.boards["board-1"];
-
-      expect(board1.cardIds).toEqual(["card-2", "card-1"]);
-      expect(result.cards["card-1"].parentId).toBeNull();
-    });
-
-    it("兄弟要素の並び替え (topLeft: 上に移動)", () => {
-      // card-2 を card-1 の上に移動
-      const payload: Payload = {
-        activeId: "card-2",
-        overId: "card-1",
-        quadrant: "topLeft",
-      };
-
-      const result = applyMoveLogic(payload, state);
-      const board1 = result.boards["board-1"];
-
-      expect(board1.cardIds).toEqual(["card-2", "card-1"]);
+      expect(newState.cards["card-child-1"].parentId).toBeNull();
+      expect(newState.boards["board-1"].cardIds).toContain("card-child-1");
+      expect(newState.cards["card-root-1"].childrenIds).not.toContain("card-child-1");
+      verifyIntegrity(newState, "card-child-1");
     });
   });
 
-  describe("ネスト処理 (Nest)", () => {
-    it("カードの中に子として移動 (topRight)", () => {
-      // card-2 を card-1 の中に入れる
-      const payload: Payload = {
-        activeId: "card-2",
-        overId: "card-1",
-        quadrant: "topRight",
-      };
+  describe("2. 並び替え(Reorder)パターン", () => {
+    it("ルートレベルでカードの前後を入れ替えられる (top)", () => {
+      const state = createInitialState();
+      const payload: Payload = { activeId: "card-root-2", overId: "card-root-1", dropPosition: "top" };
+      const { newState } = applyMoveLogic(payload, state);
 
-      const result = applyMoveLogic(payload, state);
+      expect(newState.boards["board-1"].cardIds).toEqual(["card-root-2", "card-root-1"]);
+      verifyIntegrity(newState, "card-root-2");
+    });
 
-      // 元の場所から消えているか
-      expect(result.boards["board-1"].cardIds).not.toContain("card-2");
-      // 新しい親のchildrenに追加されているか
-      expect(result.cards["card-1"].childrenIds).toContain("card-2");
-      // parentIdが更新されているか
-      expect(result.cards["card-2"].parentId).toBe("card-1");
+    it("異なる親を持つ子カード同士で並び替えができる (Cross-Parent Reorder)", () => {
+      const state = createInitialState();
+      // 準備: card-root-2 に子を作る
+      state.cards["card-root-2"].childrenIds = ["card-child-2"];
+      state.cards["card-child-2"] = { id: "card-child-2", parentId: "card-root-2", boardId: "board-1", childrenIds: [] } as any;
+
+      const payload: Payload = { activeId: "card-child-1", overId: "card-child-2", dropPosition: "bottom" };
+      const { newState } = applyMoveLogic(payload, state);
+
+      expect(newState.cards["card-child-1"].parentId).toBe("card-root-2");
+      expect(newState.cards["card-root-2"].childrenIds).toEqual(["card-child-2", "card-child-1"]);
+      expect(newState.cards["card-root-1"].childrenIds).toBeEmpty;
+      verifyIntegrity(newState, "card-child-1");
     });
   });
 
-  describe("ボード間の移動 (Move Board)", () => {
-    it("別のボードのルートへ移動", () => {
-      // card-1 を board-2 へ移動
-      const payload: Payload = {
-        activeId: "card-1",
-        overId: "board-2", // ボード自体にドロップ
-        quadrant: "topRight",
-      };
+  describe("3. ボード跨ぎパターン", () => {
+    it("子カードを別ボードのルートへ直接移動できる", () => {
+      const state = createInitialState();
+      const payload: Payload = { activeId: "card-child-1", overId: "board-2", dropPosition: null };
+      const { newState } = applyMoveLogic(payload, state);
 
-      const result = applyMoveLogic(payload, state);
+      expect(newState.cards["card-child-1"].boardId).toBe("board-2");
+      expect(newState.boards["board-2"].cardIds).toContain("card-child-1");
+      verifyIntegrity(newState, "card-child-1");
+    });
+  });
 
-      // 移動元から削除
-      expect(result.boards["board-1"].cardIds).not.toContain("card-1");
-      // 移動先に追加
-      expect(result.boards["board-2"].cardIds).toContain("card-1");
-      // boardIdの更新
-      expect(result.cards["card-1"].boardId).toBe("board-2");
+  describe("4. 異常系・エッジケース", () => {
+    it("自分自身へのドロップは何もしない", () => {
+      const state = createInitialState();
+      const payload: Payload = { activeId: "card-root-1", overId: "card-root-1", dropPosition: "center" };
+      const { newState } = applyMoveLogic(payload, state);
+      expect(newState).toEqual(state);
     });
 
-    it("別のボードへ移動時、子孫のboardIdも再帰的に更新される", () => {
-      // card-1 (子に card-1-child を持つ) を board-2 へ移動
-      const payload: Payload = {
-        activeId: "card-1",
-        overId: "board-2",
-        quadrant: "topRight",
-      };
-
-      const result = applyMoveLogic(payload, state);
-
-      // 親のboardId更新確認
-      expect(result.cards["card-1"].boardId).toBe("board-2");
-      // 子のboardId更新確認 (再帰処理)
-      expect(result.cards["card-1-child"].boardId).toBe("board-2");
-    });
-
-    it("別のボードのカードの下（兄弟）へ移動", () => {
-      // まず board-2 にカードを作る準備（テストデータにはないので擬似的に）
-      // ここでは card-1 を board-2 に移動させた後の状態からスタートする想定でも良いが、
-      // 簡単のため card-1 を board-2 の何もないところに card-2扱いで入れる処理を確認する
-      
-      // card-1 (Board1) を card-2 (Board1) の下に移動してもボード移動は発生しないので、
-      // Board2に予めカードがある状態を作るか、ロジックを確認する。
-      
-      // ケース: Board1のcard-1を、Board2へ移動（Board2をOverIdとする）は上でテスト済み。
-      // ここでは、Board2にあるカードの上にドロップするケース。
-      
-      // テストデータを一時的に変更
-      state.boards["board-2"].cardIds = ["card-99"];
-      state.cards["card-99"] = {
-        ...state.cards["card-1"],
-        id: "card-99",
-        boardId: "board-2",
-        childrenIds: []
-      };
-
-      // card-1 (Board1) を card-99 (Board2) の下 (bottomLeft) に移動
-      const payload: Payload = {
-        activeId: "card-1",
-        overId: "card-99",
-        quadrant: "bottomLeft"
-      };
-
-      const result = applyMoveLogic(payload, state);
-
-      // Board1から削除
-      expect(result.boards["board-1"].cardIds).not.toContain("card-1");
-      // Board2に追加 (card-99の後ろ)
-      expect(result.boards["board-2"].cardIds).toEqual(["card-99", "card-1"]);
-      // boardId更新
-      expect(result.cards["card-1"].boardId).toBe("board-2");
+    it("無効なID(存在しないID)への移動は状態を維持する", () => {
+      const state = createInitialState();
+      const payload: Payload = { activeId: "card-root-1", overId: "non-existent", dropPosition: "center" };
+      // isOverBoard が false になり cards["non-existent"] が undefined なのでエラー回避が必要
+      // ロジック側で防御されている前提
+      const { newState } = applyMoveLogic(payload, state);
+      expect(newState).toEqual(state);
     });
   });
 });

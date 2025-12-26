@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Pusher from "pusher-js";
+import { toast, Toaster } from "sonner";
 
 import {
 	DndContext,
@@ -54,6 +57,32 @@ export default function AppContent(initialData) {
 			setCards: state.setCards
 		}))
 	);
+
+	const router = useRouter()
+
+	// DB更新の通知を受け取る
+	useEffect(() => {
+    // Pusherの接続設定
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
+    });
+
+    // チャンネルを購読
+    const channel = pusher.subscribe("task-board-channel");
+
+    // "task-updated" という叫び声が聞こえたら実行
+    channel.bind("task-updated", (data: any) => {
+      toast.info("他のユーザーがタスクを更新しました！", {
+        description: "最新の状態を確認してください。"
+      });
+      // 必要であればここで router.refresh() して最新データを再取得する
+			router.refresh()
+    });
+
+    return () => {
+      pusher.unsubscribe("task-board-channel");
+    };
+  }, []);
 
 
 	useEffect(() => {
@@ -270,6 +299,7 @@ export default function AppContent(initialData) {
 					</div>
 				</div>
 			</DndContext>
+			<Toaster richColors />
 		</div>
 	);
 	

@@ -27,10 +27,8 @@ export default function DraftTask({ source, onClose }: DraftTaskProps) {
       return;
     }
 		if (source.type === "boardList") {
-			console.log("BoardList");
 			addBoard(draftTitle)
 		} else {
-			console.log("AddTask")
 	    addTask(draftTitle, source);
 		}
     setDraftTitle("");

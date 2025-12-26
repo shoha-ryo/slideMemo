@@ -16,6 +16,7 @@ function BoardList({}) {
 			boards: state.boards
 	})));
 
+
 	const [isDrafting, setIsDrafting] = useState(false)
 
   return (
