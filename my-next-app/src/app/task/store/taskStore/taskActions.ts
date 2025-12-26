@@ -47,9 +47,11 @@ export const taskActions = (set: Function, get: () => TaskStore) => ({
     // storeの状態を取得
     const state = get();
     // 移動ロジックを実行
-    const newState = moveBoardLogic(payload, state);
+    const {newState, diffTasks} = moveBoardLogic(payload, state);
     // storeの状態を更新
     set(newState);
+
+		toDataBase(diffTasks)
   },
 
 	addBoard: (title: string) => {

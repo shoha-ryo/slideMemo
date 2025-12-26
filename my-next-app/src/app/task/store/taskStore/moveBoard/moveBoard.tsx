@@ -1,12 +1,24 @@
 // @/store/taskStore/moveBoard/moveBoardLogic.ts
 import { Payload, AppState } from "@/types/task";
 
-export const moveBoardLogic = (payload: Payload, state: AppState): AppState => {
+export const moveBoardLogic = (payload: Payload, state: AppState) => {
   const { activeId, overId } = payload;
   const { boardOrder, cards } = state;
 
   // 移動元と移動先が同じ、またはどちらかが欠けている場合は何もしない
-  if (!activeId || !overId || activeId === overId) return state;
+  if (!activeId || !overId || activeId === overId)
+		return {
+			newState: {
+				...state,
+			},
+			diffTasks: {
+				diffTasks: {
+					diffBoardOrder: [],
+					diffBoard: [],
+					diffCard: []
+				}
+			}
+		};
 
 	let newOverId = overId
 
@@ -19,7 +31,19 @@ export const moveBoardLogic = (payload: Payload, state: AppState): AppState => {
   const newIndex = boardOrder.indexOf(newOverId);
 
   // どちらかのIDが配列内に存在しない場合はエラー回避のため中断
-  if (oldIndex === -1 || newIndex === -1) return state;
+  if (oldIndex === -1 || newIndex === -1)
+		return {
+			newState: {
+				...state,
+			},
+			diffTasks: {
+				diffTasks: {
+					diffBoardOrder: [],
+					diffBoard: [],
+					diffCard: []
+				}
+			}
+		};
 
   // 新しい配列を作成して並び替え
   const newBoardOrder = [...boardOrder];
@@ -27,7 +51,16 @@ export const moveBoardLogic = (payload: Payload, state: AppState): AppState => {
   newBoardOrder.splice(newIndex, 0, removed);
 
   return {
-    ...state,
-    boardOrder: newBoardOrder,
-  };
+		newState: {
+			...state,
+			boardOrder: newBoardOrder,
+		},
+		diffTasks: {
+			diffTasks: {
+				diffBoardOrder: newBoardOrder,
+				diffBoard: [],
+				diffCard: []
+			}
+		}
+	};
 };

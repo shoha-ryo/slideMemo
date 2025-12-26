@@ -14,10 +14,6 @@ export default async function TaskPage() {
   dbBoards.forEach((board) => {
     boardsObj[board.id] = {
       ...board
-			// id: board.id,
-      // title: board.title,
-      // projectId: board.projectId,
-      // cardIds: board.cardIds
     };
 	board.cards.forEach((card) => {
 		cardsObj[card.id] = {
