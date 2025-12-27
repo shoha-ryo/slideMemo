@@ -1,6 +1,7 @@
 import { Payload } from "@/types/task";
 import { AppState, CardType, BoardType } from "@/types/task";
 import { getObjectDiff } from "@/app/task/actions/getDiff";
+import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 export const applyMoveLogic = (payload: Payload, state: AppState) => {
   // 必要なデータの読み込み
@@ -10,11 +11,7 @@ export const applyMoveLogic = (payload: Payload, state: AppState) => {
   if (!activeId || !overId || activeId === overId)
 		return {
 			newState: state,
-			diffTasks: {
-				diffBoardOrder: [] as string[],
-				diffBoard: [] as BoardType[],
-				diffCard: [] as CardType[],
-			}
+			diffTasks: emptyTasks
 		};
 
 	// --- 循環参照（自分自身の子孫への移動）防止チェック ---
@@ -24,11 +21,7 @@ export const applyMoveLogic = (payload: Payload, state: AppState) => {
     if (isAncestor(activeId, overId, cards)) {
       return {
 				newState: state,
-				diffTasks: {
-					diffBoardOrder: [] as string[],
-					diffBoard: [] as BoardType[],
-					diffCard: [] as CardType[],
-				}
+				diffTasks: emptyTasks
 			};
     }
   }
@@ -116,15 +109,16 @@ export const applyMoveLogic = (payload: Payload, state: AppState) => {
   // --- 移動ロジック終了 ---
 
   // 3. APIへの送信準備 (オブジェクトの配列化など)
-	const diffCard = Array.from(dirtyCardIds).map((id) => {
+	const updateCards = Array.from(dirtyCardIds).map((id) => {
 		const updates = getObjectDiff(cards[id], newCards[id]);
+		if (Object.keys(updates).length === 0) return {};
 		return { id, ...updates }; // idは確実に返せるように必ず追加
 	});
-	const diffBoard = Array.from(dirtyBoardIds).map((id) => {
+	const updateBoards = Array.from(dirtyBoardIds).map((id) => {
 		const updates = getObjectDiff(boards[id], newBoards[id]);
+		if (Object.keys(updates).length === 0) return {};
 		return { id, ...updates };
 	});
-	const diffBoardOrder = [] as string[]
 
 
   // 4. Zustandへの返却
@@ -135,10 +129,13 @@ export const applyMoveLogic = (payload: Payload, state: AppState) => {
 			boardOrder: newBoardOrder,
 		},
 		diffTasks: {
-			diffBoardOrder: diffBoardOrder,
-			diffBoard: diffBoard,
-			diffCard: diffCard,
-	}
+			...emptyTasks,
+			updateTasks: {
+				...emptyTasks.updateTasks,
+				boards: updateBoards,
+				cards: updateCards,
+			}
+		}
   };
 };
 

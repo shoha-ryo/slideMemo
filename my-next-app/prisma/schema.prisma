@@ -30,21 +30,20 @@ model Card {
   id         String   @id @default(uuid())
   title      String
   details    String
-  status     String   
-  progress   String   
+  status     String
+  progress   String
   startAt    DateTime?
   dueAt      DateTime?
   simpleView Boolean  @default(false)
 
-  // 追加：子カードの並び順（IDの配列）を直接保存する
-  childrenIds String[] 
+  childrenIds String[]
 
   parentId   String?
   parent     Card?    @relation("CardHierarchy", fields: [parentId], references: [id])
   children   Card[]   @relation("CardHierarchy")
 
   boardId    String
-  board      Board    @relation(fields: [boardId], references: [id])
+  board      Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt

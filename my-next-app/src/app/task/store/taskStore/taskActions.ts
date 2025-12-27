@@ -19,18 +19,19 @@ export const taskActions = (set: Function, get: () => TaskStore) => ({
     const {newState, diffTasks} = applyMoveLogic(payload, state);
     // storeの状態を更新
     set(newState);
-
 		// DBへ登録
-		toDataBase({diffTasks})
+		toDataBase(diffTasks)
   },
 
   addTask: (title: string, source: Source) => {
 		// storeの状態を取得
     const state = get();
 		// 追加ロジックを実行
-		const newState = addCardLogic(title, source, state)
+		const {newState, diffTasks} = addCardLogic(title, source, state)
 		// storeの状態を更新
     set(newState);
+
+		toDataBase(diffTasks)
 
 	},
 
@@ -38,9 +39,11 @@ export const taskActions = (set: Function, get: () => TaskStore) => ({
     // storeの状態を取得
     const state = get();
     // 削除ロジックを実行
-    const newState = deleteCardLogic(cardId, state);
+    const {newState, diffTasks} = deleteCardLogic(cardId, state);
     // storeの状態を更新
     set(newState);
+
+		toDataBase(diffTasks)
   },
 
   moveBoard: (payload: Payload) => {
@@ -58,18 +61,22 @@ export const taskActions = (set: Function, get: () => TaskStore) => ({
 		// storeの状態を取得
     const state = get();
 		// 追加ロジックを実行
-		const newState = addBoardLogic(title, state)
+		const {newState, diffTasks} = addBoardLogic(title, state)
 		// storeの状態を更新
     set(newState);
+
+		toDataBase(diffTasks)
 	},
 
-	  deleteBoard: (cardId: string) => {
-    // storeの状態を取得
-    const state = get();
-    // 削除ロジックを実行
-    const newState = deleteBoardLogic(cardId, state);
-    // storeの状態を更新
-    set(newState);
+	deleteBoard: (cardId: string) => {
+		// storeの状態を取得
+		const state = get();
+		// 削除ロジックを実行
+		const {newState, diffTasks} = deleteBoardLogic(cardId, state);
+		// storeの状態を更新
+		set(newState);
+
+		toDataBase(diffTasks)
   },
 
 });

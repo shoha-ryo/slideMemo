@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from "uuid"
 import { CardType, BoardType, Source, AppState } from "@/types/task";
+import { getObjectDiff } from "@/app/task/actions/getDiff";
+import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 // 新しいカードの情報を作成
 function createNewCard(title: string, parentId: string | null, boardId: string) {
@@ -19,8 +21,12 @@ function createNewCard(title: string, parentId: string | null, boardId: string) 
 	return newCard
 }
 
-export function addCardLogic(title: string, source: Source, state: AppState): AppState {
-	if (!title.trim()) return state;
+export function addCardLogic(title: string, source: Source, state: AppState) {
+	if (!title.trim())
+		return {
+			newState: state,
+			diffTasks: emptyTasks
+		};
 
 	const { boardOrder, boards, cards } = state
 
@@ -28,38 +34,78 @@ export function addCardLogic(title: string, source: Source, state: AppState): Ap
 	if (source.type === "board") {
 		const targetBoard: BoardType = source.data
 		const newCard = createNewCard(title, null, targetBoard.id);
+		const newTargetBoard = {
+			...targetBoard,
+			cardIds: [...targetBoard.cardIds, newCard.id]
+		}
+
+		const updateBoard = [{
+			id: targetBoard.id,
+			...getObjectDiff(targetBoard, newTargetBoard)
+		}];
 
 		return {
-			boardOrder,
-			boards: {
-				...boards,
-				[targetBoard.id]: { // 親ボードを更新
-					...targetBoard,
-					cardIds: [...targetBoard.cardIds, newCard.id]
-				}
+			newState: {
+				...state,
+				boards: {
+					...boards,
+					[targetBoard.id]: newTargetBoard // 親ボードを更新
+				},
+				cards: {...cards, [newCard.id]: newCard} // 新しいカードを追加
 			},
-			cards: {...cards, [newCard.id]: newCard} // 新しいカードを追加
-		}
+			diffTasks: {
+				...emptyTasks,
+				createTasks: {
+					...emptyTasks.createTasks,
+					cards: [newCard],
+				},
+				updateTasks: {
+					...emptyTasks.updateTasks,
+					boards: updateBoard,
+				}
+			}
+		};
 	}
 
 		// カードの場合の処理
 	if (source.type === "card") {
 		const targetCard: CardType = source.data
 		const newCard = createNewCard(title, targetCard.id, targetCard.boardId);
+		const newTargetCard = {
+			...targetCard,
+			childrenIds: [newCard.id, ...targetCard.childrenIds]
+		}
+
+		const updateCard = [{
+			id: targetCard.id,
+			...getObjectDiff(targetCard, newTargetCard)
+		}];
 
 		return {
-			boardOrder,
-			boards,
-			cards: {
-				...cards,
-				[targetCard.id]: { // 親カードを更新
-					...targetCard,
-					childrenIds: [newCard.id, ...targetCard.childrenIds]
+			newState: {
+				...state,
+				cards: {
+					...cards,
+					[targetCard.id]: newTargetCard, // 親カードを更新
+					[newCard.id]: newCard // 新しいカードを追加
+				}
+			},
+			diffTasks: {
+				...emptyTasks,
+				createTasks: {
+					...emptyTasks.createTasks,
+					cards: [newCard],
 				},
-				[newCard.id]: newCard // 新しいカードを追加
+				updateTasks: {
+					...emptyTasks.updateTasks,
+					cards: updateCard as Partial<CardType>[],
+				}
 			}
-		}
+		};
 	}
 
-	return state
+	return {
+			newState: state,
+			diffTasks: emptyTasks
+		};
 }

@@ -1,18 +1,20 @@
 import { AppState, CardType, TaskStore } from "@/types/task";
+import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 /**
  * 指定されたカードIDとその子孫を全て削除し、親の参照を更新する
  */
-export const deleteCardLogic = (
-  cardId: string,
-  state: TaskStore
-): Partial<AppState> => {
+export const deleteCardLogic = (cardId: string, state: TaskStore) => {
   const newCards = { ...state.cards };
   const newBoards = { ...state.boards };
   const targetCard = newCards[cardId];
 
   // 存在しない場合は何もしない
-  if (!targetCard) return {};
+  if (!targetCard)
+		return {
+			newState: state,
+			diffTasks: emptyTasks
+		};
 
   // -------------------------------------------------
   // 1. 親（Board または ParentCard）からの参照を削除
@@ -54,8 +56,18 @@ export const deleteCardLogic = (
 
   // 更新された state を返す
   return {
-    cards: newCards,
-    boards: newBoards,
+		newState: {
+			...state,
+			cards: newCards,
+			boards: newBoards,
+		},
+		diffTasks: {
+			...emptyTasks,
+			deleteTasks: {
+				...emptyTasks.deleteTasks,
+				cardIds: idsToDelete
+			}
+		}
   };
 };
 
