@@ -6,16 +6,20 @@ export interface TaskStore extends AppState, Payload{
 	setActiveId: (activeId: Pick<Payload, "activeId">["activeId"]) => void,
 	setOverId: (overId: Pick<Payload, "overId">["overId"]) => void,
 	setPayload: (payload: Payload) => void;
-  setBoardOrder: (boradOrder: Pick<AppState, "boardOrder">["boardOrder"],) => void;
+
+	setBoardOrder: (boradOrder: Pick<AppState, "boardOrder">["boardOrder"],) => void;
   setBoards: (boards: Pick<AppState, "boards">["boards"]) => void;
   setCards: (cards: Pick<AppState, "cards">["cards"]) => void;
-  moveTask: (payload: Payload) => void;
+
+	moveTask: (payload: Payload) => void;
 	addTask: (title: string, source: Source) => void
 	deleteTask: (cardId: string) => void;
+	updateTask: (cardId: string, updates: Partial<CardType>) => void;
+
 	moveBoard: (payload: Payload) => void;
 	addBoard: (title: string) => void
 	deleteBoard: (boardId: string) => void;
-
+	updateBoard: (boardId: string, updates: Partial<BoardType>) => void;
 
 	isTaskCreating: boolean
 	setIsTaskCreating: (isTaskCreating: boolean) => void

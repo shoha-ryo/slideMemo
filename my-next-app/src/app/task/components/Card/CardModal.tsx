@@ -8,12 +8,12 @@ import { useTaskStore } from "../../store/taskStore/taskStore";
 
 import { CardType } from "@/types/task";
 
-export default function Modal({}) {
+export default function CardModal() {
   // --- 状態とストアからのデータ取得 ---
   
   // モーダルとタスクの状態を取得
   const { hideModal, clickedActiveId } = useModalStore();
-  const { cards, setCards } = useTaskStore();
+  const { cards, updateTask } = useTaskStore();
 
   // フラット構造なので、IDを使って直接カードを特定
   const activeNode: CardType | null = clickedActiveId ? cards[clickedActiveId] : null;
@@ -60,6 +60,9 @@ export default function Modal({}) {
     }
   }, [title]);
 
+
+
+
   // --- 保存処理 ---
   const onSave = async () => {
 		if (!title.trim()) {
@@ -68,37 +71,19 @@ export default function Modal({}) {
 		}
     if (!activeNode || !clickedActiveId) return;
 
-    // 1. 新しいノード（変更部分のみ更新）を作成
-    const updatedNode: CardType = {
-      ...activeNode,
-      title: title,
-      details: details,
-    };
+		// 更新内容が増えたらキーを追加
+		updateTask(
+			clickedActiveId,
+			{
+				title: title,
+				details: details
+			}
+		)
 
-    // 2. フラットなオブジェクト構造を更新 (再帰処理は不要)
-    // IDをキーにして上書きするだけです
-    const newCards = {
-      ...cards,
-      [updatedNode.id]: updatedNode
-    };
-
-    // 3. ストアの状態を更新 (PC側で即時画面反映)
-    setCards(newCards);
-
-    // 4. API関数を呼び出す
-    try {
-      // ※注意: バックエンドもフラット構造に対応したAPIに変更する必要があります。
-      // 例: 全データ送信ではなく、変更されたカード単体を送るのが一般的です。
-      // await updateCardApi(updatedNode); 
-      console.log("API送信（仮）:", updatedNode);
-
-      // 5. モーダルを非表示にする
-      hideModal();
-    } catch (error) {
-      console.error("API Error:", error);
-      console.log("エラーのためモーダルを閉じません。");
-    }
+		hideModal()
   };
+
+
 
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // e.targetの型チェック

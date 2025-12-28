@@ -5,15 +5,14 @@ import {
   useSortable,
   SortableContext,
   verticalListSortingStrategy,
-	defaultAnimateLayoutChanges,
 } from "@dnd-kit/sortable";
 import Card from "../Card/Card";
-import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
 import { BoardType } from "@/types/task";
 import DraftTask from "../Card/DraftTask";
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import { useShallow } from "zustand/shallow";
+import { useModalStore } from "../../store/ModalStore";
 
 
 export default function Board({ board }: { board: BoardType }) {
@@ -30,6 +29,8 @@ export default function Board({ board }: { board: BoardType }) {
 			dropPosition: state.dropPosition,
     }))
   );
+
+	const { showModal } = useModalStore()
 
 
 	const style = "flex flex-col self-start "
@@ -52,6 +53,10 @@ export default function Board({ board }: { board: BoardType }) {
 		: ""
 
 
+	const handleBoardClick = () => {
+		showModal(board.id, "board");
+	}
+
 	const [isDrafting, setIsDrafting] = useState(false)
 
   return (
@@ -67,6 +72,7 @@ export default function Board({ board }: { board: BoardType }) {
 			{...listeners}
 			onMouseEnter={() => (setIsHovered(true))}
 			onMouseLeave={() => (setIsHovered(false))}
+			onClick={handleBoardClick}
 		>
 
       <div

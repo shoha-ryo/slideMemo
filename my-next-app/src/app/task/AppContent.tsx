@@ -21,7 +21,8 @@ import {
 // 必要なコンポーネント
 import { getDropPosition } from "./lib/getDropPosition";
 import { useMousePointer } from "./components/useMousePointer";
-import Modal from "./components/Card/Modal";
+import CardModal from "./components/Card/CardModal";
+import BoardModal from "./components/Board/BoardModal";
 import BoardList from "./components/Board/BoardList";
 import Card from "./components/Card/Card";
 import Board from "./components/Board/Board";
@@ -98,7 +99,7 @@ export default function AppContent({initialData}: AppContent) {
     }
   }, []); // 依存配列を空にする
 
-	const { isShowModal } = useModalStore();
+	const { isShowModal, modalType } = useModalStore();
 	const { x, y } = useMousePointer();
 
 	const mouseSensor = useSensor(MouseSensor, {
@@ -252,7 +253,12 @@ export default function AppContent({initialData}: AppContent) {
 				cards={initialData.cards}
 			/> */}
 
-			{isShowModal ? <Modal /> : null}
+			{isShowModal && (
+      <>
+        {modalType === "card" && <CardModal />}
+        {modalType === "board" && <BoardModal />}
+      </>
+    	)}
 
 			<DndContext
 				collisionDetection={customCollisionDetection}

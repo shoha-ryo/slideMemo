@@ -74,7 +74,7 @@ const Card = ({ cardId }: { cardId: string }) => {
   const { showModal } = useModalStore();
   const handleCardClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    showModal(cardId);
+    showModal(cardId, "card");
   };
 
   const handleMouseEnter = () => {
