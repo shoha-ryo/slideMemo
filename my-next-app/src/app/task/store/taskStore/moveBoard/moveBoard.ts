@@ -1,8 +1,8 @@
 // @/store/taskStore/moveBoard/moveBoardLogic.ts
-import { Payload, AppState } from "@/types/task";
+import { Payload, AppState, ReturnTasks } from "@/types/task";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
-export const moveBoardLogic = (payload: Payload, state: AppState) => {
+export const moveBoardLogic = (payload: Payload, state: AppState): ReturnTasks => {
   const { activeId, overId } = payload;
   const { boardOrder, cards } = state;
 

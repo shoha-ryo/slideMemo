@@ -1,7 +1,7 @@
 // Prisma 7+ 仕様: datasourceにurlは書かない
 datasource db {
   provider = "postgresql"
-	url      = env("DATABASE_URL")
+	// url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -21,7 +21,7 @@ model Board {
   projectId String?
   
   // 追加：カードの並び順（IDの配列）を直接保存する
-  cardIds   String[] 
+  cardIds   String[]
   
   cards     Card[]
 }

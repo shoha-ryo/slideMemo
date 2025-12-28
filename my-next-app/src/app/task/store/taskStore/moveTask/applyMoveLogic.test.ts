@@ -12,13 +12,13 @@ describe("applyMoveLogic - 全パターン網羅テスト", () => {
     cards: {
       "card-root-1": {
         id: "card-root-1", parentId: null, boardId: "board-1", childrenIds: ["card-child-1"], title: "R1"
-      },
+      } as unknown as CardType,
       "card-child-1": {
         id: "card-child-1", parentId: "card-root-1", boardId: "board-1", childrenIds: [], title: "C1"
-      },
+      } as unknown as CardType,
       "card-root-2": {
         id: "card-root-2", parentId: null, boardId: "board-1", childrenIds: [], title: "R2"
-      },
+      } as unknown as CardType,
     },
   });
 
@@ -92,7 +92,7 @@ describe("applyMoveLogic - 全パターン網羅テスト", () => {
   describe("3. ボード跨ぎパターン", () => {
     it("子カードを別ボードのルートへ直接移動できる", () => {
       const state = createInitialState();
-      const payload: Payload = { activeId: "card-child-1", overId: "board-2", dropPosition: null };
+      const payload: Payload = { activeId: "card-child-1", overId: "board-2", dropPosition: "center" };
       const { newState } = applyMoveLogic(payload, state);
 
       expect(newState.cards["card-child-1"].boardId).toBe("board-2");

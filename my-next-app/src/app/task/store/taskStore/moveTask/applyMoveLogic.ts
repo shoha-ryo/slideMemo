@@ -1,18 +1,27 @@
-import { Payload } from "@/types/task";
+import { Payload, ReturnTasks } from "@/types/task";
 import { AppState, CardType, BoardType } from "@/types/task";
 import { getObjectDiff } from "@/app/task/actions/getDiff";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
+import { log } from "console";
 
-export const applyMoveLogic = (payload: Payload, state: AppState) => {
+export const applyMoveLogic = (payload: Payload, state: AppState): ReturnTasks => {
   // 必要なデータの読み込み
   const { activeId, overId, dropPosition } = payload;
   const { boardOrder, boards, cards } = state;
 
+	// データ欠損・同じIDなら戻す
   if (!activeId || !overId || activeId === overId)
 		return {
 			newState: state,
 			diffTasks: emptyTasks
 		};
+
+		// 存在しないIDの場合は戻す
+	if (!boards[activeId] && !cards[activeId] || !boards[overId] && !cards[overId])
+		return {
+			newState: state,
+			diffTasks: emptyTasks
+		}
 
 	// --- 循環参照（自分自身の子孫への移動）防止チェック ---
   // overIdがボードではなく、かつactiveIdの子孫である場合は無効な操作として無視する
@@ -48,9 +57,11 @@ export const applyMoveLogic = (payload: Payload, state: AppState) => {
   if (isOverBoard) {
     destinationBoardId = overId;
   } else {
+
     // overがカードなら、そのカードが所属するボード
     destinationBoardId = newCards[overId].boardId;
   }
+
 
   // ■ Step 0: 元の親/ボードから「切り離し」処理
   // 移動処理をする前に、必ず現在の場所から削除する必要があります
@@ -307,7 +318,11 @@ const moveToBoardRoot = (
   dirtyBoardIds: Set<string>,
 ) => {
   // 1. activeのparentをnullにする
-  newCards[activeId] = { ...newCards[activeId], parentId: null };
+  newCards[activeId] = {
+		...newCards[activeId],
+		parentId: null,
+		boardId: destinationBoardId
+	};
   dirtyCardIds.add(activeId);
 
   // 2. ボードのcardIdsの末尾に追加

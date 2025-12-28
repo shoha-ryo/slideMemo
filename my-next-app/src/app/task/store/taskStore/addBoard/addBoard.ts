@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid"
 import { CardType, BoardType, Source, AppState } from "@/types/task";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
+import { ReturnTasks } from "@/types/task";
 
 // 新しいカードの情報を作成
 function createNewBoard(title: string) {
@@ -13,7 +14,7 @@ function createNewBoard(title: string) {
 	return newBoard
 }
 
-export function addBoardLogic(title: string, state: AppState) {
+export function addBoardLogic(title: string, state: AppState): ReturnTasks {
 	if (!title.trim())
 		return {
 			newState: state,

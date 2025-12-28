@@ -30,10 +30,14 @@ import TrashDropArea, { TRASH_ID } from "./components/TrashArea/TrashDropArea"; 
 // Store
 import { useTaskStore } from "./store/taskStore/taskStore";
 import { useModalStore } from "./store/ModalStore";
-import { Payload } from "@/types/task";
+import { AppState, Payload } from "@/types/task";
 import { useShallow } from "zustand/shallow";
 
-export default function AppContent(initialData) {
+interface AppContent {
+	initialData: AppState
+}
+
+export default function AppContent({initialData}: AppContent) {
 	const {
 		activeId, overId, dropPosition, cards, boards, setActiveId, setHoverInfo,
 		moveTask, deleteTask, moveBoard, deleteBoard,
@@ -86,7 +90,7 @@ export default function AppContent(initialData) {
 
 
 	useEffect(() => {
-    const init = initialData.initialData;
+    const init = initialData;
     if (init) {
       setBoardOrder(init.boardOrder);
       setBoards(init.boards);

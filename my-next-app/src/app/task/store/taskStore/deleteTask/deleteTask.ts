@@ -1,10 +1,10 @@
-import { AppState, CardType, TaskStore } from "@/types/task";
+import { AppState, CardType, ReturnTasks, TaskStore } from "@/types/task";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 /**
  * 指定されたカードIDとその子孫を全て削除し、親の参照を更新する
  */
-export const deleteCardLogic = (cardId: string, state: TaskStore) => {
+export const deleteCardLogic = (cardId: string, state: TaskStore): ReturnTasks => {
   const newCards = { ...state.cards };
   const newBoards = { ...state.boards };
   const targetCard = newCards[cardId];

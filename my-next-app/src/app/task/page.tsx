@@ -1,6 +1,7 @@
 // src/app/task/page.tsx
 import { prisma } from "@/lib/prisma";
 import AppContent from "./AppContent";
+import { AppState } from "@/types/task";
 
 export default async function TaskPage() {
   // DBからデータを取得（サーバー側で実行される）

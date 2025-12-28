@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from "uuid"
 import { CardType, BoardType, Source, AppState } from "@/types/task";
 import { getObjectDiff } from "@/app/task/actions/getDiff";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
+import { ReturnTasks } from "@/types/task";
 
 // 新しいカードの情報を作成
 function createNewCard(title: string, parentId: string | null, boardId: string) {
@@ -21,7 +22,7 @@ function createNewCard(title: string, parentId: string | null, boardId: string) 
 	return newCard
 }
 
-export function addCardLogic(title: string, source: Source, state: AppState) {
+export function addCardLogic(title: string, source: Source, state: AppState): ReturnTasks {
 	if (!title.trim())
 		return {
 			newState: state,

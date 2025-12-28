@@ -1,8 +1,9 @@
 // deleteBoard/deleteBoard.ts
 import { AppState } from "@/types/task";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
+import { ReturnTasks } from "@/types/task";
 
-export const deleteBoardLogic = (boardId: string, state: AppState) => {
+export const deleteBoardLogic = (boardId: string, state: AppState): ReturnTasks => {
   // 1. 削除対象のボード情報を取得
   const boardToDelete = state.boards[boardId];
   if (!boardToDelete)
@@ -41,7 +42,7 @@ export const deleteBoardLogic = (boardId: string, state: AppState) => {
 			},
 			deleteTasks: {
 				...emptyTasks.deleteTasks,
-				boards: [boardId]
+				boardIds: [boardId]
 				// カードはボード側でカスケードされているので自動削除
 			}
 		}

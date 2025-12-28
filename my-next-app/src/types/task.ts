@@ -1,5 +1,7 @@
 // type/task.ts
 
+import { emptyTasks } from "@/app/task/actions/emptyTasks";
+
 export interface TaskStore extends AppState, Payload{
 	setActiveId: (activeId: Pick<Payload, "activeId">["activeId"]) => void,
 	setOverId: (overId: Pick<Payload, "overId">["overId"]) => void,
@@ -57,4 +59,11 @@ export interface AppState {
   boardOrder: string[]; // まずはボードの順番を取得する。
   boards: { [id: string]: BoardType }; // ボードを並べて、カードの順番も取得する。
   cards: { [id: string]: CardType }; // カードを並べて完了。
+}
+
+
+// 各タスクロジックの戻り値
+export type ReturnTasks = {
+	newState: AppState
+	diffTasks: typeof emptyTasks
 }
