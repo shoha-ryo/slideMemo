@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Source } from "@/types/task";
+import { Source } from "@/types/TasksType";
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import { useShallow } from "zustand/shallow";
 
@@ -16,8 +16,8 @@ export default function DraftTask({ source, onClose }: DraftTaskProps) {
   const { addTask, addBoard } = useTaskStore(
     useShallow((state) => ({
       addTask: state.addTask,
-			addBoard: state.addBoard,
-    }))
+      addBoard: state.addBoard,
+    })),
   );
 
   const [draftTitle, setDraftTitle] = useState("");
@@ -26,11 +26,11 @@ export default function DraftTask({ source, onClose }: DraftTaskProps) {
     if (!draftTitle.trim()) {
       return;
     }
-		if (source.type === "boardList") {
-			addBoard(draftTitle)
-		} else {
-	    addTask(draftTitle, source);
-		}
+    if (source.type === "boardList") {
+      addBoard(draftTitle);
+    } else {
+      addTask(draftTitle, source);
+    }
     setDraftTitle("");
   };
 
@@ -39,19 +39,20 @@ export default function DraftTask({ source, onClose }: DraftTaskProps) {
     onClose();
   };
 
-	const addBoradStyle = source.type === "boardList"
-		? "w-100 bg-neutral-300 self-start"
-		: "bg-white"
+  const addBoardStyle =
+    source.type === "boardList"
+      ? "w-100 bg-neutral-300 self-start"
+      : "bg-white";
 
   return (
     <>
       {/* 1. 画面全体の操作をブロックする透明なオーバーレイ */}
-      <div 
+      <div
         className="fixed inset-0 z-40 cursor-default bg-black/10"
         onClick={(e) => {
-					e.stopPropagation()
-					handleCancel()
-				}} // 外側クリックで閉じる挙動をここで担保
+          e.stopPropagation();
+          handleCancel();
+        }} // 外側クリックで閉じる挙動をここで担保
       />
 
       {/* 2. 入力フォーム本体 (z-indexを上げてオーバーレイより前に出す) */}
@@ -59,7 +60,7 @@ export default function DraftTask({ source, onClose }: DraftTaskProps) {
         className={`
 					relative z-50 p-4
 					border-2 rounded-lg	border-gray-300 shadow-xl
-					${addBoradStyle}
+					${addBoardStyle}
 					`}
         onClick={(e) => e.stopPropagation()} // フォーム内クリックで閉じないようにする
       >
@@ -69,7 +70,7 @@ export default function DraftTask({ source, onClose }: DraftTaskProps) {
           value={draftTitle}
           onChange={(e) => setDraftTitle(e.target.value)}
           onKeyDown={(e) => {
-						if (e.nativeEvent.isComposing) return
+            if (e.nativeEvent.isComposing) return;
             if (e.key === "Enter") handleSubmit();
             if (e.key === "Escape") handleCancel();
           }}

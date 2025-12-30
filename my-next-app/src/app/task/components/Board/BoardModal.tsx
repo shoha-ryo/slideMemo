@@ -5,23 +5,22 @@
 import { useEffect, useRef, useState } from "react";
 import { useModalStore } from "../../store/ModalStore";
 import { useTaskStore } from "../../store/taskStore/taskStore";
-import { updateBoardLogic } from "../../store/taskStore/updateBoard/updateBoard"; 
-import { emptyTasks } from "@/app/task/actions/emptyTasks"; // emptyTasksも必要に応じてインポート
-
-import { BoardType } from "@/types/task";
+import { BoardType } from "@/types/TasksType";
 
 export default function BoardModal() {
   // --- 状態とストアからのデータ取得 ---
-  
+
   // モーダルとタスクの状態を取得
   const { hideModal, clickedActiveId } = useModalStore(); // clickedActiveId がボードIDを指す想定
   const { boards, updateBoard } = useTaskStore(); // setDiffTasks も取得
 
   // フラット構造なので、IDを使って直接ボードを特定
-  const activeBoard: BoardType | null = clickedActiveId ? boards[clickedActiveId] : null;
+  const activeBoard: BoardType | null = clickedActiveId
+    ? boards[clickedActiveId]
+    : null;
 
   // UIの状態
-  const [title, setTitle] = useState<string>("");
+  const [title, setTitle] = useState<string>(activeBoard?.title || "");
   const titleRef = useRef<HTMLTextAreaElement>(null);
 
   // --- 高さ調整ロジック (タイトル用) ---
@@ -30,27 +29,29 @@ export default function BoardModal() {
     const MAX_HEIGHT_FOR_ONE_LINE = 64; // 必要に応じて調整
 
     if (textarea) {
-      textarea.style.height = "auto"; 
-      textarea.style.height = `${textarea.scrollHeight}px`; 
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
       if (textarea.scrollHeight < MAX_HEIGHT_FOR_ONE_LINE)
-        textarea.style.height = `40px`; 
-      else textarea.style.height = `${textarea.scrollHeight}px`; 
+        textarea.style.height = `40px`;
+      else textarea.style.height = `${textarea.scrollHeight}px`;
     }
   };
 
   // --- useEffect: 初期化とスクロール禁止 ---
   useEffect(() => {
-    // モーダルの内容を初期化
-    if (activeBoard?.title) {
-      setTitle(activeBoard.title);
+    // 初期状態のセッティング
+    if (titleRef.current) {
+      const el = titleRef.current;
+      el.focus();
+      el.setSelectionRange(0, el.value.length);
     }
 
-    // 背景スクロール禁止
+    // スクロール禁止
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [clickedActiveId, boards]); // IDまたはboardsデータ自体が変わった時に再同期
+  }, [clickedActiveId, boards]); // 依存配列は空でOK（マウント・アンマウント時のみ）
 
   useEffect(() => {
     if (titleRef.current) {
@@ -66,15 +67,12 @@ export default function BoardModal() {
     }
     if (!activeBoard || !clickedActiveId) return;
 
- 		// 更新内容が増えたらキーを追加
-		updateBoard(
-			clickedActiveId,
-			{
-				title: title,
-			}
-		)
+    // 更新内容が増えたらキーを追加
+    updateBoard(clickedActiveId, {
+      title: title,
+    });
 
-		hideModal()
+    hideModal();
   };
 
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -151,16 +149,10 @@ export default function BoardModal() {
               resize: "none",
               height: "40px",
               overflowY: "hidden",
-              fontFamily: "inherit"
+              fontFamily: "inherit",
             }}
           />
         </div>
-        
-        {/* ボードには詳細欄はない想定 */}
-        {/* <div style={{ marginTop: "15px" }}>
-          <label>詳細</label>
-          <textarea ... />
-        </div> */}
 
         <button
           onClick={onSave}

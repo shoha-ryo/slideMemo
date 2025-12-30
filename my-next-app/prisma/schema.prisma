@@ -18,19 +18,31 @@ model Board {
   id        String   @id @default(uuid())
   title     String?
   projectId String?
-  
+
   // 追加：カードの並び順（IDの配列）を直接保存する
   cardIds   String[]
-  
   cards     Card[]
+}
+
+
+
+enum Status {
+  active
+  archived
+}
+
+enum Progress {
+  todo
+  doing
+  done
 }
 
 model Card {
   id         String   @id @default(uuid())
   title      String
   details    String
-  status     String
-  progress   String
+  status     Status   @default(active)
+  progress   Progress @default(todo)
   startAt    DateTime?
   dueAt      DateTime?
   simpleView Boolean  @default(false)

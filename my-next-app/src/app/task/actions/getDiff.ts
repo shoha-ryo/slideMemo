@@ -1,4 +1,7 @@
-export const getObjectDiff = <T extends object>(oldObj: T, newObj: T): Partial<T> => {
+export const getObjectDiff = <T extends object>(
+  oldObj: T,
+  newObj: T,
+): Partial<T> => {
   const diff: Partial<T> = {};
   (Object.keys(newObj) as Array<keyof T>).forEach((key) => {
     if (newObj[key] !== oldObj[key]) {

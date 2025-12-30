@@ -1,4 +1,4 @@
-import { AppState } from "@/types/task";
+import { AppState } from "@/types/TasksType";
 
 // ==========================================
 // 具体的なサンプルデータ
@@ -91,7 +91,7 @@ export const sampleAppState: AppState = {
 
       childrenIds: [],
     },
-		"card-4": {
+    "card-4": {
       id: "card-4",
       parentId: null,
       boardId: "board-2",

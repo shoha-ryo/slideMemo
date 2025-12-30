@@ -1,7 +1,7 @@
-import { AppState, CardType } from "@/types/task";
+import { AppState, CardType } from "@/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 import { getObjectDiff } from "@/app/task/actions/getDiff";
-import { ReturnTasks } from "@/types/task";
+import { ReturnTasks } from "@/types/TasksType";
 
 /**
  * カードの情報を更新し、newStateとdiffTasksを返す
@@ -9,7 +9,7 @@ import { ReturnTasks } from "@/types/task";
 export const updateCardLogic = (
   cardId: string,
   updates: Partial<CardType>, // 変更があった差分だけ受け取る
-  state: AppState
+  state: AppState,
 ): ReturnTasks => {
   const targetCard = state.cards[cardId];
 

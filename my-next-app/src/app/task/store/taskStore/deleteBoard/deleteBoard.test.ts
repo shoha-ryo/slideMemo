@@ -1,19 +1,41 @@
 import { describe, it, expect } from "vitest";
 import { deleteBoardLogic } from "./deleteBoard"; // パスは適宜調整してください
-import { AppState } from "@/types/task";
+import { AppState, CardType } from "@/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 describe("deleteBoardLogic", () => {
   const mockInitialState: AppState = {
     boardOrder: ["board-1", "board-2"],
     boards: {
-      "board-1": { id: "board-1", title: "Board 1", cardIds: ["card-1", "card-2"], projectId: "p1" },
-      "board-2": { id: "board-2", title: "Board 2", cardIds: ["card-3"], projectId: "p1" },
+      "board-1": {
+        id: "board-1",
+        title: "Board 1",
+        cardIds: ["card-1", "card-2"],
+        projectId: "p1",
+      },
+      "board-2": {
+        id: "board-2",
+        title: "Board 2",
+        cardIds: ["card-3"],
+        projectId: "p1",
+      },
     },
     cards: {
-      "card-1": { id: "card-1", title: "Task 1", boardId: "board-1" } as any,
-      "card-2": { id: "card-2", title: "Task 2", boardId: "board-1" } as any,
-      "card-3": { id: "card-3", title: "Task 3", boardId: "board-2" } as any,
+      "card-1": {
+        id: "card-1",
+        title: "Task 1",
+        boardId: "board-1",
+      } as unknown as CardType,
+      "card-2": {
+        id: "card-2",
+        title: "Task 2",
+        boardId: "board-1",
+      } as unknown as CardType,
+      "card-3": {
+        id: "card-3",
+        title: "Task 3",
+        boardId: "board-2",
+      } as unknown as CardType,
     },
   };
 
@@ -30,7 +52,7 @@ describe("deleteBoardLogic", () => {
     // 所属していたカード(card-1, card-2)が消えているか
     expect(result.newState.cards["card-1"]).toBeUndefined();
     expect(result.newState.cards["card-2"]).toBeUndefined();
-    
+
     // 他のボードのカード(card-3)は残っているか
     expect(result.newState.cards["card-3"]).toBeDefined();
 
@@ -50,9 +72,14 @@ describe("deleteBoardLogic", () => {
     const emptyBoardState: AppState = {
       ...mockInitialState,
       boards: {
-        "board-empty": { id: "board-empty", title: "Empty", cardIds: [], projectId: "p1" }
+        "board-empty": {
+          id: "board-empty",
+          title: "Empty",
+          cardIds: [],
+          projectId: "p1",
+        },
       },
-      boardOrder: ["board-empty"]
+      boardOrder: ["board-empty"],
     };
 
     const result = deleteBoardLogic("board-empty", emptyBoardState);

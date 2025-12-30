@@ -1,5 +1,5 @@
 // src/app/task/store/taskStore/updateBoard/updateBoardLogic.ts
-import { AppState, BoardType } from "@/types/task";
+import { AppState, BoardType } from "@/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 import { getObjectDiff } from "@/app/task/actions/getDiff";
 
@@ -13,7 +13,7 @@ import { getObjectDiff } from "@/app/task/actions/getDiff";
 export const updateBoardLogic = (
   boardId: string,
   updates: Partial<BoardType>, // 変更があった差分だけ受け取る
-  state: AppState
+  state: AppState,
 ) => {
   const targetBoard = state.boards[boardId];
 

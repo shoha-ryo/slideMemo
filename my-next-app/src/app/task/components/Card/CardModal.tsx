@@ -1,27 +1,26 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
 import { useModalStore } from "../../store/ModalStore";
 import { useTaskStore } from "../../store/taskStore/taskStore";
-// import { updateCardApi } from "@/lib/api"; // ※必要に応じてAPI関数をインポート
-
-import { CardType } from "@/types/task";
+import { CardType } from "@/types/TasksType";
 
 export default function CardModal() {
   // --- 状態とストアからのデータ取得 ---
-  
+
   // モーダルとタスクの状態を取得
   const { hideModal, clickedActiveId } = useModalStore();
   const { cards, updateTask } = useTaskStore();
 
   // フラット構造なので、IDを使って直接カードを特定
-  const activeNode: CardType | null = clickedActiveId ? cards[clickedActiveId] : null;
+  const activeNode: CardType | null = clickedActiveId
+    ? cards[clickedActiveId]
+    : null;
 
   // UIの状態
-  const [title, setTitle] = useState<string>("");
-  const [details, setDetails] = useState<string>("");
-  const titleRef = useRef<HTMLTextAreaElement>(null); // inputではなくtextareaだったので修正
+  const [title, setTitle] = useState<string>(activeNode?.title || "");
+  const [details, setDetails] = useState<string>(activeNode?.details || "");
+  const titleRef = useRef<HTMLTextAreaElement>(null);
 
   // --- 高さ調整ロジック ---
   const resizeTitleHeight = () => {
@@ -29,23 +28,24 @@ export default function CardModal() {
     const MAX_HEIGHT_FOR_ONE_LINE = 64;
 
     if (textarea) {
-      textarea.style.height = "auto"; 
-      textarea.style.height = `${textarea.scrollHeight}px`; 
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
       if (textarea.scrollHeight < MAX_HEIGHT_FOR_ONE_LINE)
-        textarea.style.height = `40px`; 
-      else textarea.style.height = `${textarea.scrollHeight}px`; 
+        textarea.style.height = `40px`;
+      else textarea.style.height = `${textarea.scrollHeight}px`;
     }
   };
 
   // --- useEffect: 初期化とスクロール禁止 ---
   useEffect(() => {
-    // モーダルの内容を初期化
-    if (activeNode) {
-      setTitle(activeNode.title);
-      setDetails(activeNode.details || "");
+    // 初期状態のセッティング
+    if (titleRef.current) {
+      const el = titleRef.current;
+      el.focus();
+      el.setSelectionRange(0, el.value.length);
     }
 
-    // 背景スクロール禁止
+    // スクロール禁止
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "auto";
@@ -54,36 +54,26 @@ export default function CardModal() {
 
   useEffect(() => {
     if (titleRef.current) {
-      // フォーカス制御はUXによるので、必要であれば解除または条件付きにする
-      // titleRef.current.focus(); 
       resizeTitleHeight();
     }
   }, [title]);
 
-
-
-
   // --- 保存処理 ---
   const onSave = async () => {
-		if (!title.trim()) {
-			setTitle("")
-			return
-		}
+    if (!title.trim()) {
+      setTitle("");
+      return;
+    }
     if (!activeNode || !clickedActiveId) return;
 
-		// 更新内容が増えたらキーを追加
-		updateTask(
-			clickedActiveId,
-			{
-				title: title,
-				details: details
-			}
-		)
+    // 更新内容が増えたらキーを追加
+    updateTask(clickedActiveId, {
+      title: title,
+      details: details,
+    });
 
-		hideModal()
+    hideModal();
   };
-
-
 
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // e.targetの型チェック
@@ -148,7 +138,7 @@ export default function CardModal() {
           <textarea
             ref={titleRef}
             value={title}
-						placeholder="タイトルを入力してください"
+            placeholder="タイトルを入力してください"
             onChange={(e) => {
               setTitle(e.target.value);
             }}
@@ -162,7 +152,7 @@ export default function CardModal() {
               resize: "none",
               height: "40px",
               overflowY: "hidden",
-              fontFamily: "inherit"
+              fontFamily: "inherit",
             }}
           />
         </div>
@@ -180,7 +170,7 @@ export default function CardModal() {
               borderRadius: "4px",
               border: "1px solid #ccc",
               resize: "vertical",
-              fontFamily: "inherit"
+              fontFamily: "inherit",
             }}
           />
         </div>

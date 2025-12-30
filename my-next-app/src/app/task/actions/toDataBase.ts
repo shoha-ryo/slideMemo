@@ -1,33 +1,29 @@
-"use server"
+"use server";
 
-import { pusherServer } from "@/lib/pusher-server"
-import { PrismaClient } from "@prisma/client"
-import { emptyTasks } from "./emptyTasks"
+import { pusherServer } from "@/lib/pusher-server";
+import { PrismaClient } from "@prisma/client";
+import { emptyTasks } from "./emptyTasks";
 
-const prisma = new PrismaClient()
-
+const prisma = new PrismaClient();
 
 type ToDataBase = typeof emptyTasks;
 
-export async function toDataBase( diffTasks: ToDataBase) {
-  
-	const createTasks = diffTasks.createTasks
-	const updateTasks = diffTasks.updateTasks
-	const deleteTasks = diffTasks.deleteTasks
-
+export async function toDataBase(diffTasks: ToDataBase) {
+  const createTasks = diffTasks.createTasks;
+  const updateTasks = diffTasks.updateTasks;
+  const deleteTasks = diffTasks.deleteTasks;
 
   try {
     await prisma.$transaction(async (tx) => {
-      
       // =================================================================
       // 1. Create (新規作成)
       // =================================================================
-      
+
       // 1-A. ボードの作成
       if (createTasks.boards.length > 0) {
         // createMany は高速ですが、個別のバリデーションが必要な場合はループに変更してください
         await tx.board.createMany({
-          data: createTasks.boards.map(board => ({
+          data: createTasks.boards.map((board) => ({
             id: board.id,
             title: board.title,
             projectId: board.projectId,
@@ -40,7 +36,7 @@ export async function toDataBase( diffTasks: ToDataBase) {
       // 1-B. カードの作成
       if (createTasks.cards.length > 0) {
         await tx.card.createMany({
-          data: createTasks.cards.map(card => ({
+          data: createTasks.cards.map((card) => ({
             id: card.id,
             title: card.title,
             details: card.details,
@@ -62,7 +58,11 @@ export async function toDataBase( diffTasks: ToDataBase) {
       // 2. Update (既存データの更新)
       // =================================================================
 
-      const { boards: updateBoards, cards: updateCards, boardOrder } = updateTasks;
+      const {
+        boards: updateBoards,
+        cards: updateCards,
+        boardOrder,
+      } = updateTasks;
 
       // 2-A. カードの更新
       if (updateCards.length > 0) {
@@ -79,10 +79,22 @@ export async function toDataBase( diffTasks: ToDataBase) {
               parentId: card.parentId,
               boardId: card.boardId,
               simpleView: card.simpleView,
-              startAt: card.startAt !== undefined ? (card.startAt ? new Date(card.startAt) : null) : undefined,
-              dueAt: card.dueAt !== undefined ? (card.dueAt ? new Date(card.dueAt) : null) : undefined,
+              startAt:
+                card.startAt !== undefined
+                  ? card.startAt
+                    ? new Date(card.startAt)
+                    : null
+                  : undefined,
+              dueAt:
+                card.dueAt !== undefined
+                  ? card.dueAt
+                    ? new Date(card.dueAt)
+                    : null
+                  : undefined,
               // 配列は set で上書き
-              childrenIds: card.childrenIds ? { set: card.childrenIds } : undefined,
+              childrenIds: card.childrenIds
+                ? { set: card.childrenIds }
+                : undefined,
             },
           });
         }
@@ -109,8 +121,8 @@ export async function toDataBase( diffTasks: ToDataBase) {
         await tx.appConfig.update({
           where: { id: 1 }, // 環境に合わせてIDを変更してください
           data: {
-            boardOrder: { set: boardOrder }
-          }
+            boardOrder: { set: boardOrder },
+          },
         });
       }
 
@@ -123,8 +135,8 @@ export async function toDataBase( diffTasks: ToDataBase) {
       if (deleteTasks.cardIds.length > 0) {
         await tx.card.deleteMany({
           where: {
-            id: { in: deleteTasks.cardIds }
-          }
+            id: { in: deleteTasks.cardIds },
+          },
         });
       }
 
@@ -134,11 +146,10 @@ export async function toDataBase( diffTasks: ToDataBase) {
         // 通常は onDelete: Cascade 設定でボード消去時にカードも消えます
         await tx.board.deleteMany({
           where: {
-            id: { in: deleteTasks.boardIds }
-          }
+            id: { in: deleteTasks.boardIds },
+          },
         });
       }
-
     }); // --- トランザクション終了 ---
 
     // Pusherへの通知
@@ -147,7 +158,6 @@ export async function toDataBase( diffTasks: ToDataBase) {
     });
 
     return { success: true };
-
   } catch (error) {
     console.error("Database sync failed:", error);
     throw error;

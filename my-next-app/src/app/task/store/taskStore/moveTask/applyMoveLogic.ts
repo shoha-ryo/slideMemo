@@ -1,41 +1,45 @@
-import { Payload, ReturnTasks } from "@/types/task";
-import { AppState, CardType, BoardType } from "@/types/task";
+import { Payload, ReturnTasks } from "@/types/TasksType";
+import { AppState, CardType, BoardType } from "@/types/TasksType";
 import { getObjectDiff } from "@/app/task/actions/getDiff";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
-import { log } from "console";
 
-export const applyMoveLogic = (payload: Payload, state: AppState): ReturnTasks => {
+export const applyMoveLogic = (
+  payload: Payload,
+  state: AppState,
+): ReturnTasks => {
   // 必要なデータの読み込み
   const { activeId, overId, dropPosition } = payload;
   const { boardOrder, boards, cards } = state;
 
-	// データ欠損・同じIDなら戻す
+  // データ欠損・同じIDなら戻す
   if (!activeId || !overId || activeId === overId)
-		return {
-			newState: state,
-			diffTasks: emptyTasks
-		};
+    return {
+      newState: state,
+      diffTasks: emptyTasks,
+    };
 
-		// 存在しないIDの場合は戻す
-	if (!boards[activeId] && !cards[activeId] || !boards[overId] && !cards[overId])
-		return {
-			newState: state,
-			diffTasks: emptyTasks
-		}
+  // 存在しないIDの場合は戻す
+  if (
+    (!boards[activeId] && !cards[activeId]) ||
+    (!boards[overId] && !cards[overId])
+  )
+    return {
+      newState: state,
+      diffTasks: emptyTasks,
+    };
 
-	// --- 循環参照（自分自身の子孫への移動）防止チェック ---
+  // --- 循環参照（自分自身の子孫への移動）防止チェック ---
   // overIdがボードではなく、かつactiveIdの子孫である場合は無効な操作として無視する
   const isOverBoardToCheck = !!boards[overId];
   if (!isOverBoardToCheck) {
     if (isAncestor(activeId, overId, cards)) {
       return {
-				newState: state,
-				diffTasks: emptyTasks
-			};
+        newState: state,
+        diffTasks: emptyTasks,
+      };
     }
   }
   // -------------------------------------------------------
-
 
   // 1. 状態のコピー (イミュータブルな操作のため)
   const newBoardOrder = [...boardOrder];
@@ -57,11 +61,9 @@ export const applyMoveLogic = (payload: Payload, state: AppState): ReturnTasks =
   if (isOverBoard) {
     destinationBoardId = overId;
   } else {
-
     // overがカードなら、そのカードが所属するボード
     destinationBoardId = newCards[overId].boardId;
   }
-
 
   // ■ Step 0: 元の親/ボードから「切り離し」処理
   // 移動処理をする前に、必ず現在の場所から削除する必要があります
@@ -101,9 +103,9 @@ export const applyMoveLogic = (payload: Payload, state: AppState): ReturnTasks =
 
     // center -> 「子要素」としてネスト (nestCard)
     if (dropPosition === "center") {
-      nestCard(activeId, overId, newCards, newBoards, dirtyCardIds, dirtyBoardIds);
+      nestCard(activeId, overId, newCards, dirtyCardIds);
     }
-    // top, botoom -> 「兄弟要素」として並び替え (reorderSibling)
+    // top, bottom -> 「兄弟要素」として並び替え (reorderSibling)
     else {
       reorderSibling(
         activeId,
@@ -120,33 +122,32 @@ export const applyMoveLogic = (payload: Payload, state: AppState): ReturnTasks =
   // --- 移動ロジック終了 ---
 
   // 3. APIへの送信準備 (オブジェクトの配列化など)
-	const updateCards = Array.from(dirtyCardIds).map((id) => {
-		const updates = getObjectDiff(cards[id], newCards[id]);
-		if (Object.keys(updates).length === 0) return {};
-		return { id, ...updates }; // idは確実に返せるように必ず追加
-	});
-	const updateBoards = Array.from(dirtyBoardIds).map((id) => {
-		const updates = getObjectDiff(boards[id], newBoards[id]);
-		if (Object.keys(updates).length === 0) return {};
-		return { id, ...updates };
-	});
-
+  const updateCards = Array.from(dirtyCardIds).map((id) => {
+    const updates = getObjectDiff(cards[id], newCards[id]);
+    if (Object.keys(updates).length === 0) return {};
+    return { id, ...updates }; // idは確実に返せるように必ず追加
+  });
+  const updateBoards = Array.from(dirtyBoardIds).map((id) => {
+    const updates = getObjectDiff(boards[id], newBoards[id]);
+    if (Object.keys(updates).length === 0) return {};
+    return { id, ...updates };
+  });
 
   // 4. Zustandへの返却
   return {
-		newState: {
-			cards: newCards,
-			boards: newBoards,
-			boardOrder: newBoardOrder,
-		},
-		diffTasks: {
-			...emptyTasks,
-			updateTasks: {
-				...emptyTasks.updateTasks,
-				boards: updateBoards,
-				cards: updateCards,
-			}
-		}
+    newState: {
+      cards: newCards,
+      boards: newBoards,
+      boardOrder: newBoardOrder,
+    },
+    diffTasks: {
+      ...emptyTasks,
+      updateTasks: {
+        ...emptyTasks.updateTasks,
+        boards: updateBoards,
+        cards: updateCards,
+      },
+    },
   };
 };
 
@@ -159,8 +160,8 @@ export const applyMoveLogic = (payload: Payload, state: AppState): ReturnTasks =
  */
 const isAncestor = (
   potentialAncestorId: string, // activeId
-  targetId: string,          // overId
-  cards: { [id: string]: CardType }
+  targetId: string, // overId
+  cards: { [id: string]: CardType },
 ): boolean => {
   let currentId: string | null = cards[targetId]?.parentId;
 
@@ -176,7 +177,6 @@ const isAncestor = (
 
   return false;
 };
-
 
 /**
  * 元の場所からカードIDを削除する
@@ -241,9 +241,7 @@ const nestCard = (
   activeId: string,
   overId: string, // 新しい親
   newCards: { [id: string]: CardType },
-	newBoards: { [id: string]: BoardType },
   dirtyCardIds: Set<string>,
-	dirtyBoardIds: Set<string>
 ) => {
   // 1. activeのparentを更新
   newCards[activeId] = { ...newCards[activeId], parentId: overId };
@@ -256,7 +254,7 @@ const nestCard = (
     childrenIds: [activeId, ...overCard.childrenIds],
   };
   dirtyCardIds.add(overId);
-}
+};
 
 /**
  * カードを兄弟要素として並び替える (Reorder)
@@ -319,10 +317,10 @@ const moveToBoardRoot = (
 ) => {
   // 1. activeのparentをnullにする
   newCards[activeId] = {
-		...newCards[activeId],
-		parentId: null,
-		boardId: destinationBoardId
-	};
+    ...newCards[activeId],
+    parentId: null,
+    boardId: destinationBoardId,
+  };
   dirtyCardIds.add(activeId);
 
   // 2. ボードのcardIdsの末尾に追加

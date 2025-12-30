@@ -1,16 +1,19 @@
 // deleteBoard/deleteBoard.ts
-import { AppState } from "@/types/task";
+import { AppState } from "@/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
-import { ReturnTasks } from "@/types/task";
+import { ReturnTasks } from "@/types/TasksType";
 
-export const deleteBoardLogic = (boardId: string, state: AppState): ReturnTasks => {
+export const deleteBoardLogic = (
+  boardId: string,
+  state: AppState,
+): ReturnTasks => {
   // 1. 削除対象のボード情報を取得
   const boardToDelete = state.boards[boardId];
   if (!boardToDelete)
-		return {
-			newState: state,
-			diffTasks: emptyTasks
-		}
+    return {
+      newState: state,
+      diffTasks: emptyTasks,
+    };
 
   // 2. そのボードに含まれるカードIDのリストを取得
   const cardIdsToRemove = boardToDelete.cardIds;
@@ -27,24 +30,24 @@ export const deleteBoardLogic = (boardId: string, state: AppState): ReturnTasks 
   // 5. boardOrder から対象IDを除外
   const newBoardOrder = state.boardOrder.filter((id) => id !== boardId);
 
-	return {
-		newState: {
-			...state,
-			boardOrder: newBoardOrder,
-			boards: remainingBoards,
-			cards: remainingCards,
-		},
-		diffTasks: {
-			...emptyTasks,
-			updateTasks: {
-				...emptyTasks.updateTasks,
-				boardOrder: newBoardOrder
-			},
-			deleteTasks: {
-				...emptyTasks.deleteTasks,
-				boardIds: [boardId]
-				// カードはボード側でカスケードされているので自動削除
-			}
-		}
-	}
+  return {
+    newState: {
+      ...state,
+      boardOrder: newBoardOrder,
+      boards: remainingBoards,
+      cards: remainingCards,
+    },
+    diffTasks: {
+      ...emptyTasks,
+      updateTasks: {
+        ...emptyTasks.updateTasks,
+        boardOrder: newBoardOrder,
+      },
+      deleteTasks: {
+        ...emptyTasks.deleteTasks,
+        boardIds: [boardId],
+        // カードはボード側でカスケードされているので自動削除
+      },
+    },
+  };
 };

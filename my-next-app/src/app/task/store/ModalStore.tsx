@@ -1,9 +1,9 @@
 import { create } from "zustand";
 
-type ModalType = "card" | "board"
+type ModalType = "card" | "board";
 interface ModalStore {
   isShowModal: boolean;
-	modalType: ModalType | null
+  modalType: ModalType | null;
   clickedActiveId: string | null;
   showModal: (id: string, type: ModalType) => void;
   hideModal: () => void;
@@ -11,7 +11,7 @@ interface ModalStore {
 
 export const useModalStore = create<ModalStore>()((set) => ({
   isShowModal: false,
-	modalType: null,
+  modalType: null,
   clickedActiveId: null,
 
   // idからノードを取得してモーダルを表示する
@@ -19,7 +19,7 @@ export const useModalStore = create<ModalStore>()((set) => ({
     set(() => ({
       isShowModal: true,
       clickedActiveId: id,
-			modalType: type,
+      modalType: type,
     })),
 
   // モーダルを非表示にする
@@ -27,6 +27,6 @@ export const useModalStore = create<ModalStore>()((set) => ({
     set(() => ({
       isShowModal: false,
       clickedActiveId: null,
-			modalType: null,
+      modalType: null,
     })),
 }));

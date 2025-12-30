@@ -2,27 +2,29 @@
 
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
-export interface TaskStore extends AppState, Payload{
-	setActiveId: (activeId: Pick<Payload, "activeId">["activeId"]) => void,
-	setOverId: (overId: Pick<Payload, "overId">["overId"]) => void,
-	setPayload: (payload: Payload) => void;
+export interface TaskStore extends AppState, Payload {
+  setActiveId: (activeId: Pick<Payload, "activeId">["activeId"]) => void;
+  setOverId: (overId: Pick<Payload, "overId">["overId"]) => void;
+  setPayload: (payload: Payload) => void;
 
-	setBoardOrder: (boradOrder: Pick<AppState, "boardOrder">["boardOrder"],) => void;
+  setBoardOrder: (
+    boardOrder: Pick<AppState, "boardOrder">["boardOrder"],
+  ) => void;
   setBoards: (boards: Pick<AppState, "boards">["boards"]) => void;
   setCards: (cards: Pick<AppState, "cards">["cards"]) => void;
 
-	moveTask: (payload: Payload) => void;
-	addTask: (title: string, source: Source) => void
-	deleteTask: (cardId: string) => void;
-	updateTask: (cardId: string, updates: Partial<CardType>) => void;
+  moveTask: (payload: Payload) => void;
+  addTask: (title: string, source: Source) => void;
+  deleteTask: (cardId: string) => void;
+  updateTask: (cardId: string, updates: Partial<CardType>) => void;
 
-	moveBoard: (payload: Payload) => void;
-	addBoard: (title: string) => void
-	deleteBoard: (boardId: string) => void;
-	updateBoard: (boardId: string, updates: Partial<BoardType>) => void;
+  moveBoard: (payload: Payload) => void;
+  addBoard: (title: string) => void;
+  deleteBoard: (boardId: string) => void;
+  updateBoard: (boardId: string, updates: Partial<BoardType>) => void;
 
-	isTaskCreating: boolean
-	setIsTaskCreating: (isTaskCreating: boolean) => void
+  isTaskCreating: boolean;
+  setIsTaskCreating: (isTaskCreating: boolean) => void;
 }
 
 export type Payload = {
@@ -32,10 +34,9 @@ export type Payload = {
 };
 
 export type Source =
-	| { type: "board"; data: BoardType }
-	| { type: "card"; data: CardType }
-	| { type: "boardList"; data: null}
-
+  | { type: "board"; data: BoardType }
+  | { type: "card"; data: CardType }
+  | { type: "boardList"; data: null };
 
 export interface CardType {
   id: string;
@@ -49,12 +50,14 @@ export interface CardType {
   dueAt: number | null;
   simpleView: boolean;
   childrenIds: string[];
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface BoardType {
   id: string;
-  projectId?: string;
-  title?: string;
+  projectId: string | null;
+  title: string | null;
   cardIds: string[];
 }
 
@@ -65,9 +68,8 @@ export interface AppState {
   cards: { [id: string]: CardType }; // カードを並べて完了。
 }
 
-
 // 各タスクロジックの戻り値
 export type ReturnTasks = {
-	newState: AppState
-	diffTasks: typeof emptyTasks
-}
+  newState: AppState;
+  diffTasks: typeof emptyTasks;
+};
