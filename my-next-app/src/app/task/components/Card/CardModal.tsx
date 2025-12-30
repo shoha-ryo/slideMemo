@@ -65,14 +65,48 @@ export default function CardModal() {
       return;
     }
     if (!activeNode || !clickedActiveId) return;
-
     // 更新内容が増えたらキーを追加
     updateTask(clickedActiveId, {
       title: title,
       details: details,
     });
-
     hideModal();
+  };
+
+	// --- グローバルキーイベント（Escで閉じる、Enterで保存） ---
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        hideModal();
+      }
+
+      // 2. カーソルがどこにもない状態での Enter 保存
+      const activeEl = document.activeElement;
+      const isInputFocused = activeEl?.tagName === "INPUT" || activeEl?.tagName === "TEXTAREA";
+      if (e.key === "Enter" && !e.shiftKey && !isInputFocused) {
+        e.preventDefault();
+        onSave();
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleGlobalKeyDown);
+    };
+  }, [hideModal, onSave]); // 関数の参照が変わった時に再登録
+
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // 日本語入力中の確定（IME）の Enter で送信されないようにチェック
+    if (e.nativeEvent.isComposing) return;
+
+    // Enter だけが押された場合（Shift は押されていない）
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // 改行を防ぐ
+      onSave();           // 保存実行
+    }
+		if (e.key === "Escape") {
+			hideModal()
+		}
   };
 
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -142,6 +176,7 @@ export default function CardModal() {
             onChange={(e) => {
               setTitle(e.target.value);
             }}
+						onKeyDown={handleKeyDown}
             style={{
               width: "100%",
               minHeight: "40px",
@@ -162,6 +197,7 @@ export default function CardModal() {
           <textarea
             value={details}
             onChange={(e) => setDetails(e.target.value)}
+						onKeyDown={handleKeyDown}
             style={{
               width: "100%",
               height: "100px",

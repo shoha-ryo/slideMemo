@@ -277,7 +277,7 @@ export default function AppContent({ initialData }: AppContent) {
           </DragOverlay>
 
           {/* デバッグ表示 */}
-          <div
+          {/* <div
             style={{
               marginTop: "20px",
               padding: "10px",
@@ -306,7 +306,7 @@ export default function AppContent({ initialData }: AppContent) {
                 ドラッグして移動を開始してください
               </p>
             )}
-          </div>
+          </div> */}
         </div>
       </DndContext>
       <Toaster richColors />

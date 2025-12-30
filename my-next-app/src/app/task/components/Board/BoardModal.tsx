@@ -75,13 +75,35 @@ export default function BoardModal() {
     hideModal();
   };
 
+	// --- グローバルキーイベント（Escで閉じる、Enterで保存） ---
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        hideModal();
+      }
+
+      // 2. カーソルがどこにもない状態での Enter 保存
+      const activeEl = document.activeElement;
+      const isInputFocused = activeEl?.tagName === "INPUT" || activeEl?.tagName === "TEXTAREA";
+      if (e.key === "Enter" && !e.shiftKey && !isInputFocused) {
+        e.preventDefault();
+        onSave();
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleGlobalKeyDown);
+    };
+  }, [hideModal, onSave]); // 関数の参照が変わった時に再登録
+
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if ((e.target as HTMLElement).id === "modal-background") {
       hideModal();
     }
   };
 
-  // 編集対象がない場合は何も表示しない（安全策）
+  // 編集対象がない場合は何も表示しない
   if (!activeBoard) return null;
 
   return (
