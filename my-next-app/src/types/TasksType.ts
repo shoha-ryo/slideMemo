@@ -38,12 +38,21 @@ export type Source =
   | { type: "card"; data: CardType }
   | { type: "boardList"; data: null };
 
+
+
+export interface BoardType {
+  id: string;
+  projectId: string;
+  title: string;
+  cardIds: string[];
+}
+
 export interface CardType {
   id: string;
   parentId: string | null;
   boardId: string;
   title: string;
-  details: string;
+  details: string | "";
   status: "active" | "archived";
   progress: "todo" | "doing" | "done";
   startAt: number | null;
@@ -52,13 +61,6 @@ export interface CardType {
   childrenIds: string[];
   createdAt: number;
   updatedAt: number;
-}
-
-export interface BoardType {
-  id: string;
-  projectId: string | null;
-  title: string | null;
-  cardIds: string[];
 }
 
 // アプリのオブジェクト情報

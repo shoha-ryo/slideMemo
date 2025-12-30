@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { addCardLogic } from "./addTask"; // 正しいインポート
-import { AppState, Source } from "@/types/TasksType";
+import { AppState, CardType, Source } from "@/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 describe("addCardLogic", () => {
@@ -27,7 +27,7 @@ describe("addCardLogic", () => {
         startAt: null,
         dueAt: null,
         simpleView: false,
-      },
+      } as unknown as CardType,
     },
   };
 

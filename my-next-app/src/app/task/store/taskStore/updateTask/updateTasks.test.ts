@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { updateCardLogic } from "./updateTask";
-import { AppState, CardType } from "@/types/TasksType";
+import { AppState, BoardType, CardType } from "@/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 describe("updateCardLogic", () => {
@@ -8,7 +8,7 @@ describe("updateCardLogic", () => {
   const initialState: AppState = {
     boardOrder: ["board-1"],
     boards: {
-      "board-1": { id: "board-1", title: "Board 1", cardIds: ["card-1"] },
+      "board-1": { id: "board-1", title: "Board 1", cardIds: ["card-1"] } as unknown as BoardType ,
     },
     cards: {
       "card-1": {

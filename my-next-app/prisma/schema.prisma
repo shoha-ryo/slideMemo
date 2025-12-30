@@ -7,55 +7,55 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// 1. AppStateの boardOrder を管理するための最上位
-model AppConfig {
-  id          Int      @id @default(1)
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String?
+  projects  Project[] // 1人のユーザーは複数のプロジェクトを持つ
+}
+
+model Project {
+  id          String      @id @default(cuid())
+	title       String
+	userId      String   // プロジェクトの作成者
   boardOrder  String[] // ボードの並び順（IDの配列）
 }
 
-// 2. ボード情報
 model Board {
   id        String   @id @default(uuid())
-  title     String?
-  projectId String?
-
-  // 追加：カードの並び順（IDの配列）を直接保存する
+  title     String
+  projectId String
   cardIds   String[]
   cards     Card[]
 }
-
-
 
 enum Status {
   active
   archived
 }
-
 enum Progress {
   todo
   doing
   done
 }
-
 model Card {
   id         String   @id @default(uuid())
   title      String
   details    String
-  status     Status   @default(active)
-  progress   Progress @default(todo)
-  startAt    DateTime?
-  dueAt      DateTime?
-  simpleView Boolean  @default(false)
 
   childrenIds String[]
-
+  children   Card[]   @relation("CardHierarchy")
   parentId   String?
   parent     Card?    @relation("CardHierarchy", fields: [parentId], references: [id])
-  children   Card[]   @relation("CardHierarchy")
-
   boardId    String
   board      Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
+	progress   Progress @default(todo)
+  status     Status   @default(active)
+  simpleView Boolean  @default(false)
+  startAt    DateTime?
+  dueAt      DateTime?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }

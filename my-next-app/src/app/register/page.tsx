@@ -20,7 +20,11 @@ export default function SignUpPage() {
       await signInWithEmailAndPassword(auth, email, password);
       router.push("/dashboard");
     } catch (err) {
-      setError(err.message);
+  		if (err instanceof Error) {
+				setError(err.message);
+			} else {
+				setError("予期せぬエラーが発生しました");
+			}
     } finally {
       setLoading(false);
     }

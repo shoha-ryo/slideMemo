@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { updateBoardLogic } from "./updateBoard";
-import { AppState, CardType } from "@/types/TasksType";
+import { AppState, BoardType, CardType } from "@/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 describe("updateBoardLogic", () => {
@@ -11,8 +11,8 @@ describe("updateBoardLogic", () => {
         id: "board-1",
         title: "Original Board Title",
         cardIds: ["card-1"],
-      },
-      "board-2": { id: "board-2", title: "Another Board", cardIds: [] },
+      } as unknown as BoardType,
+      "board-2": { id: "board-2", title: "Another Board", cardIds: [] } as unknown as BoardType,
     },
     cards: {
       "card-1": {

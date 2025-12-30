@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { addBoardLogic } from "./addBoard"; // パスは適宜調整してください
-import { AppState } from "@/types/TasksType";
+import { AppState, CardType } from "@/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 describe("addBoardLogic", () => {
@@ -61,7 +61,7 @@ describe("addBoardLogic", () => {
           dueAt: null,
           parentId: null,
           simpleView: false,
-        },
+        } as unknown as CardType,
       },
     };
 
