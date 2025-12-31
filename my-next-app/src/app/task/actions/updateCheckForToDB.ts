@@ -3,7 +3,7 @@ import { toDataBase } from "./toDataBase";
 
 type DiffTasks = typeof emptyTasks;
 
-export const updateCheckForToDB = (diffTasks: DiffTasks) => {
+export const updateCheckForToDB = (diffTasks: DiffTasks, projectId: string) => {
   if (diffTasks === emptyTasks) return;
-  toDataBase(diffTasks);
+  toDataBase(diffTasks, projectId);
 };

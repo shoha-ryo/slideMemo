@@ -1,9 +1,10 @@
 "use client";
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Pusher from "pusher-js";
 import { toast, Toaster } from "sonner";
+import { getAuth } from "firebase/auth";
 
 import {
   DndContext,
@@ -19,26 +20,34 @@ import {
 } from "@dnd-kit/core";
 
 // 必要なコンポーネント
+import Card from "./components/Card/Card";
+import CardModal from "./components/Card/CardModal";
+import Board from "./components/Board/Board";
+import BoardList from "./components/Board/BoardList";
+import BoardModal from "./components/Board/BoardModal";
+import TrashDropArea, { TRASH_ID } from "./components/TrashArea/TrashDropArea"; // ★ 追加
+
+import { getInitialData } from "./actions/getTasks";
 import { getDropPosition } from "./lib/getDropPosition";
 import { useMousePointer } from "./components/useMousePointer";
-import CardModal from "./components/Card/CardModal";
-import BoardModal from "./components/Board/BoardModal";
-import BoardList from "./components/Board/BoardList";
-import Card from "./components/Card/Card";
-import Board from "./components/Board/Board";
-import TrashDropArea, { TRASH_ID } from "./components/TrashArea/TrashDropArea"; // ★ 追加
 
 // Store
 import { useTaskStore } from "./store/taskStore/taskStore";
 import { useModalStore } from "./store/ModalStore";
 import { AppState, Payload } from "@/types/TasksType";
 import { useShallow } from "zustand/shallow";
+import { useUserStore } from "../../store/userStore";
 
-interface AppContent {
-  initialData: AppState;
-}
+export default function AppContent({projectId}: {projectId: string}) {
+	const auth = getAuth()
 
-export default function AppContent({ initialData }: AppContent) {
+	const { userId, setUserId } = useUserStore(
+		useShallow((state) => ({
+			userId: state.userId,
+			setUserId: state.setUserId,
+		}))
+	)
+
   const {
     activeId,
     overId,
@@ -51,6 +60,8 @@ export default function AppContent({ initialData }: AppContent) {
     deleteTask,
     moveBoard,
     deleteBoard,
+		setProjectId,
+		setProjectTitle,
     setBoardOrder,
     setBoards,
     setCards,
@@ -68,11 +79,29 @@ export default function AppContent({ initialData }: AppContent) {
       deleteTask: state.deleteTask,
       moveBoard: state.moveBoard,
       deleteBoard: state.deleteBoard,
+			setProjectId: state.setProjectId,
+			setProjectTitle: state.setProjectTitle,
       setBoardOrder: state.setBoardOrder,
       setBoards: state.setBoards,
       setCards: state.setCards,
     })),
   );
+
+
+	useEffect(() => {
+		const user = auth.currentUser
+		if (user) {
+			getInitialData(user.uid, projectId).then((res) => {
+				setUserId(user.uid)
+				setProjectId(projectId)
+				setProjectTitle(res.title)
+				setBoardOrder(res.boardOrder);
+				setBoards(res.boards);
+				setCards(res.cards);
+			})
+		}
+	}, [auth])
+
 
   // DB更新の通知を受け取る
   useEffect(() => {
@@ -82,7 +111,7 @@ export default function AppContent({ initialData }: AppContent) {
     });
 
     // チャンネルを購読
-    const channel = pusher.subscribe("task-board-channel");
+    const channel = pusher.subscribe(`project-${projectId}`);
 
     // "task-updated" という叫び声が聞こえたら実行
     channel.bind("task-updated", () => {
@@ -92,19 +121,12 @@ export default function AppContent({ initialData }: AppContent) {
     });
 
     return () => {
-      pusher.unsubscribe("task-board-channel");
+      pusher.unsubscribe(`project-${projectId}`);
     };
   }, []);
 
-  // DBからの初期値を読み込む
-  useEffect(() => {
-    const init = initialData;
-    if (init) {
-      setBoardOrder(init.boardOrder);
-      setBoards(init.boards);
-      setCards(init.cards);
-    }
-  }, []); // 意図的に空配列にしています
+
+
 
   const { isShowModal, modalType, clickedActiveId } = useModalStore();
   const { x, y } = useMousePointer();
@@ -246,70 +268,75 @@ export default function AppContent({ initialData }: AppContent) {
     return pointerCollisions;
   };
 
+			// 判定はカード以外でもOK
+	if (!userId) {
+		return <p> Loading Tasks... </p>
+	}
+
   return (
-    <div style={{ position: "relative" }}>
-      {isShowModal && (
-        <>
-          {modalType === "card" && <CardModal key={clickedActiveId} />}
-          {modalType === "board" && <BoardModal key={clickedActiveId} />}
-        </>
-      )}
+		<div style={{ position: "relative" }}>
+			{isShowModal && (
+				<>
+					{modalType === "card" && <CardModal key={clickedActiveId} />}
+					{modalType === "board" && <BoardModal key={clickedActiveId} />}
+				</>
+			)}
 
-      <DndContext
-        collisionDetection={customCollisionDetection}
-        onDragStart={handleDragStart}
-        onDragMove={handleDragMove}
-        onDragEnd={handleDragEnd}
-        sensors={sensors}
-      >
-        {/* ★ 追加: 削除エリア (DndContextの中に配置する必要があります) */}
-        {/* activeIdが存在する(=ドラッグ中)ときだけスライドダウン表示 */}
-        <TrashDropArea isVisible={!!activeId} />
+			<DndContext
+				collisionDetection={customCollisionDetection}
+				onDragStart={handleDragStart}
+				onDragMove={handleDragMove}
+				onDragEnd={handleDragEnd}
+				sensors={sensors}
+			>
+				{/* ★ 追加: 削除エリア (DndContextの中に配置する必要があります) */}
+				{/* activeIdが存在する(=ドラッグ中)ときだけスライドダウン表示 */}
+				<TrashDropArea isVisible={!!activeId} />
 
-        <div style={{ width: "auto", margin: "20px auto" }}>
-          <BoardList />
+				<div style={{ width: "auto", margin: "20px auto" }}>
+					<BoardList />
 
-          <DragOverlay>
-            {activeId && cards[activeId] ? <Card cardId={activeId} /> : null}
-            {activeId && boards[activeId] ? (
-              <Board board={boards[activeId]}></Board>
-            ) : null}
-          </DragOverlay>
+					<DragOverlay>
+						{activeId && cards[activeId] ? <Card cardId={activeId} /> : null}
+						{activeId && boards[activeId] ? (
+							<Board board={boards[activeId]}></Board>
+						) : null}
+					</DragOverlay>
 
-          {/* デバッグ表示 */}
-          {/* <div
-            style={{
-              marginTop: "20px",
-              padding: "10px",
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-              background: "#fafafa",
-              textAlign: "center",
-              fontSize: "0.9rem",
-            }}
-          >
-            {activeId ? (
-              <>
-                <p>
-                  🟦 Active: <strong>{activeId}</strong>
-                </p>
-                <p>
-                  📍 Over:{" "}
-                  <strong>{overId === TRASH_ID ? "🗑️ ゴミ箱" : overId}</strong>
-                </p>
-                <p>
-                  🧭 dropPosition: <strong>{dropPosition}</strong>
-                </p>
-              </>
-            ) : (
-              <p style={{ color: "#888" }}>
-                ドラッグして移動を開始してください
-              </p>
-            )}
-          </div> */}
-        </div>
-      </DndContext>
-      <Toaster richColors />
-    </div>
+					{/* デバッグ表示 */}
+					{/* <div
+						style={{
+							marginTop: "20px",
+							padding: "10px",
+							border: "1px solid #ccc",
+							borderRadius: "8px",
+							background: "#fafafa",
+							textAlign: "center",
+							fontSize: "0.9rem",
+						}}
+					>
+						{activeId ? (
+							<>
+								<p>
+									🟦 Active: <strong>{activeId}</strong>
+								</p>
+								<p>
+									📍 Over:{" "}
+									<strong>{overId === TRASH_ID ? "🗑️ ゴミ箱" : overId}</strong>
+								</p>
+								<p>
+									🧭 dropPosition: <strong>{dropPosition}</strong>
+								</p>
+							</>
+						) : (
+							<p style={{ color: "#888" }}>
+								ドラッグして移動を開始してください
+							</p>
+						)}
+					</div> */}
+				</div>
+			</DndContext>
+			<Toaster richColors />
+		</div>
   );
 }

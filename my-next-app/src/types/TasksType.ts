@@ -7,8 +7,14 @@ export interface TaskStore extends AppState, Payload {
   setOverId: (overId: Pick<Payload, "overId">["overId"]) => void;
   setPayload: (payload: Payload) => void;
 
+	projectId: string | null
+	projectTitle: string | null
+	setProjectId: (projectId: string) => void
+	setProjectTitle: (projectTitle: string) => void
+
+
   setBoardOrder: (
-    boardOrder: Pick<AppState, "boardOrder">["boardOrder"],
+    boardOrder: Pick<AppState, "boardOrder">["boardOrder"]
   ) => void;
   setBoards: (boards: Pick<AppState, "boards">["boards"]) => void;
   setCards: (cards: Pick<AppState, "cards">["cards"]) => void;

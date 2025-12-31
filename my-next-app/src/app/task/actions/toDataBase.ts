@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 type ToDataBase = typeof emptyTasks;
 
-export async function toDataBase(diffTasks: ToDataBase) {
+export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
   const createTasks = diffTasks.createTasks;
   const updateTasks = diffTasks.updateTasks;
   const deleteTasks = diffTasks.deleteTasks;
@@ -118,8 +118,8 @@ export async function toDataBase(diffTasks: ToDataBase) {
 
       // 2-C. ボード順序 (AppConfig) の更新
       if (boardOrder && boardOrder.length > 0) {
-        await tx.appConfig.update({
-          where: { id: 1 }, // 環境に合わせてIDを変更してください
+        await tx.project.update({
+          where: { id: projectId }, // 環境に合わせてIDを変更してください
           data: {
             boardOrder: { set: boardOrder },
           },

@@ -21,10 +21,14 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   isTaskCreating: false,
   setIsTaskCreating: (isTaskCreating) => set({ isTaskCreating }),
 
-  // サンプルの初期値(後でDBと接続)
-  boardOrder: [], //sampleAppState.boardOrder,
-  boards: {}, //sampleAppState.boards,
-  cards: {}, //sampleAppState.cards,
+	projectId: null,
+	projectTitle: null,
+	setProjectId: (projectId) => set({ projectId }),
+	setProjectTitle: (projectTitle) => set({ projectTitle }),
+
+  boardOrder: [],
+  boards: {},
+  cards: {},
   setBoardOrder: (boardOrder) => set({ boardOrder }),
   setBoards: (boards) => set({ boards }),
   setCards: (cards) => set({ cards }),

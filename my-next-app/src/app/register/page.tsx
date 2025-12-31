@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { syncUser } from "../actions/syncUser";
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
@@ -16,9 +17,17 @@ export default function SignUpPage() {
     e.preventDefault(); // 再読み込みを停止させる（状態リセットや非同期処理の中断を防ぐため）
     setError(null); // エラーメッセージをリセット（前回のエラーを表示させない）
     setLoading(true);
+
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push("/dashboard");
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+			const user = userCredential.user
+
+			await syncUser({
+				uid: user.uid,
+				email: user.email ?? "",
+				displayName: user.displayName ?? "名無しユーザー"
+			})
+			router.push("/dashboard");
     } catch (err) {
   		if (err instanceof Error) {
 				setError(err.message);

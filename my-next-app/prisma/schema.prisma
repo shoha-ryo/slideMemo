@@ -9,7 +9,7 @@ generator client {
 
 
 model User {
-  id        String    @id @default(cuid())
+  id        String    @id // firebaseのuidで管理
   email     String    @unique
   name      String?
   projects  Project[] // 1人のユーザーは複数のプロジェクトを持つ
@@ -19,6 +19,7 @@ model Project {
   id          String      @id @default(cuid())
 	title       String
 	userId      String   // プロジェクトの作成者
+	user        User     @relation(fields: [userId], references: [id])
   boardOrder  String[] // ボードの並び順（IDの配列）
 }
 

@@ -1,5 +1,5 @@
 // Firebase 初期化用モジュール (例: src/lib/firebase.js)
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 // 環境変数から設定値を読み込む
@@ -19,7 +19,5 @@ if (!firebaseConfig.apiKey) {
   console.error("Firebase API Key is missing. Check your .env.local file.");
 }
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 export const auth = getAuth(app);
-
-// コメント
