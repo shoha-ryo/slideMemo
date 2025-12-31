@@ -21,10 +21,10 @@ export default function SignUpPage() {
       router.push("/dashboard");
     } catch (err) {
       if (err instanceof Error) {
-				setError(err.message);
-			} else {
-				setError("予期せぬエラーが発生しました");
-			}
+        setError(err.message);
+      } else {
+        setError("予期せぬエラーが発生しました");
+      }
     } finally {
       setLoading(false);
     }

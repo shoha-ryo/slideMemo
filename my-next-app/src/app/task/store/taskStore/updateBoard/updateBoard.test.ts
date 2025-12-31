@@ -12,7 +12,11 @@ describe("updateBoardLogic", () => {
         title: "Original Board Title",
         cardIds: ["card-1"],
       } as unknown as BoardType,
-      "board-2": { id: "board-2", title: "Another Board", cardIds: [] } as unknown as BoardType,
+      "board-2": {
+        id: "board-2",
+        title: "Another Board",
+        cardIds: [],
+      } as unknown as BoardType,
     },
     cards: {
       "card-1": {

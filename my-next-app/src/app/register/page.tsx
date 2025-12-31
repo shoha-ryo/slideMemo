@@ -19,21 +19,25 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-			const user = userCredential.user
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      const user = userCredential.user;
 
-			await syncUser({
-				uid: user.uid,
-				email: user.email ?? "",
-				displayName: user.displayName ?? "名無しユーザー"
-			})
-			router.push("/dashboard");
+      await syncUser({
+        uid: user.uid,
+        email: user.email ?? "",
+        displayName: user.displayName ?? "名無しユーザー",
+      });
+      router.push("/dashboard");
     } catch (err) {
-  		if (err instanceof Error) {
-				setError(err.message);
-			} else {
-				setError("予期せぬエラーが発生しました");
-			}
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("予期せぬエラーが発生しました");
+      }
     } finally {
       setLoading(false);
     }

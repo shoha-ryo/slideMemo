@@ -38,15 +38,15 @@ import { AppState, Payload } from "@/types/TasksType";
 import { useShallow } from "zustand/shallow";
 import { useUserStore } from "../../store/userStore";
 
-export default function AppContent({projectId}: {projectId: string}) {
-	const auth = getAuth()
+export default function AppContent({ projectId }: { projectId: string }) {
+  const auth = getAuth();
 
-	const { userId, setUserId } = useUserStore(
-		useShallow((state) => ({
-			userId: state.userId,
-			setUserId: state.setUserId,
-		}))
-	)
+  const { userId, setUserId } = useUserStore(
+    useShallow((state) => ({
+      userId: state.userId,
+      setUserId: state.setUserId,
+    })),
+  );
 
   const {
     activeId,
@@ -60,8 +60,8 @@ export default function AppContent({projectId}: {projectId: string}) {
     deleteTask,
     moveBoard,
     deleteBoard,
-		setProjectId,
-		setProjectTitle,
+    setProjectId,
+    setProjectTitle,
     setBoardOrder,
     setBoards,
     setCards,
@@ -79,29 +79,27 @@ export default function AppContent({projectId}: {projectId: string}) {
       deleteTask: state.deleteTask,
       moveBoard: state.moveBoard,
       deleteBoard: state.deleteBoard,
-			setProjectId: state.setProjectId,
-			setProjectTitle: state.setProjectTitle,
+      setProjectId: state.setProjectId,
+      setProjectTitle: state.setProjectTitle,
       setBoardOrder: state.setBoardOrder,
       setBoards: state.setBoards,
       setCards: state.setCards,
     })),
   );
 
-
-	useEffect(() => {
-		const user = auth.currentUser
-		if (user) {
-			getInitialData(user.uid, projectId).then((res) => {
-				setUserId(user.uid)
-				setProjectId(projectId)
-				setProjectTitle(res.title)
-				setBoardOrder(res.boardOrder);
-				setBoards(res.boards);
-				setCards(res.cards);
-			})
-		}
-	}, [auth])
-
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (user) {
+      getInitialData(user.uid, projectId).then((res) => {
+        setUserId(user.uid);
+        setProjectId(projectId);
+        setProjectTitle(res.title);
+        setBoardOrder(res.boardOrder);
+        setBoards(res.boards);
+        setCards(res.cards);
+      });
+    }
+  }, [auth]);
 
   // DB更新の通知を受け取る
   useEffect(() => {
@@ -124,9 +122,6 @@ export default function AppContent({projectId}: {projectId: string}) {
       pusher.unsubscribe(`project-${projectId}`);
     };
   }, []);
-
-
-
 
   const { isShowModal, modalType, clickedActiveId } = useModalStore();
   const { x, y } = useMousePointer();
@@ -268,43 +263,43 @@ export default function AppContent({projectId}: {projectId: string}) {
     return pointerCollisions;
   };
 
-			// 判定はカード以外でもOK
-	if (!userId) {
-		return <p> Loading Tasks... </p>
-	}
+  // 判定はカード以外でもOK
+  if (!userId) {
+    return <p> Loading Tasks... </p>;
+  }
 
   return (
-		<div style={{ position: "relative" }}>
-			{isShowModal && (
-				<>
-					{modalType === "card" && <CardModal key={clickedActiveId} />}
-					{modalType === "board" && <BoardModal key={clickedActiveId} />}
-				</>
-			)}
+    <div style={{ position: "relative" }}>
+      {isShowModal && (
+        <>
+          {modalType === "card" && <CardModal key={clickedActiveId} />}
+          {modalType === "board" && <BoardModal key={clickedActiveId} />}
+        </>
+      )}
 
-			<DndContext
-				collisionDetection={customCollisionDetection}
-				onDragStart={handleDragStart}
-				onDragMove={handleDragMove}
-				onDragEnd={handleDragEnd}
-				sensors={sensors}
-			>
-				{/* ★ 追加: 削除エリア (DndContextの中に配置する必要があります) */}
-				{/* activeIdが存在する(=ドラッグ中)ときだけスライドダウン表示 */}
-				<TrashDropArea isVisible={!!activeId} />
+      <DndContext
+        collisionDetection={customCollisionDetection}
+        onDragStart={handleDragStart}
+        onDragMove={handleDragMove}
+        onDragEnd={handleDragEnd}
+        sensors={sensors}
+      >
+        {/* ★ 追加: 削除エリア (DndContextの中に配置する必要があります) */}
+        {/* activeIdが存在する(=ドラッグ中)ときだけスライドダウン表示 */}
+        <TrashDropArea isVisible={!!activeId} />
 
-				<div style={{ width: "auto", margin: "20px auto" }}>
-					<BoardList />
+        <div style={{ width: "auto", margin: "20px auto" }}>
+          <BoardList />
 
-					<DragOverlay>
-						{activeId && cards[activeId] ? <Card cardId={activeId} /> : null}
-						{activeId && boards[activeId] ? (
-							<Board board={boards[activeId]}></Board>
-						) : null}
-					</DragOverlay>
+          <DragOverlay>
+            {activeId && cards[activeId] ? <Card cardId={activeId} /> : null}
+            {activeId && boards[activeId] ? (
+              <Board board={boards[activeId]}></Board>
+            ) : null}
+          </DragOverlay>
 
-					{/* デバッグ表示 */}
-					{/* <div
+          {/* デバッグ表示 */}
+          {/* <div
 						style={{
 							marginTop: "20px",
 							padding: "10px",
@@ -334,9 +329,9 @@ export default function AppContent({projectId}: {projectId: string}) {
 							</p>
 						)}
 					</div> */}
-				</div>
-			</DndContext>
-			<Toaster richColors />
-		</div>
+        </div>
+      </DndContext>
+      <Toaster richColors />
+    </div>
   );
 }

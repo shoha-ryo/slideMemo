@@ -2,16 +2,17 @@
 import AppContent from "../AppContent";
 import { AuthGuard } from "@/components/Auth/AuthGuard";
 
-export default async function TaskPage(
-	{params}: {params: Promise<{ id: string }>}
-) {
-
-	const resolvedParams = await params
-	const projectId = resolvedParams.id;
+export default async function TaskPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const resolvedParams = await params;
+  const projectId = resolvedParams.id;
 
   return (
-		<AuthGuard>
-			<AppContent projectId={projectId} />
-		</AuthGuard>
-	);
+    <AuthGuard>
+      <AppContent projectId={projectId} />
+    </AuthGuard>
+  );
 }

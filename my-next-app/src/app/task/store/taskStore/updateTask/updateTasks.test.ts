@@ -8,7 +8,11 @@ describe("updateCardLogic", () => {
   const initialState: AppState = {
     boardOrder: ["board-1"],
     boards: {
-      "board-1": { id: "board-1", title: "Board 1", cardIds: ["card-1"] } as unknown as BoardType ,
+      "board-1": {
+        id: "board-1",
+        title: "Board 1",
+        cardIds: ["card-1"],
+      } as unknown as BoardType,
     },
     cards: {
       "card-1": {

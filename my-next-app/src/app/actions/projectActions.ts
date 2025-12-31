@@ -12,7 +12,7 @@ export async function createProject(title: string, userId: string) {
         boardOrder: [], // 初期状態は空
       },
     });
-    
+
     // ダッシュボードのデータを最新にする（キャッシュ更新）
     revalidatePath("/dashboard");
     return { success: true, project: newProject };

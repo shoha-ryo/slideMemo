@@ -75,7 +75,7 @@ export default function BoardModal() {
     hideModal();
   };
 
-	// --- グローバルキーイベント（Escで閉じる、Enterで保存） ---
+  // --- グローバルキーイベント（Escで閉じる、Enterで保存） ---
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -84,7 +84,8 @@ export default function BoardModal() {
 
       // 2. カーソルがどこにもない状態での Enter 保存
       const activeEl = document.activeElement;
-      const isInputFocused = activeEl?.tagName === "INPUT" || activeEl?.tagName === "TEXTAREA";
+      const isInputFocused =
+        activeEl?.tagName === "INPUT" || activeEl?.tagName === "TEXTAREA";
       if (e.key === "Enter" && !e.shiftKey && !isInputFocused) {
         e.preventDefault();
         onSave();

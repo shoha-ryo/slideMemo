@@ -31,7 +31,7 @@ export const taskActions = (
     // 移動ロジックを実行
     const { newState, diffTasks } = applyMoveLogic(payload, state);
 
-		if (!state.projectId) return
+    if (!state.projectId) return;
     // storeの状態を更新
     set(newState);
     // DBへ登録
@@ -44,7 +44,7 @@ export const taskActions = (
     // 追加ロジックを実行
     const { newState, diffTasks } = addCardLogic(title, source, state);
 
-		if (!state.projectId) return
+    if (!state.projectId) return;
     // storeの状態を更新
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
@@ -56,8 +56,8 @@ export const taskActions = (
     // 削除ロジックを実行
     const { newState, diffTasks } = deleteCardLogic(cardId, state);
 
-		if (!state.projectId) return
-		// storeの状態を更新
+    if (!state.projectId) return;
+    // storeの状態を更新
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
   },
@@ -68,7 +68,7 @@ export const taskActions = (
     // 削除ロジックを実行
     const { newState, diffTasks } = updateCardLogic(cardId, updates, state);
 
-		if (!state.projectId) return
+    if (!state.projectId) return;
     // storeの状態を更新
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
@@ -80,7 +80,7 @@ export const taskActions = (
     // 移動ロジックを実行
     const { newState, diffTasks } = moveBoardLogic(payload, state);
 
-		if (!state.projectId) return
+    if (!state.projectId) return;
     // storeの状態を更新
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
@@ -92,7 +92,7 @@ export const taskActions = (
     // 追加ロジックを実行
     const { newState, diffTasks } = addBoardLogic(title, state);
 
-		if (!state.projectId) return
+    if (!state.projectId) return;
     // storeの状態を更新
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
@@ -104,7 +104,7 @@ export const taskActions = (
     // 削除ロジックを実行
     const { newState, diffTasks } = deleteBoardLogic(cardId, state);
 
-		if (!state.projectId) return
+    if (!state.projectId) return;
     // storeの状態を更新
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
@@ -116,7 +116,7 @@ export const taskActions = (
     // 削除ロジックを実行
     const { newState, diffTasks } = updateBoardLogic(boardId, updates, state);
 
-		if (!state.projectId) return
+    if (!state.projectId) return;
     // storeの状態を更新
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);

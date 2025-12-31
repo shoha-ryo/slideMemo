@@ -21,10 +21,10 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   isTaskCreating: false,
   setIsTaskCreating: (isTaskCreating) => set({ isTaskCreating }),
 
-	projectId: null,
-	projectTitle: null,
-	setProjectId: (projectId) => set({ projectId }),
-	setProjectTitle: (projectTitle) => set({ projectTitle }),
+  projectId: null,
+  projectTitle: null,
+  setProjectId: (projectId) => set({ projectId }),
+  setProjectTitle: (projectTitle) => set({ projectTitle }),
 
   boardOrder: [],
   boards: {},

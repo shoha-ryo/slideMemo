@@ -16,8 +16,10 @@ export default function DashboardPage() {
 
         {/* ここにプロジェクト一覧を出すと便利です */}
         <section>
-          <h2 className="text-xl font-semibold mb-4">あなたのプロジェクト一覧</h2>
-					<ProjectList></ProjectList>
+          <h2 className="text-xl font-semibold mb-4">
+            あなたのプロジェクト一覧
+          </h2>
+          <ProjectList></ProjectList>
         </section>
       </div>
     </AuthGuard>

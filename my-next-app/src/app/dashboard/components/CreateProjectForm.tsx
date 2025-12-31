@@ -32,7 +32,10 @@ export default function CreateProjectForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 border rounded-xl bg-white shadow-sm">
+    <form
+      onSubmit={handleSubmit}
+      className="p-4 border rounded-xl bg-white shadow-sm"
+    >
       <h2 className="text-lg font-bold mb-4">新しいプロジェクトを開始</h2>
       <div className="flex gap-2">
         <input
