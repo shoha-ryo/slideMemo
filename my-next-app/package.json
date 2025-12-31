@@ -47,7 +47,7 @@
     "babel-plugin-react-compiler": "1.0.0",
     "baseline-browser-mapping": "^2.9.11",
     "eslint": "^9",
-    "eslint-config-next": "16.0.1",
+    "eslint-config-next": "16.1.1",
     "jsdom": "^27.0.1",
     "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
