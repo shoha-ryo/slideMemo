@@ -20,6 +20,7 @@ import {
 } from "@dnd-kit/core";
 
 // 必要なコンポーネント
+import TaskHeader from "../header/task-header";
 import Card from "./components/Card/Card";
 import CardModal from "./components/Card/CardModal";
 import Board from "./components/Board/Board";
@@ -54,6 +55,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
     dropPosition,
     cards,
     boards,
+		projectTitle,
     setActiveId,
     setHoverInfo,
     moveTask,
@@ -72,6 +74,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
       dropPosition: state.dropPosition,
       cards: state.cards,
       boards: state.boards,
+			projectTitle: state.projectTitle,
       setActiveId: state.setActiveId,
       setOverId: state.setOverId,
       setHoverInfo: state.setPayload,
@@ -270,69 +273,74 @@ export default function AppContent({ projectId }: { projectId: string }) {
   }
 
   return (
-    <div style={{ position: "relative" }}>
-      {isShowModal && (
-        <>
-          {modalType === "card" && <CardModal key={clickedActiveId} />}
-          {modalType === "board" && <BoardModal key={clickedActiveId} />}
-        </>
-      )}
+		<div className="min-h-screen">
+			{projectTitle
+				? <TaskHeader projectTitle={projectTitle}></TaskHeader>
+				: null}
+			<div style={{ position: "relative" }}>
+				{isShowModal && (
+					<>
+						{modalType === "card" && <CardModal key={clickedActiveId} />}
+						{modalType === "board" && <BoardModal key={clickedActiveId} />}
+					</>
+				)}
 
-      <DndContext
-        collisionDetection={customCollisionDetection}
-        onDragStart={handleDragStart}
-        onDragMove={handleDragMove}
-        onDragEnd={handleDragEnd}
-        sensors={sensors}
-      >
-        {/* ★ 追加: 削除エリア (DndContextの中に配置する必要があります) */}
-        {/* activeIdが存在する(=ドラッグ中)ときだけスライドダウン表示 */}
-        <TrashDropArea isVisible={!!activeId} />
+				<DndContext
+					collisionDetection={customCollisionDetection}
+					onDragStart={handleDragStart}
+					onDragMove={handleDragMove}
+					onDragEnd={handleDragEnd}
+					sensors={sensors}
+				>
+					{/* ★ 追加: 削除エリア (DndContextの中に配置する必要があります) */}
+					{/* activeIdが存在する(=ドラッグ中)ときだけスライドダウン表示 */}
+					<TrashDropArea isVisible={!!activeId} />
 
-        <div style={{ width: "auto", margin: "20px auto" }}>
-          <BoardList />
+					<div style={{ width: "auto", margin: "20px auto" }}>
+						<BoardList />
 
-          <DragOverlay>
-            {activeId && cards[activeId] ? <Card cardId={activeId} /> : null}
-            {activeId && boards[activeId] ? (
-              <Board board={boards[activeId]}></Board>
-            ) : null}
-          </DragOverlay>
+						<DragOverlay>
+							{activeId && cards[activeId] ? <Card cardId={activeId} /> : null}
+							{activeId && boards[activeId] ? (
+								<Board board={boards[activeId]}></Board>
+							) : null}
+						</DragOverlay>
 
-          {/* デバッグ表示 */}
-          {/* <div
-						style={{
-							marginTop: "20px",
-							padding: "10px",
-							border: "1px solid #ccc",
-							borderRadius: "8px",
-							background: "#fafafa",
-							textAlign: "center",
-							fontSize: "0.9rem",
-						}}
-					>
-						{activeId ? (
-							<>
-								<p>
-									🟦 Active: <strong>{activeId}</strong>
+						{/* デバッグ表示 */}
+						{/* <div
+							style={{
+								marginTop: "20px",
+								padding: "10px",
+								border: "1px solid #ccc",
+								borderRadius: "8px",
+								background: "#fafafa",
+								textAlign: "center",
+								fontSize: "0.9rem",
+							}}
+						>
+							{activeId ? (
+								<>
+									<p>
+										🟦 Active: <strong>{activeId}</strong>
+									</p>
+									<p>
+										📍 Over:{" "}
+										<strong>{overId === TRASH_ID ? "🗑️ ゴミ箱" : overId}</strong>
+									</p>
+									<p>
+										🧭 dropPosition: <strong>{dropPosition}</strong>
+									</p>
+								</>
+							) : (
+								<p style={{ color: "#888" }}>
+									ドラッグして移動を開始してください
 								</p>
-								<p>
-									📍 Over:{" "}
-									<strong>{overId === TRASH_ID ? "🗑️ ゴミ箱" : overId}</strong>
-								</p>
-								<p>
-									🧭 dropPosition: <strong>{dropPosition}</strong>
-								</p>
-							</>
-						) : (
-							<p style={{ color: "#888" }}>
-								ドラッグして移動を開始してください
-							</p>
-						)}
-					</div> */}
-        </div>
-      </DndContext>
-      <Toaster richColors />
-    </div>
+							)}
+						</div> */}
+					</div>
+				</DndContext>
+				<Toaster richColors />
+			</div>
+		</div>
   );
 }

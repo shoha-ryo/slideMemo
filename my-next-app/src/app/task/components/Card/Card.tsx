@@ -109,10 +109,9 @@ const Card = ({ cardId }: { cardId: string }) => {
         >
           <div className="flex justify-between p-2">
             <div className="min-w-0 flex-1">
-              <strong className="block text-sm">
+              <strong className="block text-sm text-foreground/80">
                 <FormattedText text={card.title} />
               </strong>
-              {/* <div className="text-xs text-gray-400">{card.id}</div> */}
               {card.details
 								?
 									<div className="text-xs text-gray-500 mt-1.5">
