@@ -38,6 +38,7 @@ import { useModalStore } from "./store/ModalStore";
 import { AppState, Payload } from "@/types/TasksType";
 import { useShallow } from "zustand/shallow";
 import { useUserStore } from "../../store/userStore";
+import { emptyTasks } from "./actions/emptyTasks";
 
 export default function AppContent({ projectId }: { projectId: string }) {
   const auth = getAuth();
@@ -118,7 +119,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
     const channel = pusher.subscribe(`project-${projectId}`);
 
     // "task-updated" という叫び声が聞こえたら実行
-    channel.bind("task-updated", (payload) => {
+    channel.bind("task-updated", (payload: typeof emptyTasks) => {
       toast.info("他のユーザーがタスクを更新しました！", {});
 			const diff = payload
 			if (!userId) return;
