@@ -13,6 +13,7 @@ import DraftTask from "../Card/DraftTask";
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import { useShallow } from "zustand/shallow";
 import { useModalStore } from "../../store/ModalStore";
+import { Ghost } from "lucide-react";
 
 export default function Board({ board }: { board: BoardType }) {
   const { attributes, listeners, setNodeRef, isDragging, isOver } = useSortable(
@@ -90,7 +91,8 @@ export default function Board({ board }: { board: BoardType }) {
             e.stopPropagation();
             setIsDrafting(true);
           }} // モーダル表示をブロックする。
-          className="mt-2 mr-2 h-8 rounded-full border bg-neutral-800"
+					variant="ghost"
+          className="mt-2 mr-2 h-8 rounded-full"
         >
           ＋カードを追加
         </Button>

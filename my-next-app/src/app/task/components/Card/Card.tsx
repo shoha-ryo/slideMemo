@@ -114,7 +114,7 @@ const Card = ({ cardId }: { cardId: string }) => {
               </strong>
               {card.details
 								?
-									<div className="text-xs text-gray-500 mt-1.5">
+									<div className="text-xs text-gray-500 mt-1">
 										<FormattedText text={card.details} />
 									</div>
 								: null
