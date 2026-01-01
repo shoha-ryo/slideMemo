@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { FlowLogo, Flow2px, Flow3px, Flow4px } from "../../../public/FLOW"
 
 export default function TaskHeader({projectTitle}: {projectTitle: string}) {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -22,8 +23,7 @@ export default function TaskHeader({projectTitle}: {projectTitle: string}) {
         {/* Left Section - Logo & Project Name */}
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <CheckSquare className="h-6 w-6 text-foreground" />
-            <span className="text-xl font-semibold text-foreground">TaskFlow</span>
+						<FlowLogo className={"h-10 w-10"}></FlowLogo>
           </div>
 
 					<div

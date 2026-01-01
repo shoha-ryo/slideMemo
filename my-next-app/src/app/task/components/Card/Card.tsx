@@ -11,16 +11,8 @@ import DraftTask from "./DraftTask";
 
 // Draggable/Droppable コンポーネント
 const Card = ({ cardId }: { cardId: string }) => {
-  const [isNew, setIsNew] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   const [isDrafting, setIsDrafting] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsNew(false);
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, []);
 
   const {
     isDragging,
@@ -92,7 +84,6 @@ const Card = ({ cardId }: { cardId: string }) => {
 				p-2.5 pl-2.5 mb-[5px]
 				border rounded-lg
 				transition-all duration-200
-				${isNew ? "animate-highlight" : ""}
 				${hoveredStyle}
 				${draggableStyle}
 				${droppableStyle}
