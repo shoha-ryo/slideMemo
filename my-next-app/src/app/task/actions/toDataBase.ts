@@ -116,10 +116,10 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
         }
       }
 
-      // 2-C. ボード順序 (AppConfig) の更新
+      // 2-C. ボード順序の更新
       if (boardOrder && boardOrder.length > 0) {
         await tx.project.update({
-          where: { id: projectId }, // 環境に合わせてIDを変更してください
+          where: { id: projectId },
           data: {
             boardOrder: { set: boardOrder },
           },
@@ -131,7 +131,6 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
       // =================================================================
 
       // 3-A. カードの削除
-      // IDの配列を渡すだけで一括削除できます
       if (deleteTasks.cardIds.length > 0) {
         await tx.card.deleteMany({
           where: {
@@ -142,8 +141,6 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
 
       // 3-B. ボードの削除
       if (deleteTasks.boardIds.length > 0) {
-        // もし Cascade delete が設定されていない場合、先にカードを消す必要がありますが
-        // 通常は onDelete: Cascade 設定でボード消去時にカードも消えます
         await tx.board.deleteMany({
           where: {
             id: { in: deleteTasks.boardIds },
@@ -153,7 +150,7 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
     }); // --- トランザクション終了 ---
 
     // Pusherへの通知
-    await pusherServer.trigger("task-board-channel", "task-updated", {
+    await pusherServer.trigger(`project-${projectId}`, "task-updated", {
       timestamp: Date.now(),
     });
 

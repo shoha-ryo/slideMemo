@@ -91,6 +91,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
     const user = auth.currentUser;
     if (user) {
       getInitialData(user.uid, projectId).then((res) => {
+				console.log("取得した初期値", res)
         setUserId(user.uid);
         setProjectId(projectId);
         setProjectTitle(res.title);

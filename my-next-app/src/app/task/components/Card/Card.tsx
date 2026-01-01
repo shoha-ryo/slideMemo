@@ -113,9 +113,13 @@ const Card = ({ cardId }: { cardId: string }) => {
                 <FormattedText text={card.title} />
               </strong>
               {/* <div className="text-xs text-gray-400">{card.id}</div> */}
-              <div className="text-xs text-gray-500">
-                <FormattedText text={card.details} />
-              </div>
+              {card.details
+								?
+									<div className="text-xs text-gray-500 mt-1.5">
+										<FormattedText text={card.details} />
+									</div>
+								: null
+							}
             </div>
             <div className="w-12 shrink-0" />
           </div>
