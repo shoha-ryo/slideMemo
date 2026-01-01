@@ -47,7 +47,6 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 			const nextCards = { ...state.cards };
 			const nextBoards = { ...state.boards };
 
-			console.log("差分データ：",diff)
 			// --- 1. 削除処理 ---
 			diff.deleteTasks?.cardIds?.forEach((id) => {
 				delete nextCards[id];
@@ -70,6 +69,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 				}
 			});
 
+			console.log(diff,diff.createTasks?.cards)
 			// --- 3. 追加処理 ---
 			diff.createTasks?.cards?.forEach((newCard) => {
 				nextCards[newCard.id] = newCard;
@@ -83,9 +83,9 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 				cards: nextCards,
 				boards: nextBoards,
 				// boardOrderは配列なのでそのまま上書き
-				boardOrder: diff.updateTasks.boardOrder.length > 0 
-										? diff.updateTasks.boardOrder 
-										: state.boardOrder
+				boardOrder: diff?.updateTasks?.boardOrder?.length > 0 
+										? diff?.updateTasks?.boardOrder 
+										: state?.boardOrder
 			};
 		});
 	}

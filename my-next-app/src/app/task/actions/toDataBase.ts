@@ -150,9 +150,9 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
     }); // --- トランザクション終了 ---
 
     // Pusherへの通知
-    await pusherServer.trigger(`project-${projectId}`, "task-updated", {
-      diff: diffTasks,
-    });
+    await pusherServer.trigger(`project-${projectId}`, "task-updated",
+      diffTasks,
+		);
 
     return { success: true };
   } catch (error) {

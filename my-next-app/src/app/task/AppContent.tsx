@@ -119,11 +119,10 @@ export default function AppContent({ projectId }: { projectId: string }) {
     const channel = pusher.subscribe(`project-${projectId}`);
 
     // "task-updated" という叫び声が聞こえたら実行
-    channel.bind("task-updated", (payload: typeof emptyTasks) => {
+    channel.bind("task-updated", (diffTasks: typeof emptyTasks) => {
       toast.info("他のユーザーがタスクを更新しました！", {});
-			const diff = payload
 			if (!userId) return;
-			applyDiff(diff, userId)
+			applyDiff(diffTasks, userId)
     });
 
     return () => {
