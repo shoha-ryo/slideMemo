@@ -18,6 +18,7 @@ import { deleteBoardLogic } from "./deleteBoard/deleteBoard";
 import { updateBoardLogic } from "./updateBoard/updateBoard";
 
 import { updateCheckForToDB } from "../../actions/updateCheckForToDB";
+import { useUserStore } from "@/store/userStore";
 
 export const taskActions = (
   set: (
@@ -25,6 +26,7 @@ export const taskActions = (
   ) => void,
   get: () => TaskStore,
 ) => ({
+
   moveTask: (payload: Payload) => {
     // storeの状態を取得
     const state = get();

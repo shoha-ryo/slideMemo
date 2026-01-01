@@ -30,6 +30,8 @@ export interface TaskStore extends AppState, Payload {
 
   isTaskCreating: boolean;
   setIsTaskCreating: (isTaskCreating: boolean) => void;
+
+	applyDiff: (diffTasks: typeof emptyTasks, userId: string) => void
 }
 
 export type Payload = {

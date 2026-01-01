@@ -67,6 +67,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
     setBoardOrder,
     setBoards,
     setCards,
+		applyDiff,
   } = useTaskStore(
     useShallow((state) => ({
       activeId: state.activeId,
@@ -87,6 +88,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
       setBoardOrder: state.setBoardOrder,
       setBoards: state.setBoards,
       setCards: state.setCards,
+			applyDiff: state.applyDiff
     })),
   );
 
@@ -116,16 +118,17 @@ export default function AppContent({ projectId }: { projectId: string }) {
     const channel = pusher.subscribe(`project-${projectId}`);
 
     // "task-updated" という叫び声が聞こえたら実行
-    channel.bind("task-updated", () => {
-      toast.info("他のユーザーがタスクを更新しました！", {
-        description: "最新の状態を確認してください。",
-      });
+    channel.bind("task-updated", (payload) => {
+      toast.info("他のユーザーがタスクを更新しました！", {});
+			const diff = payload
+			if (!userId) return;
+			applyDiff(diff, userId)
     });
 
     return () => {
       pusher.unsubscribe(`project-${projectId}`);
     };
-  }, []);
+  }, [projectId, userId, applyDiff]);
 
   const { isShowModal, modalType, clickedActiveId } = useModalStore();
   const { x, y } = useMousePointer();
