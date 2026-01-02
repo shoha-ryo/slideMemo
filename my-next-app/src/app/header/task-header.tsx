@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { FlowLogo, Flow2px, Flow3px, Flow4px } from "../../../public/FLOW"
+import { FlowLogo, Flow15px } from "../../../public/FLOW"
 
 export default function TaskHeader({projectTitle}: {projectTitle: string}) {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -21,9 +21,10 @@ export default function TaskHeader({projectTitle}: {projectTitle: string}) {
     <header className="border-b border-border bg-background">
       <div className="flex h-16 items-center justify-between px-6">
         {/* Left Section - Logo & Project Name */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-10">
           <div className="flex items-center gap-2">
-						<FlowLogo className={"h-10 w-10"}></FlowLogo>
+						<FlowLogo className={"h-8 w-8"}></FlowLogo>
+						<Flow15px className={"h-3 w-15"}/>
           </div>
 
 					<div

@@ -120,7 +120,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
 
     // "task-updated" という叫び声が聞こえたら実行
     channel.bind("task-updated", (diffTasks: typeof emptyTasks) => {
-      toast.info("他のユーザーがタスクを更新しました！", {});
+      toast.error("他のユーザーがタスクを更新しました！", {});
 			if (!userId) return;
 			applyDiff(diffTasks, userId)
     });
