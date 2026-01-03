@@ -13,13 +13,45 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
   const updateTasks = diffTasks.updateTasks;
   const deleteTasks = diffTasks.deleteTasks;
 
+	let lastSyncAt: number = 0;
+
   try {
     await prisma.$transaction(async (tx) => {
       // =================================================================
       // 1. Create (新規作成)
       // =================================================================
 
-      // 1-A. ボードの作成
+      // 1-A. カードの作成
+      if (createTasks.cards.length > 0) {
+        await tx.card.createMany({
+          data: createTasks.cards.map((card) => ({
+            id: card.id,
+            title: card.title,
+            details: card.details,
+            status: card.status,
+            progress: card.progress,
+						projectId: projectId,
+            parentId: card.parentId,
+            boardId: card.boardId,
+            simpleView: card.simpleView,
+            childrenIds: card.childrenIds,
+            // 型変換: number (timestamp) -> Date オブジェクト
+            startAt: card.startAt ? new Date(card.startAt) : null,
+            dueAt: card.dueAt ? new Date(card.dueAt) : null,
+          })),
+          skipDuplicates: true,
+        });
+				await tx.activityLog.createMany({
+					data: createTasks.cards.map(c => ({
+						projectId,
+						entityId: c.id,
+						entityType: "CARD",
+						action: "CREATE"
+					}))
+				});
+      }
+
+      // 1-B. ボードの作成
       if (createTasks.boards.length > 0) {
         // createMany は高速ですが、個別のバリデーションが必要な場合はループに変更してください
         await tx.board.createMany({
@@ -31,26 +63,13 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
           })),
           skipDuplicates: true, // 念のための安全策
         });
-      }
-
-      // 1-B. カードの作成
-      if (createTasks.cards.length > 0) {
-        await tx.card.createMany({
-          data: createTasks.cards.map((card) => ({
-            id: card.id,
-            title: card.title,
-            details: card.details,
-            status: card.status,
-            progress: card.progress,
-            parentId: card.parentId,
-            boardId: card.boardId,
-            simpleView: card.simpleView,
-            childrenIds: card.childrenIds,
-            // 型変換: number (timestamp) -> Date オブジェクト
-            startAt: card.startAt ? new Date(card.startAt) : null,
-            dueAt: card.dueAt ? new Date(card.dueAt) : null,
-          })),
-          skipDuplicates: true,
+				await tx.activityLog.createMany({
+          data: createTasks.boards.map(b => ({
+            projectId,
+            entityId: b.id,
+            entityType: "BOARD",
+            action: "CREATE"
+          }))
         });
       }
 
@@ -98,6 +117,14 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
             },
           });
         }
+				await tx.activityLog.createMany({
+          data: updateCards.map(c => ({
+            projectId,
+            entityId: c.id!,
+            entityType: "CARD",
+            action: "UPDATE"
+          }))
+        });
       }
 
       // 2-B. ボードの更新
@@ -114,6 +141,14 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
             },
           });
         }
+				await tx.activityLog.createMany({
+          data: updateBoards.map(b => ({
+            projectId,
+            entityId: b.id!,
+            entityType: "BOARD",
+            action: "UPDATE"
+          }))
+        });
       }
 
       // 2-C. ボード順序の更新
@@ -137,6 +172,14 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
             id: { in: deleteTasks.cardIds },
           },
         });
+				await tx.activityLog.createMany({
+					data: deleteTasks.cardIds.map(id => ({
+						projectId,
+						entityId: id,
+						entityType: "CARD",
+						action: "DELETE"
+					}))
+				});
       }
 
       // 3-B. ボードの削除
@@ -146,12 +189,31 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
             id: { in: deleteTasks.boardIds },
           },
         });
+				await tx.activityLog.createMany({
+          data: deleteTasks.boardIds.map(id => ({
+            projectId,
+            entityId: id,
+            entityType: "BOARD",
+            action: "DELETE"
+          }))
+        });
       }
+
+
+			// トランザクションの中で、このプロジェクトの最新の更新時刻を1つ取得する
+			const latestProject = await prisma.project.findUnique({
+				where: { id: projectId },
+				select: { updatedAt: true }
+			});
+
+			lastSyncAt = latestProject?.updatedAt.getTime() || Date.now();
     }); // --- トランザクション終了 ---
 
-    // Pusherへの通知
-    await pusherServer.trigger(`project-${projectId}`, "task-updated",
-      diffTasks,
+		// Pusherへの通知
+		await pusherServer.trigger(`project-${projectId}`, "task-updated",{
+			diffTasks: diffTasks,
+			lastSyncAt: lastSyncAt
+		},
 		);
 
     return { success: true };

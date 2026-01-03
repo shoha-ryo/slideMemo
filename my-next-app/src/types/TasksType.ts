@@ -22,7 +22,6 @@ export interface TaskStore extends AppState, Payload {
   addTask: (title: string, source: Source) => void;
   deleteTask: (cardId: string) => void;
   updateTask: (cardId: string, updates: Partial<CardType>) => void;
-
   moveBoard: (payload: Payload) => void;
   addBoard: (title: string) => void;
   deleteBoard: (boardId: string) => void;
@@ -31,6 +30,8 @@ export interface TaskStore extends AppState, Payload {
   isTaskCreating: boolean;
   setIsTaskCreating: (isTaskCreating: boolean) => void;
 
+	syncStatus: "initializing" | "syncing" | "synced"
+	initializeProject: (userId: string, projectId: string) => void,
 	applyDiff: (diffTasks: typeof emptyTasks, userId: string) => void
 }
 
@@ -50,10 +51,13 @@ export interface BoardType {
   projectId: string;
   title: string;
   cardIds: string[];
+	createdAt: number;
+  updatedAt: number;
 }
 
 export interface CardType {
   id: string;
+	projectId: string
   parentId: string | null;
   boardId: string;
   title: string;

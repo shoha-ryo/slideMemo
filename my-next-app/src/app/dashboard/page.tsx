@@ -2,6 +2,7 @@
 import { AuthGuard } from "@/components/Auth/AuthGuard";
 import CreateProjectForm from "./components/CreateProjectForm";
 import ProjectList from "./components/ProjectList"; // 作成済みのリストを表示するコンポーネント（後述）
+import { ProjectGrid } from "./components/ProjectGrid";
 
 export default function DashboardPage() {
   return (
@@ -22,6 +23,7 @@ export default function DashboardPage() {
           <ProjectList></ProjectList>
         </section>
       </div>
+				<ProjectGrid></ProjectGrid>
     </AuthGuard>
   );
 }

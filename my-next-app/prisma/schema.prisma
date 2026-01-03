@@ -1,6 +1,7 @@
 datasource db {
-  provider = "postgresql"
-	url      = env("DATABASE_URL") // ver6.x.xだから必要みたい
+  provider  = "postgresql"
+	url       = env("DATABASE_URL") // ver6.x.xだから必要みたい
+	directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -20,15 +21,23 @@ model Project {
 	title       String
 	userId      String   // プロジェクトの作成者
 	user        User     @relation(fields: [userId], references: [id])
+	activityLog ActivityLog[]
   boardOrder  String[] // ボードの並び順（IDの配列）
+	boards      Board[]
+	cards       Card[]
+	createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt @default(now())
 }
 
 model Board {
-  id        String   @id @default(uuid())
-  title     String
-  projectId String
-  cardIds   String[]
-  cards     Card[]
+  id         String   @id @default(uuid())
+  title      String
+  projectId  String
+	project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  cardIds    String[]
+  cards      Card[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt @default(now())
 }
 
 enum Status {
@@ -45,6 +54,8 @@ model Card {
   title      String
   details    String
 
+	projectId  String
+	project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   childrenIds String[]
   children   Card[]   @relation("CardHierarchy")
   parentId   String?
@@ -58,5 +69,24 @@ model Card {
   startAt    DateTime?
   dueAt      DateTime?
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime @updatedAt @default(now())
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  projectId  String
+	project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  entityId   String   // 変更されたカードやボードのID
+  entityType String   // "CARD" | "BOARD"
+  action     String   // "CREATE" | "UPDATE" | "DELETE"
+
+  // 誰が変えたか（将来的な認証導入時に役立つ）
+  // userId    String?
+
+  // 更新内容の要約（任意：Pusherの軽量化やログ表示用）
+  // payload   Json?
+
+  createdAt DateTime @default(now()) // 変更日
+
+  @@index([projectId, createdAt])
 }

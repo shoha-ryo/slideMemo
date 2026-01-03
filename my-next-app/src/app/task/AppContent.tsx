@@ -39,6 +39,7 @@ import { AppState, Payload } from "@/types/TasksType";
 import { useShallow } from "zustand/shallow";
 import { useUserStore } from "../../store/userStore";
 import { emptyTasks } from "./actions/emptyTasks";
+import { toLocalDataBase } from "./actions/toLocalDataBase";
 
 export default function AppContent({ projectId }: { projectId: string }) {
   const auth = getAuth();
@@ -57,6 +58,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
     cards,
     boards,
 		projectTitle,
+		syncStatus,
     setActiveId,
     setHoverInfo,
     moveTask,
@@ -69,6 +71,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
     setBoards,
     setCards,
 		applyDiff,
+		initializeProject,
   } = useTaskStore(
     useShallow((state) => ({
       activeId: state.activeId,
@@ -77,6 +80,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
       cards: state.cards,
       boards: state.boards,
 			projectTitle: state.projectTitle,
+			syncStatus: state.syncStatus,
       setActiveId: state.setActiveId,
       setOverId: state.setOverId,
       setHoverInfo: state.setPayload,
@@ -89,46 +93,45 @@ export default function AppContent({ projectId }: { projectId: string }) {
       setBoardOrder: state.setBoardOrder,
       setBoards: state.setBoards,
       setCards: state.setCards,
-			applyDiff: state.applyDiff
+			applyDiff: state.applyDiff,
+			initializeProject: state.initializeProject,
     })),
   );
 
+	// 初期値取得
   useEffect(() => {
     const user = auth.currentUser;
     if (user) {
-      getInitialData(user.uid, projectId).then((res) => {
-				console.log("取得した初期値", res)
-        setUserId(user.uid);
-        setProjectId(projectId);
-        setProjectTitle(res.title);
-        setBoardOrder(res.boardOrder);
-        setBoards(res.boards);
-        setCards(res.cards);
-      });
+			// ローカルDB読み込みロジック
+			// 外部DBから差分を取得しローカルに追加（まるごと受け取ってローカルに当てはめた方が楽そう？）
+      initializeProject(user.uid, projectId)
+			setUserId(user.uid);
+			setProjectId(projectId);
+			// setProjectTitle(res.title);
     }
   }, [auth]);
 
-  // DB更新の通知を受け取る
+  // DB更新時の処理
   useEffect(() => {
     // Pusherの接続設定
     const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
       cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
     });
-
     // チャンネルを購読
     const channel = pusher.subscribe(`project-${projectId}`);
-
     // "task-updated" という叫び声が聞こえたら実行
-    channel.bind("task-updated", (diffTasks: typeof emptyTasks) => {
-      toast.error("他のユーザーがタスクを更新しました！", {});
+    channel.bind("task-updated", (payload: {diffTasks: typeof emptyTasks, lastSyncAt: number}) => {
+      toast.info("他のユーザーがタスクを更新しました！", {});
+			const { diffTasks, lastSyncAt } = payload
 			if (!userId) return;
 			applyDiff(diffTasks, userId)
+			toLocalDataBase(diffTasks, projectId, userId, lastSyncAt)
     });
-
     return () => {
       pusher.unsubscribe(`project-${projectId}`);
     };
   }, [projectId, userId, applyDiff]);
+
 
   const { isShowModal, modalType, clickedActiveId } = useModalStore();
   const { x, y } = useMousePointer();
@@ -270,10 +273,14 @@ export default function AppContent({ projectId }: { projectId: string }) {
     return pointerCollisions;
   };
 
-  // 判定はカード以外でもOK
-  if (!userId) {
-    return <p> Loading Tasks... </p>;
-  }
+
+	// if (syncStatus === "initializing" ) return "初期化中"
+	// if (syncStatus === "syncing" ) return "ロード中"
+	// if (syncStatus === "synced" ) {
+	// 	return "ロード完了"
+	// }
+
+
 
   return (
 		<div className="min-h-screen">
@@ -308,38 +315,6 @@ export default function AppContent({ projectId }: { projectId: string }) {
 								<Board board={boards[activeId]}></Board>
 							) : null}
 						</DragOverlay>
-
-						{/* デバッグ表示 */}
-						{/* <div
-							style={{
-								marginTop: "20px",
-								padding: "10px",
-								border: "1px solid #ccc",
-								borderRadius: "8px",
-								background: "#fafafa",
-								textAlign: "center",
-								fontSize: "0.9rem",
-							}}
-						>
-							{activeId ? (
-								<>
-									<p>
-										🟦 Active: <strong>{activeId}</strong>
-									</p>
-									<p>
-										📍 Over:{" "}
-										<strong>{overId === TRASH_ID ? "🗑️ ゴミ箱" : overId}</strong>
-									</p>
-									<p>
-										🧭 dropPosition: <strong>{dropPosition}</strong>
-									</p>
-								</>
-							) : (
-								<p style={{ color: "#888" }}>
-									ドラッグして移動を開始してください
-								</p>
-							)}
-						</div> */}
 					</div>
 				</DndContext>
 				<Toaster richColors />
