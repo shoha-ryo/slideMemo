@@ -50,7 +50,7 @@ export default function LoginPage() {
 		const {email, password} = values
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push("/dashboard");
+      router.push("/home");
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);

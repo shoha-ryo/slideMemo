@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { FlowLogo, Flow15px } from "../../../public/FLOW"
 import { useTaskStore } from "../task/store/taskStore/taskStore"
 import { useShallow } from "zustand/shallow"
+import Link from "next/link"
 
 export default function TaskHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -22,15 +23,20 @@ export default function TaskHeader() {
 		projectTitle: state.projectTitle
 	})))
 
+
   return (
     <header className="border-b border-border bg-background">
       <div className="flex h-16 items-center justify-between px-6">
         {/* Left Section - Logo & Project Name */}
         <div className="flex items-center gap-10">
-          <div className="flex items-center gap-2">
-						<FlowLogo className={"h-8 w-8"}></FlowLogo>
-						<Flow15px className={"h-3 w-15"}/>
-          </div>
+          <Link
+						href={"/home"}
+					>
+						<div className="flex items-center gap-2">
+							<FlowLogo className={"h-8 w-8"}></FlowLogo>
+							<Flow15px className={"h-3 w-15"}/>
+						</div>
+					</Link>
 
 					<div
 						className="text-lg font-semibold text-foreground/80"
