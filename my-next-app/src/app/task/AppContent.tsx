@@ -102,12 +102,9 @@ export default function AppContent({ projectId }: { projectId: string }) {
   useEffect(() => {
     const user = auth.currentUser;
     if (user) {
-			// ローカルDB読み込みロジック
-			// 外部DBから差分を取得しローカルに追加（まるごと受け取ってローカルに当てはめた方が楽そう？）
       initializeProject(user.uid, projectId)
 			setUserId(user.uid);
 			setProjectId(projectId);
-			// setProjectTitle(res.title);
     }
   }, [auth]);
 
@@ -123,9 +120,9 @@ export default function AppContent({ projectId }: { projectId: string }) {
     channel.bind("task-updated", (payload: {diffTasks: typeof emptyTasks, lastSyncAt: number}) => {
       toast.info("他のユーザーがタスクを更新しました！", {});
 			const { diffTasks, lastSyncAt } = payload
-			if (!userId) return;
+			if (!userId || !projectTitle) return;
 			applyDiff(diffTasks, userId)
-			toLocalDataBase(diffTasks, projectId, userId, lastSyncAt)
+			toLocalDataBase(diffTasks, projectId, projectTitle, userId, lastSyncAt)
     });
     return () => {
       pusher.unsubscribe(`project-${projectId}`);

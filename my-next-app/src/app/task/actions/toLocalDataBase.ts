@@ -1,7 +1,7 @@
 import { db } from "@/lib/dexie";
 import { emptyTasks } from "./emptyTasks";
 
-export const toLocalDataBase = async (diff: typeof emptyTasks, projectId: string, userId: string, newLastSyncAt: number) => {
+export const toLocalDataBase = async (diff: typeof emptyTasks, projectId: string, projectTitle: string, userId: string, newLastSyncAt: number) => {
   try {
     // トランザクションで一括処理（途中でエラーが出たらロールバックされるので安全）
     await db.transaction('rw', [db.cards, db.boards, db.projects, db.syncMeta], async () => {
@@ -39,8 +39,8 @@ export const toLocalDataBase = async (diff: typeof emptyTasks, projectId: string
 			}
 
       // 並び順 (projectMetaなど)
-      const latestOrder = diff.createTasks.boardOrder.length > 0 
-				? diff.createTasks.boardOrder 
+      const latestOrder = diff.createTasks.boardOrder.length > 0
+				? diff.createTasks.boardOrder
 				: diff.updateTasks.boardOrder;
 
 			if (latestOrder.length > 0) {
@@ -49,13 +49,18 @@ export const toLocalDataBase = async (diff: typeof emptyTasks, projectId: string
 
 				if (existingProject) {
 					// 【2回目以降】データがあるので、並び順だけ「更新」
-					await db.projects.update(projectId, { boardOrder: latestOrder });
+					await db.projects.update(projectId, {
+						title: projectTitle,
+						boardOrder: latestOrder,
+						updatedAt: Date.now(),
+					});
 				} else {
 					// 【初回】データがないので、新しくレコードを「作成」
 					// ※ project全体の情報を入れる必要があります
+					console.log("タイトル：", projectTitle);
 					await db.projects.put({
 						id: projectId,
-						title: "読み込み中...", // 後でサーバーから取得した本物のタイトルに更新
+						title: projectTitle,
 						userId: userId, // 引数などで渡す
 						boardOrder: latestOrder,
 						createdAt: Date.now(),
@@ -63,13 +68,12 @@ export const toLocalDataBase = async (diff: typeof emptyTasks, projectId: string
 					});
 				}
 			}
-			await db.syncMeta.put({ 
-        id: projectId, 
-        lastSyncAt: newLastSyncAt 
+			await db.syncMeta.put({
+        id: projectId,
+        lastSyncAt: newLastSyncAt
       });
-
     });
   } catch (error) {
-    console.error("Failed to sync Dexie:", error);
+		console.error("Failed to sync Dexie:", error);
   }
 };

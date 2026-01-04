@@ -122,5 +122,6 @@ export async function getInitialData(userId: string, projectId: string, lastSync
       },
     },
     newLastSyncAt: project.updatedAt.getTime(),
+		projectTitle: project.title,
   };
 }

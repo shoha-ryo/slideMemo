@@ -40,12 +40,11 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   ...taskActions(set, get),
 
 
-
 	// ...既存のステート...
   syncStatus: 'initializing',
 
   // 🚀 初期ロード処理
-  initializeProject: async (userId:string, projectId: string) => {
+  initializeProject: async (userId: string, projectId: string) => {
     set({ syncStatus: 'initializing', projectId });
 
     // 1. まずローカルDBから取得（爆速）
@@ -60,6 +59,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
         cards: Object.fromEntries(localCards.map(c => [c.id, c])),
         boards: Object.fromEntries(localBoards.map(b => [b.id, b])),
         boardOrder: localProject?.boardOrder || [],
+				projectTitle: localProject?.title,
         syncStatus: 'syncing' // 外部DBへ確認中ステータス
       });
     } else {
@@ -75,14 +75,13 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 				lastSyncAt = 0 // もし30日以上ローカルDBにアクセスしていなければすべてのデータを再取得する（未実装）
 			}
 
-			console.log("最終更新時刻：", lastSyncAt)
-
 			// 2. 外部DBから最新データを取得 (差分しか取らないのでtoLocalDataBase()でローカルに保存)
-			const {diffTasks, newLastSyncAt} = await getInitialData(userId, projectId, lastSyncAt)
-			console.log("外部DBから取得(OKぽい)：", diffTasks)
+			const {diffTasks, newLastSyncAt, projectTitle} = await getInitialData(userId, projectId, lastSyncAt)
+			const newProjectTitle = projectTitle ? projectTitle : "プロジェクト名の取得に失敗しました"
 
 			// 3. 次回のためにローカルDBを最新化
-      await toLocalDataBase(diffTasks, projectId, userId, newLastSyncAt)
+      await toLocalDataBase(diffTasks, projectId, newProjectTitle, userId, newLastSyncAt)
+			// projectTitleがundefindの可能性あり（要修正）
 
 			// 4. Storeを最新に更新(ローカルDB更新後)
 			const localCards = await db.cards.where({ projectId }).toArray();
@@ -96,6 +95,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 				cards: cardMap,
 				boards: boardMap,
 				boardOrder: localProject?.boardOrder,
+				projectTitle: newProjectTitle,
 				syncStatus: 'synced'
 			});
     } catch (e) {
