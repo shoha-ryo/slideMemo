@@ -1,0 +1,11 @@
+import type React from "react"
+import TaskHeader from "@/app/header/TaskHeader"
+
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen bg-muted/30">
+      <TaskHeader/>
+      {children}
+    </div>
+  )
+}

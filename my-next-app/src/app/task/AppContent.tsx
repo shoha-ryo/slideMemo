@@ -20,7 +20,7 @@ import {
 } from "@dnd-kit/core";
 
 // 必要なコンポーネント
-import TaskHeader from "../header/task-header";
+import TaskHeader from "../header/TaskHeader";
 import Card from "./components/Card/Card";
 import CardModal from "./components/Card/CardModal";
 import Board from "./components/Board/Board";

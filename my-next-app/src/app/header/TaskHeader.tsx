@@ -13,9 +13,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { FlowLogo, Flow15px } from "../../../public/FLOW"
+import { useTaskStore } from "../task/store/taskStore/taskStore"
+import { useShallow } from "zustand/shallow"
 
-export default function TaskHeader({projectTitle}: {projectTitle: string}) {
+export default function TaskHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+	const {projectTitle} = useTaskStore(useShallow(state => ({
+		projectTitle: state.projectTitle
+	})))
 
   return (
     <header className="border-b border-border bg-background">
