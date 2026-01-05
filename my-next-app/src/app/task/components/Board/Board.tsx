@@ -13,7 +13,8 @@ import DraftTask from "../Card/DraftTask";
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import { useShallow } from "zustand/shallow";
 import { useModalStore } from "../../store/ModalStore";
-import { Ghost } from "lucide-react";
+import { Ghost } from "lucide-react"
+import { handleKeyDown } from "../../actions/handler";
 
 export default function Board({ board }: { board: BoardType }) {
   const { attributes, listeners, setNodeRef, isDragging, isOver } = useSortable(
@@ -59,16 +60,20 @@ export default function Board({ board }: { board: BoardType }) {
     <div
       ref={setNodeRef}
       className={`
+				board
 				${style}
 				${hoveredStyle}
 				${draggableStyle}
 				${droppableStyle}
+				focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:z-10
 				`}
       {...attributes}
       {...listeners}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleBoardClick}
+			onKeyDown={handleKeyDown}
+			tabIndex={0}
     >
       <div className="font-black text-center">{board.title}</div>
       <SortableContext

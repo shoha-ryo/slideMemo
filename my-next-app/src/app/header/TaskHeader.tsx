@@ -32,32 +32,16 @@ export default function TaskHeader() {
           <Link
 						href={"/home"}
 					>
-						<div className="flex items-center gap-2">
+						<div className="flex items-center gap-2 font-bold text-xl tracking-tighter">
 							<FlowLogo className={"h-8 w-8"}></FlowLogo>
-							<Flow15px className={"h-3 w-15"}/>
+							<span>FLOW</span>
 						</div>
 					</Link>
-
-					<div
-						className="text-lg font-semibold text-foreground/80"
-					>{projectTitle}</div>
-
-          {/* Navigation Menu
-          <nav className="hidden items-center gap-1 md:flex">
-            <Button variant="ghost" size="sm" className="text-foreground/80">
-              ダッシュボード
-            </Button>
-            <Button variant="ghost" size="sm" className="text-foreground/80">
-              プロジェクト
-            </Button>
-            <Button variant="ghost" size="sm" className="text-foreground/80">
-              タスク
-            </Button>
-            <Button variant="ghost" size="sm" className="text-foreground/80">
-              チーム
-            </Button>
-          </nav> */}
         </div>
+
+				<div className="text-xl font-bold text-foreground/80">
+					{projectTitle}
+				</div>
 
         {/* Right Section - Search, Actions, User */}
         <div className="flex items-center gap-3">
@@ -132,7 +116,7 @@ export default function TaskHeader() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-9 gap-2 px-2">
                 <Avatar className="h-7 w-7">
-                  <AvatarImage src="/placeholder.svg?height=28&width=28" />
+                  {/* <AvatarImage src="/placeholder.svg?height=28&width=28" /> */}
                   <AvatarFallback className="bg-muted text-xs">YS</AvatarFallback>
                 </Avatar>
                 <span className="hidden text-sm font-medium lg:inline-block">山田さん</span>

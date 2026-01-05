@@ -7,6 +7,7 @@ export const applyMoveLogic = (
   payload: Payload,
   state: AppState,
 ): ReturnTasks => {
+
   // 必要なデータの読み込み
   const { activeId, overId, dropPosition } = payload;
   const { boardOrder, boards, cards } = state;
@@ -124,14 +125,31 @@ export const applyMoveLogic = (
   // 3. APIへの送信準備 (オブジェクトの配列化など)
   const updateCards = Array.from(dirtyCardIds).map((id) => {
     const updates = getObjectDiff(cards[id], newCards[id]);
-    if (Object.keys(updates).length === 0) return {};
+    if (Object.keys(updates).length === 0) return null;
     return { id, ...updates }; // idは確実に返せるように必ず追加
-  });
+  }).filter((item) => item !== null)
   const updateBoards = Array.from(dirtyBoardIds).map((id) => {
     const updates = getObjectDiff(boards[id], newBoards[id]);
-    if (Object.keys(updates).length === 0) return {};
+    if (Object.keys(updates).length === 0) return null;
     return { id, ...updates };
+  }).filter((item) => item !== null)
+
+	console.log({
+    newState: {
+      cards: newCards,
+      boards: newBoards,
+      boardOrder: newBoardOrder,
+    },
+    diffTasks: {
+      ...emptyTasks,
+      updateTasks: {
+        ...emptyTasks.updateTasks,
+        boards: updateBoards,
+        cards: updateCards,
+      },
+    },
   });
+
 
   // 4. Zustandへの返却
   return {

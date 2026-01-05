@@ -4,13 +4,8 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Zap, Shield, Sparkles, Menu } from "lucide-react"
-import { Separator } from "@/components/ui/separator"
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet" // npx shadcn@latest add sheet で追加
-import { Flow15px, FlowLogo } from "../../public/FLOW"
+import MarketingHeader from "./header/MarketingHeader"
+
 
 export default function HomePage() {
   const fadeIn = {
@@ -22,44 +17,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-white text-slate-900">
       {/* ナビゲーション */}
-      <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 font-bold text-xl tracking-tighter">
-						<FlowLogo className="h-8 w-8"></FlowLogo>
-            <span>FLOW</span>
-          </div>
-
-          {/* デスクトップメニュー */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
-            <Link href="#features" className="hover:text-primary transition-colors">機能</Link>
-            <Link href="#pricing" className="hover:text-primary transition-colors">料金</Link>
-            <Separator orientation="vertical" className="h-4" />
-            <Link href="/login">
-              <Button variant="ghost">ログイン</Button>
-            </Link>
-            <Link href="/register">
-              <Button className="shadow-md hover:shadow-lg transition-all">今すぐ始める</Button>
-            </Link>
-          </nav>
-
-          {/* モバイルメニュー (shadcn Sheet) */}
-          <div className="md:hidden">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent>
-                <div className="flex flex-col gap-4 mt-10">
-                  <Link href="/login" className="text-lg font-medium">ログイン</Link>
-                  <Link href="/register" className="text-lg font-medium text-primary">新規登録</Link>
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-        </div>
-      </header>
+      <MarketingHeader></MarketingHeader>
 
       <main className="flex-1">
         {/* ヒーローセクション */}
@@ -81,10 +39,11 @@ export default function HomePage() {
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button size="lg" className="w-full sm:w-auto h-14 px-8 text-lg rounded-full">
-                  無料で試してみる <ArrowRight className="ml-2 h-5 w-5" />
+                  <div className="pl-2">無料で試してみる</div>
+									<ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 px-8 text-lg rounded-full">
-                  デモを予約
+                  デモを確認
                 </Button>
               </div>
             </motion.div>

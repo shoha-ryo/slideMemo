@@ -17,7 +17,9 @@ import {
   DragMoveEvent,
   DragEndEvent,
   CollisionDetection,
+	KeyboardSensor
 } from "@dnd-kit/core";
+
 
 // 必要なコンポーネント
 import TaskHeader from "../header/TaskHeader";
@@ -28,7 +30,7 @@ import BoardList from "./components/Board/BoardList";
 import BoardModal from "./components/Board/BoardModal";
 import TrashDropArea, { TRASH_ID } from "./components/TrashArea/TrashDropArea"; // ★ 追加
 
-import { getInitialData } from "./actions/getTasks";
+import { handleGlobalKeyDown } from "./actions/handler";
 import { getDropPosition } from "./lib/getDropPosition";
 import { useMousePointer } from "./components/useMousePointer";
 
@@ -106,6 +108,10 @@ export default function AppContent({ projectId }: { projectId: string }) {
 			setUserId(user.uid);
 			setProjectId(projectId);
     }
+
+		// キーイベントの設定と解除
+		window.addEventListener("keydown", handleGlobalKeyDown)
+		return () => window.removeEventListener("keydown", handleGlobalKeyDown)
   }, [auth]);
 
   // DB更新時の処理
@@ -164,7 +170,6 @@ export default function AppContent({ projectId }: { projectId: string }) {
       });
       return;
     }
-
     // ★ 追加: ゴミ箱の上にいる場合は象限計算などは不要なのでスキップ
     if (over.id === TRASH_ID) {
       setHoverInfo({
@@ -237,6 +242,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
     });
   };
 
+
   const customCollisionDetection: CollisionDetection = (args) => {
     const { active } = args;
 
@@ -271,18 +277,12 @@ export default function AppContent({ projectId }: { projectId: string }) {
   };
 
 
-	// if (syncStatus === "initializing" ) return "初期化中"
-	// if (syncStatus === "syncing" ) return "ロード中"
-	// if (syncStatus === "synced" ) {
-	// 	return "ロード完了"
-	// }
-
-
+	// console.log(document.activeElement as HTMLElement)
 
   return (
 		<div className="min-h-screen">
 			{projectTitle
-				? <TaskHeader projectTitle={projectTitle}></TaskHeader>
+				? <TaskHeader/>
 				: null}
 			<div style={{ position: "relative" }}>
 				{isShowModal && (

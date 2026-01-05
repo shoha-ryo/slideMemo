@@ -8,6 +8,7 @@ import FormattedText from "./FormattedText";
 import { Button } from "@/components/ui/button";
 import { useShallow } from "zustand/shallow";
 import DraftTask from "./DraftTask";
+import { handleKeyDown } from "../../actions/handler";
 
 // Draggable/Droppable コンポーネント
 const Card = ({ cardId }: { cardId: string }) => {
@@ -77,6 +78,9 @@ const Card = ({ cardId }: { cardId: string }) => {
     return null;
   }
 
+
+
+
   return (
     <div
       ref={setNodeRef}
@@ -87,10 +91,13 @@ const Card = ({ cardId }: { cardId: string }) => {
 				${hoveredStyle}
 				${draggableStyle}
 				${droppableStyle}
+				focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:z-10
 			`}
       {...listeners}
       {...attributes}
       onClick={handleCardClick}
+			tabIndex={0}
+			onKeyDown={handleKeyDown}
     >
       <>
         <div
