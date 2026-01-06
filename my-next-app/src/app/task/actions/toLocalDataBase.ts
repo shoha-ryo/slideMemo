@@ -1,4 +1,4 @@
-import { db } from "@/lib/dexie";
+import { db } from "../../../../dexie/dexie";
 import { emptyTasks } from "./emptyTasks";
 
 export const toLocalDataBase = async (diff: typeof emptyTasks, projectId: string, projectTitle: string, userId: string, newLastSyncAt: number) => {

@@ -29,6 +29,7 @@ import Board from "./components/Board/Board";
 import BoardList from "./components/Board/BoardList";
 import BoardModal from "./components/Board/BoardModal";
 import TrashDropArea, { TRASH_ID } from "./components/TrashArea/TrashDropArea"; // ★ 追加
+import { TaskLabel } from "./components/Label/TaskLabel";
 
 import { handleGlobalKeyDown } from "./actions/handler";
 import { getDropPosition } from "./lib/getDropPosition";
@@ -37,7 +38,7 @@ import { useMousePointer } from "./components/useMousePointer";
 // Store
 import { useTaskStore } from "./store/taskStore/taskStore";
 import { useModalStore } from "./store/ModalStore";
-import { AppState, Payload } from "@/types/TasksType";
+import { AppState, Payload } from "@/app/task/store/taskStore/types/TasksType";
 import { useShallow } from "zustand/shallow";
 import { useUserStore } from "../../store/userStore";
 import { emptyTasks } from "./actions/emptyTasks";
@@ -60,20 +61,16 @@ export default function AppContent({ projectId }: { projectId: string }) {
     cards,
     boards,
 		projectTitle,
-		syncStatus,
     setActiveId,
     setHoverInfo,
     moveTask,
-    deleteTask,
     moveBoard,
+    deleteTask,
     deleteBoard,
     setProjectId,
-    setProjectTitle,
-    setBoardOrder,
-    setBoards,
-    setCards,
 		applyDiff,
 		initializeProject,
+		addLabelToCard,
   } = useTaskStore(
     useShallow((state) => ({
       activeId: state.activeId,
@@ -97,6 +94,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
       setCards: state.setCards,
 			applyDiff: state.applyDiff,
 			initializeProject: state.initializeProject,
+			addLabelToCard: state.addLabelToCard,
     })),
   );
 
@@ -203,7 +201,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
       return;
     }
 
-    // ドロップ先がゴミ箱IDと一致する場合
+    // ゴミ箱ロジック
     if (over.id === TRASH_ID) {
       // 削除アクションを実行
       if (activeId?.includes("card-")) {
@@ -215,6 +213,16 @@ export default function AppContent({ projectId }: { projectId: string }) {
       // 状態リセットして早期リターン (moveTaskを実行させない)
       setHoverInfo({ activeId: null, overId: null, dropPosition: null });
       return;
+    }
+
+		// ラベル移動ロジック
+		if (activeId?.includes("label") && overId?.includes("card")) {
+      const labelId = activeId;
+      const cardId = overId
+
+      addLabelToCard(cardId, labelId); // ストアのアクションを呼び出す
+      console.log(`ラベル ${labelId} をカード ${cardId} に追加しました。`);
+      // 必要に応じてトースト通知などを表示
     }
 
     // --- 以下、通常の移動ロジック ---
@@ -277,13 +285,11 @@ export default function AppContent({ projectId }: { projectId: string }) {
   };
 
 
-	// console.log(document.activeElement as HTMLElement)
+
 
   return (
 		<div className="min-h-screen">
-			{projectTitle
-				? <TaskHeader/>
-				: null}
+			<TaskHeader/>
 			<div style={{ position: "relative" }}>
 				{isShowModal && (
 					<>
@@ -301,16 +307,20 @@ export default function AppContent({ projectId }: { projectId: string }) {
 				>
 					{/* ★ 追加: 削除エリア (DndContextの中に配置する必要があります) */}
 					{/* activeIdが存在する(=ドラッグ中)ときだけスライドダウン表示 */}
-					<TrashDropArea isVisible={!!activeId} />
-
-					<div style={{ width: "auto", margin: "20px auto" }}>
-						<BoardList />
-
+					<TrashDropArea isVisible={!!activeId}/>
+					<TaskLabel id="label-12345" color="red" name="重要"></TaskLabel>
+					<div
+						className="h-full w-full overflow-auto overflow-y-hidden"
+						>
+						<BoardList/>
 						<DragOverlay>
 							{activeId && cards[activeId] ? <Card cardId={activeId} /> : null}
-							{activeId && boards[activeId] ? (
-								<Board board={boards[activeId]}></Board>
-							) : null}
+							{activeId && boards[activeId] ? <Board board={boards[activeId]}></Board> : null}
+							{activeId === "label-12345" && (
+								<div className="p-2 bg-red-500 w-20 rounded-2xl text-center text-white font-bold shadow-xl">
+									重要
+								</div>
+							)}
 						</DragOverlay>
 					</div>
 				</DndContext>

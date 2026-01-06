@@ -1,5 +1,5 @@
 // @/store/taskStore/moveBoard/moveBoardLogic.ts
-import { Payload, AppState, ReturnTasks } from "@/types/TasksType";
+import { Payload, AppState, ReturnTasks } from "@/app/task/store/taskStore/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 export const moveBoardLogic = (

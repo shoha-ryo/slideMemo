@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { applyMoveLogic } from "./applyMoveLogic";
-import { AppState, Payload, CardType, BoardType } from "@/types/TasksType";
+import { AppState, Payload, CardType, BoardType } from "@/app/task/store/taskStore/types/TasksType";
 
 describe("applyMoveLogic - 全パターン網羅テスト", () => {
   const createInitialState = (): AppState => ({

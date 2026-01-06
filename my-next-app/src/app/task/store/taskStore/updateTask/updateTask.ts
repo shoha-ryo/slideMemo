@@ -1,7 +1,7 @@
-import { AppState, CardType } from "@/types/TasksType";
+import { AppState, CardType } from "@/app/task/store/taskStore/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 import { getObjectDiff } from "@/app/task/actions/getDiff";
-import { ReturnTasks } from "@/types/TasksType";
+import { ReturnTasks } from "@/app/task/store/taskStore/types/TasksType";
 
 /**
  * カードの情報を更新し、newStateとdiffTasksを返す

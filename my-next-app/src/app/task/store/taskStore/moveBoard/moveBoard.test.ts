@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { moveBoardLogic } from "./moveBoard"; // パスは適宜調整してください
-import { AppState, Payload, CardType } from "@/types/TasksType";
+import { AppState, Payload, CardType } from "@/app/task/store/taskStore/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 describe("moveBoardLogic", () => {

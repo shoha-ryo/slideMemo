@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { updateBoardLogic } from "./updateBoard";
-import { AppState, BoardType, CardType } from "@/types/TasksType";
+import { AppState, BoardType, CardType } from "@/app/task/store/taskStore/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 describe("updateBoardLogic", () => {

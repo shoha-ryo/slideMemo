@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { deleteBoardLogic } from "./deleteBoard"; // パスは適宜調整してください
-import { AppState, CardType } from "@/types/TasksType";
+import { AppState, CardType } from "@/app/task/store/taskStore/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 describe("deleteBoardLogic", () => {

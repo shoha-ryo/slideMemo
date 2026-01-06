@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { addCardLogic } from "./addTask"; // 正しいインポート
-import { AppState, CardType, Source } from "@/types/TasksType";
+import { AppState, CardType, Source } from "@/app/task/store/taskStore/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 describe("addCardLogic", () => {

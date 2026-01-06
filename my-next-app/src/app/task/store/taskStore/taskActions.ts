@@ -6,7 +6,7 @@ import {
   Source,
   CardType,
   BoardType,
-} from "@/types/TasksType";
+} from "@/app/task/store/taskStore/types/TasksType";
 
 import { applyMoveLogic } from "./moveTask/applyMoveLogic";
 import { addCardLogic } from "./addTask/addTask";

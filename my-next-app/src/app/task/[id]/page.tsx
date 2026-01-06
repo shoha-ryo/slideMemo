@@ -3,7 +3,7 @@ import AppContent from "../AppContent";
 import { AuthGuard } from "@/components/Auth/AuthGuard";
 
 export default async function TaskPage({
-  params,
+  params, // [id]から取得
 }: {
   params: Promise<{ id: string }>;
 }) {

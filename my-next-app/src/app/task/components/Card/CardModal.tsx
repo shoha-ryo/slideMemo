@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useModalStore } from "../../store/ModalStore";
 import { useTaskStore } from "../../store/taskStore/taskStore";
-import { CardType } from "@/types/TasksType";
+import { CardType } from "@/app/task/store/taskStore/types/TasksType";
 
 export default function CardModal() {
   // --- 状態とストアからのデータ取得 ---
@@ -201,7 +201,7 @@ export default function CardModal() {
             onKeyDown={handleKeyDown}
             style={{
               width: "100%",
-              height: "100px",
+              height: "500px",
               padding: "8px",
               marginTop: "4px",
               borderRadius: "4px",

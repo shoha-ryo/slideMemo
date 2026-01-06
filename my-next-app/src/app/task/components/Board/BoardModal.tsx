@@ -5,7 +5,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useModalStore } from "../../store/ModalStore";
 import { useTaskStore } from "../../store/taskStore/taskStore";
-import { BoardType } from "@/types/TasksType";
+import { BoardType } from "@/app/task/store/taskStore/types/TasksType";
 
 export default function BoardModal() {
   // --- 状態とストアからのデータ取得 ---

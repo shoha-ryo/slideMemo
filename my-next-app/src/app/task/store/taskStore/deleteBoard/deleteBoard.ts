@@ -1,7 +1,7 @@
 // deleteBoard/deleteBoard.ts
-import { AppState } from "@/types/TasksType";
+import { AppState } from "@/app/task/store/taskStore/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
-import { ReturnTasks } from "@/types/TasksType";
+import { ReturnTasks } from "@/app/task/store/taskStore/types/TasksType";
 
 export const deleteBoardLogic = (
   boardId: string,

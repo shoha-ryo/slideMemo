@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-import { BoardType, AppState, TaskStore } from "@/types/TasksType";
+import { BoardType, AppState, TaskStore } from "@/app/task/store/taskStore/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
-import { ReturnTasks } from "@/types/TasksType";
+import { ReturnTasks } from "@/app/task/store/taskStore/types/TasksType";
 
 // 新しいカードの情報を作成
 function createNewBoard(title: string, projectId: string) {

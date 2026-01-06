@@ -54,7 +54,9 @@ const Card = ({ cardId }: { cardId: string }) => {
           ? "ring-2 ring-cyan-500 border-b-10 border-b-cyan-500 bg-cyan-50" // 下部に青線
           : "ring-4 ring-cyan-500 bg-cyan-50" // center（真ん中）
       : "bg-white border-gray-300"; // ホバーしていない、または自分が動いている時
-  const hoveredStyle = isHovered ? "scale-103 shadow-lg" : "";
+  const hoveredStyle = isHovered 
+  ? "-translate-y-1 ring-2 ring-gray-500 shadow-xl z-100 relative" 
+  : "transition-all duration-200";
 
   const setNodeRef = (node: HTMLElement | null) => {
     setDroppableRef(node);
@@ -84,8 +86,9 @@ const Card = ({ cardId }: { cardId: string }) => {
   return (
     <div
       ref={setNodeRef}
+			data-card-id={cardId}
       className={`card relative
-				p-2.5 pl-2.5 mb-[5px]
+				p-2.5 pl-2.5 mb-[5px] ml-1 mr-1
 				border rounded-lg
 				transition-all duration-200
 				${hoveredStyle}
@@ -97,7 +100,7 @@ const Card = ({ cardId }: { cardId: string }) => {
       {...attributes}
       onClick={handleCardClick}
 			tabIndex={0}
-			onKeyDown={handleKeyDown}
+			onKeyDown={e => handleKeyDown(e, showModal)}
     >
       <>
         <div
@@ -110,6 +113,7 @@ const Card = ({ cardId }: { cardId: string }) => {
               <strong className="block text-sm text-foreground/80">
                 <FormattedText text={card.title} />
               </strong>
+							{card.labels}
               {card.details
 								?
 									<div className="text-xs text-gray-500 mt-1">

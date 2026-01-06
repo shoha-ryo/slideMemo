@@ -12,19 +12,19 @@ export interface TaskStore extends AppState, Payload {
   setProjectId: (projectId: string) => void;
   setProjectTitle: (projectTitle: string) => void;
 
-  setBoardOrder: (
-    boardOrder: Pick<AppState, "boardOrder">["boardOrder"],
-  ) => void;
+  setBoardOrder: (boardOrder: Pick<AppState, "boardOrder">["boardOrder"]) => void;
   setBoards: (boards: Pick<AppState, "boards">["boards"]) => void;
   setCards: (cards: Pick<AppState, "cards">["cards"]) => void;
 
-  moveTask: (payload: Payload) => void;
   addTask: (title: string, source: Source) => void;
-  deleteTask: (cardId: string) => void;
-  updateTask: (cardId: string, updates: Partial<CardType>) => void;
-  moveBoard: (payload: Payload) => void;
   addBoard: (title: string) => void;
+	addLabelToCard: (labelId: string, cardId: string) => void,
+  moveTask: (payload: Payload) => void;
+  moveBoard: (payload: Payload) => void;
+  deleteTask: (cardId: string) => void;
   deleteBoard: (boardId: string) => void;
+	// deleteLabelFromCard:
+  updateTask: (cardId: string, updates: Partial<CardType>) => void;
   updateBoard: (boardId: string, updates: Partial<BoardType>) => void;
 
   isTaskCreating: boolean;
@@ -68,6 +68,7 @@ export interface CardType {
   dueAt: number | null;
   simpleView: boolean;
   childrenIds: string[];
+	labels: string[]
   createdAt: number;
   updatedAt: number;
 }

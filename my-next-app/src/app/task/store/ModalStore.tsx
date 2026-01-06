@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 type ModalType = "card" | "board";
-interface ModalStore {
+export interface ModalStore {
   isShowModal: boolean;
   modalType: ModalType | null;
   clickedActiveId: string | null;

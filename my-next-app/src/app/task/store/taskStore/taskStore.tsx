@@ -2,11 +2,11 @@
 
 import { create } from "zustand";
 import { taskActions } from "./taskActions";
-import { db } from "@/lib/dexie";
-import { TaskStore } from "@/types/TasksType";
+import { db } from "../../../../../dexie/dexie";
+import { CardType, TaskStore } from "@/app/task/store/taskStore/types/TasksType";
 import { toLocalDataBase } from "../../actions/toLocalDataBase";
 import { getInitialData } from "../../actions/getTasks";
-import { log } from "console";
+import { produce, current } from "immer"
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
   activeId: null,
@@ -35,6 +35,16 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   setBoardOrder: (boardOrder) => set({ boardOrder }),
   setBoards: (boards) => set({ boards }),
   setCards: (cards) => set({ cards }),
+
+	addLabelToCard: (cardId, labelId) =>
+    set(produce((state) => {
+      const card: CardType = state.cards[cardId];
+      if (card && !card.labels.includes(labelId)) { // 既にラベルが付いていないかチェック
+				// 配列自体が入っていない＝prismaに登録？でもデータ全取得できないぞ
+				// とりあえずprisma更新だ。
+        card.labels.push(labelId);
+      }
+    })),
 
   // タスクのCRUD操作
   ...taskActions(set, get),
@@ -74,6 +84,9 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 			} else {
 				lastSyncAt = 0 // もし30日以上ローカルDBにアクセスしていなければすべてのデータを再取得する（未実装）
 			}
+			// lastSyncAt = 0
+			// console.log("初期データ全取得モード中...")
+
 
 			// 2. 外部DBから最新データを取得 (差分しか取らないのでtoLocalDataBase()でローカルに保存)
 			const {diffTasks, newLastSyncAt, projectTitle} = await getInitialData(userId, projectId, lastSyncAt)

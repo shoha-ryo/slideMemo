@@ -8,7 +8,7 @@ import {
 } from "@dnd-kit/sortable";
 import Card from "../Card/Card";
 import { Button } from "@/components/ui/button";
-import { BoardType } from "@/types/TasksType";
+import { BoardType } from "@/app/task/store/taskStore/types/TasksType";
 import DraftTask from "../Card/DraftTask";
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import { useShallow } from "zustand/shallow";
@@ -36,6 +36,8 @@ export default function Board({ board }: { board: BoardType }) {
 
   const style =
     "flex flex-col self-start " +
+		"w-[400px] shrink-0 " + // ★重要: shrink-0 を追加して潰れないようにする
+    "max-h-[90vh] " +       // ★重要: ボードの最大高さを決めてスクロールを有効にする
     "w-[400px] gap-[3px] p-3 " +
     "bg-gray-100 rounded-lg ";
 
@@ -59,8 +61,10 @@ export default function Board({ board }: { board: BoardType }) {
   return (
     <div
       ref={setNodeRef}
+			data-board-id={board.id}
       className={`
 				board
+				overflow-hidden
 				${style}
 				${hoveredStyle}
 				${draggableStyle}
@@ -72,18 +76,20 @@ export default function Board({ board }: { board: BoardType }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleBoardClick}
-			onKeyDown={handleKeyDown}
+			onKeyDown={e => handleKeyDown(e, showModal)}
 			tabIndex={0}
     >
       <div className="font-black text-center">{board.title}</div>
-      <SortableContext
-        items={board.cardIds}
-        strategy={verticalListSortingStrategy}
-      >
-        {board.cardIds.map((cardId: string) => (
-          <Card key={cardId} cardId={cardId} />
-        ))}
-      </SortableContext>
+      <div className="overflow-auto pt-2">
+				<SortableContext
+					items={board.cardIds}
+					strategy={verticalListSortingStrategy}
+				>
+					{board.cardIds.map((cardId: string) => (
+						<Card key={cardId} cardId={cardId} />
+					))}
+				</SortableContext>
+			</div>
 
       {isDrafting ? (
         <DraftTask

@@ -1,5 +1,5 @@
-import { Payload, ReturnTasks } from "@/types/TasksType";
-import { AppState, CardType, BoardType } from "@/types/TasksType";
+import { Payload, ReturnTasks } from "@/app/task/store/taskStore/types/TasksType";
+import { AppState, CardType, BoardType } from "@/app/task/store/taskStore/types/TasksType";
 import { getObjectDiff } from "@/app/task/actions/getDiff";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 

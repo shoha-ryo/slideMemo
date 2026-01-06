@@ -1,4 +1,4 @@
-import { CardType, ReturnTasks, TaskStore } from "@/types/TasksType";
+import { CardType, ReturnTasks, TaskStore } from "@/app/task/store/taskStore/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 /**

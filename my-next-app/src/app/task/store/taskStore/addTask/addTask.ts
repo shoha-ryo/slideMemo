@@ -1,17 +1,20 @@
 import { v4 as uuidv4 } from "uuid";
-import { CardType, BoardType, Source, AppState } from "@/types/TasksType";
+import { CardType, BoardType, Source, AppState } from "@/app/task/store/taskStore/types/TasksType";
 import { getObjectDiff } from "@/app/task/actions/getDiff";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
-import { ReturnTasks } from "@/types/TasksType";
+import { ReturnTasks } from "@/app/task/store/taskStore/types/TasksType";
+import { useTaskStore } from "../taskStore";
 
 // 新しいカードの情報を作成
 function createNewCard(
   title: string,
   parentId: string | null,
   boardId: string,
+	projectId: string,
 ) {
   const newCard: CardType = {
     id: `card-${uuidv4()}`, // 一意のIDを生成
+		projectId: projectId,
     parentId: parentId, // カード内から追加の時のみ
     boardId: boardId, // 引数で受け取り
     title: title.trim(), // 引数で受け取り
@@ -22,6 +25,7 @@ function createNewCard(
     dueAt: null,
     simpleView: false,
     childrenIds: [],
+		labels: [],
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
@@ -40,11 +44,17 @@ export function addCardLogic(
     };
 
   const { boards, cards } = state;
+	const { projectId } = useTaskStore()
+	if (!projectId)
+		return {
+      newState: state,
+      diffTasks: emptyTasks,
+    };
 
   // ボードの場合の処理
   if (source.type === "board") {
     const targetBoard: BoardType = source.data;
-    const newCard = createNewCard(title, null, targetBoard.id);
+    const newCard = createNewCard(title, null, targetBoard.id, projectId);
     const newTargetBoard = {
       ...targetBoard,
       cardIds: [...targetBoard.cardIds, newCard.id],
@@ -83,7 +93,7 @@ export function addCardLogic(
   // カードの場合の処理
   if (source.type === "card") {
     const targetCard: CardType = source.data;
-    const newCard = createNewCard(title, targetCard.id, targetCard.boardId);
+    const newCard = createNewCard(title, targetCard.id, targetCard.boardId, projectId);
     const newTargetCard = {
       ...targetCard,
       childrenIds: [newCard.id, ...targetCard.childrenIds],

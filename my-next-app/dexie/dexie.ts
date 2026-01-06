@@ -12,6 +12,7 @@ export interface CardEntity {
   progress: 'todo' | 'doing' | 'done';
   status: 'active' | 'archived';
   simpleView: boolean;
+	labels: string[]
   startAt: number | null;
   dueAt: number | null;
   createdAt: number; // Dexie(IndexedDB)では数値かDateで保存
@@ -53,7 +54,7 @@ export class TaskFlowDB extends Dexie {
 
     // stores の定義（カンマ区切りで最初に書くのがプライマリキー）
     // 2つ目以降は「検索（Index）」対象にしたいキー
-    this.version(2).stores({
+    this.version(3).stores({
       projects: 'id, userId',
       boards: 'id, projectId',
       cards: 'id, boardId, parentId, projectId', // 親子関係やボード移動の高速化

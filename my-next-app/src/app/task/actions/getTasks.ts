@@ -1,7 +1,7 @@
 // src/app/actions/getTasks.ts
 "use server";
 import { prisma } from "@/lib/prisma";
-import { BoardType, CardType } from "@/types/TasksType";
+import { BoardType, CardType } from "@/app/task/store/taskStore/types/TasksType";
 
 // 戻り値の型定義
 export interface DiffTasks {
@@ -38,7 +38,6 @@ export async function getInitialData(userId: string, projectId: string, lastSync
     },
   });
 
-	console.log("project", project?.boardOrder);
 
   if (!project) throw new Error("Project not found");
 
@@ -70,6 +69,7 @@ export async function getInitialData(userId: string, projectId: string, lastSync
         deleteTasks: { boardOrder: [], boardIds: [], cardIds: [] },
       },
       newLastSyncAt: project.updatedAt.getTime(),
+			projectTitle: project.title,
     };
   }
 
@@ -102,6 +102,7 @@ export async function getInitialData(userId: string, projectId: string, lastSync
     prisma.card.findMany({ where: { id: { in: Array.from(ids.card.create) } } }),
     prisma.card.findMany({ where: { id: { in: Array.from(ids.card.update) } } }),
   ]);
+
 
   return {
     diffTasks: {

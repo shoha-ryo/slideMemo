@@ -1,4 +1,4 @@
-import { BoardType, CardType } from "@/types/TasksType";
+import { BoardType, CardType } from "@/app/task/store/taskStore/types/TasksType";
 
 // ここには "use server" を書かない！ただの定数ファイルにする
 export const emptyTasks = {
