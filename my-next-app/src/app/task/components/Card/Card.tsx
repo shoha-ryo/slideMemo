@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useShallow } from "zustand/shallow";
 import DraftTask from "./DraftTask";
 import { handleKeyDown } from "../../actions/handler";
+import { DraggableLabel } from "./Label";
 
 // Draggable/Droppable コンポーネント
 const Card = ({ cardId }: { cardId: string }) => {
@@ -28,11 +29,10 @@ const Card = ({ cardId }: { cardId: string }) => {
     id: cardId,
   });
 
-  const { cards, dropPosition } = useTaskStore(
+  const { cards, dropPosition, labels } = useTaskStore(
     useShallow((state) => ({
-      activeId: state.activeId,
-      overId: state.overId,
-      cards: state.cards,
+			cards: state.cards,
+      labels: state.labels,
       dropPosition: state.dropPosition,
     })),
   );
@@ -54,8 +54,8 @@ const Card = ({ cardId }: { cardId: string }) => {
           ? "ring-2 ring-cyan-500 border-b-10 border-b-cyan-500 bg-cyan-50" // 下部に青線
           : "ring-4 ring-cyan-500 bg-cyan-50" // center（真ん中）
       : "bg-white border-gray-300"; // ホバーしていない、または自分が動いている時
-  const hoveredStyle = isHovered 
-  ? "-translate-y-1 ring-2 ring-gray-500 shadow-xl z-100 relative" 
+  const hoveredStyle = isHovered
+  ? "-translate-y-1 ring-2 ring-gray-500 shadow-xl z-100 relative"
   : "transition-all duration-200";
 
   const setNodeRef = (node: HTMLElement | null) => {
@@ -110,20 +110,32 @@ const Card = ({ cardId }: { cardId: string }) => {
         >
           <div className="flex justify-between p-2">
             <div className="min-w-0 flex-1">
-              <strong className="block text-sm text-foreground/80">
+              {/* タイトル */}
+							<strong className="block text-sm text-foreground/80">
                 <FormattedText text={card.title} />
               </strong>
-							{card.labels}
-              {card.details
+
+							{/* 詳細 */}
+							{card.details
 								?
 									<div className="text-xs text-gray-500 mt-1">
 										<FormattedText text={card.details} />
 									</div>
 								: null
 							}
+
+							{/* ラベル */}
+							<div className="flex gap-1">
+								{card.labelIds.map(labelId => (
+									<DraggableLabel label={labels[labelId]}></DraggableLabel>
+								))}
+							</div>
+
             </div>
+						{/* ホバー時のボタンチラつき防止 */}
             <div className="w-12 shrink-0" />
           </div>
+
 
           {/* 自身にホバー時のみ表示 */}
           {isHovered && (

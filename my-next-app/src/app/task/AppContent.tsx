@@ -30,6 +30,7 @@ import BoardList from "./components/Board/BoardList";
 import BoardModal from "./components/Board/BoardModal";
 import TrashDropArea, { TRASH_ID } from "./components/TrashArea/TrashDropArea"; // ★ 追加
 import { TaskLabel } from "./components/Label/TaskLabel";
+import { DraggableLabel } from "./components/Card/Label";
 
 import { handleGlobalKeyDown } from "./actions/handler";
 import { getDropPosition } from "./lib/getDropPosition";
@@ -43,6 +44,7 @@ import { useShallow } from "zustand/shallow";
 import { useUserStore } from "../../store/userStore";
 import { emptyTasks } from "./actions/emptyTasks";
 import { toLocalDataBase } from "./actions/toLocalDataBase";
+import { LabelEntity } from "../../../dexie/dexie";
 
 export default function AppContent({ projectId }: { projectId: string }) {
   const auth = getAuth();
@@ -60,6 +62,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
     dropPosition,
     cards,
     boards,
+		labels,
 		projectTitle,
     setActiveId,
     setHoverInfo,
@@ -78,6 +81,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
       dropPosition: state.dropPosition,
       cards: state.cards,
       boards: state.boards,
+			labels: state.labels,
 			projectTitle: state.projectTitle,
 			syncStatus: state.syncStatus,
       setActiveId: state.setActiveId,
@@ -121,7 +125,10 @@ export default function AppContent({ projectId }: { projectId: string }) {
     // チャンネルを購読
     const channel = pusher.subscribe(`project-${projectId}`);
     // "task-updated" という叫び声が聞こえたら実行
-    channel.bind("task-updated", (payload: {diffTasks: typeof emptyTasks, lastSyncAt: number}) => {
+    channel.bind("task-updated", (payload: {
+			diffTasks: typeof emptyTasks,
+			lastSyncAt: number
+		}) => {
       toast.info("他のユーザーがタスクを更新しました！", {});
 			const { diffTasks, lastSyncAt } = payload
 			if (!userId || !projectTitle) return;
@@ -136,6 +143,8 @@ export default function AppContent({ projectId }: { projectId: string }) {
 
   const { isShowModal, modalType, clickedActiveId } = useModalStore();
   const { x, y } = useMousePointer();
+	const labelList = Object.values(labels);
+
 
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
@@ -308,7 +317,12 @@ export default function AppContent({ projectId }: { projectId: string }) {
 					{/* ★ 追加: 削除エリア (DndContextの中に配置する必要があります) */}
 					{/* activeIdが存在する(=ドラッグ中)ときだけスライドダウン表示 */}
 					<TrashDropArea isVisible={!!activeId}/>
-					<TaskLabel id="label-12345" color="red" name="重要"></TaskLabel>
+					{/* <TaskLabel id="label-12345" color="red" name="重要"></TaskLabel> */}
+					<div className="flex gap-2 p-4">
+						{labelList.map((label) => (
+							<DraggableLabel key={label.id} label={label}></DraggableLabel>
+						))}
+					</div>
 					<div
 						className="h-full w-full overflow-auto overflow-y-hidden"
 						>

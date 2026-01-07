@@ -73,6 +73,29 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
         });
       }
 
+			// 1-C. ラベルの作成
+			if (createTasks.labels.length > 0) {
+				await tx.label.createMany({
+					data: createTasks.labels.map(label => ({
+						id: label.id,
+						name: label.name,
+						color: label.color,
+						projectId,
+					})),
+					skipDuplicates: true,
+				});
+
+				await tx.activityLog.createMany({
+					data: createTasks.labels.map(l => ({
+						projectId,
+						entityId: l.id,
+						entityType: "LABEL",
+						action: "CREATE",
+					})),
+				});
+			}
+
+
       // =================================================================
       // 2. Update (既存データの更新)
       // =================================================================
@@ -80,6 +103,7 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
       const {
         boards: updateBoards,
         cards: updateCards,
+				labels: updateLabels,
         boardOrder,
       } = updateTasks;
 
@@ -151,7 +175,33 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
         });
       }
 
-      // 2-C. ボード順序の更新
+
+			// 2-C. ラベルの更新
+			if (updateLabels.length > 0) {
+				for (const label of updateLabels) {
+					if (!label.id) continue;
+
+					await tx.label.update({
+						where: { id: label.id },
+						data: {
+							name: label.name,
+							color: label.color,
+						},
+					});
+				}
+
+				await tx.activityLog.createMany({
+					data: updateLabels.map(l => ({
+						projectId,
+						entityId: l.id!,
+						entityType: "LABEL",
+						action: "UPDATE",
+					})),
+				});
+			}
+
+
+      // 2-X. ボード順序の更新
       if (boardOrder && boardOrder.length > 0) {
         await tx.project.update({
           where: { id: projectId },
@@ -198,6 +248,25 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
           }))
         });
       }
+
+			// 3-C. ラベルの削除
+			if (deleteTasks.labelIds.length > 0) {
+				await tx.label.deleteMany({
+					where: {
+						id: { in: deleteTasks.labelIds },
+					},
+				});
+
+				await tx.activityLog.createMany({
+					data: deleteTasks.labelIds.map(id => ({
+						projectId,
+						entityId: id,
+						entityType: "LABEL",
+						action: "DELETE",
+					})),
+				});
+			}
+
 
 
 			// トランザクションの中で、このプロジェクトの最新の更新時刻を1つ取得する

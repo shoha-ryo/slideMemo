@@ -79,7 +79,7 @@ model ActivityLog {
   projectId  String
 	project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   entityId   String   // 変更されたカードやボードのID
-  entityType String   // "CARD" | "BOARD"
+  entityType String   // "CARD" | "BOARD | "LABEL"
   action     String   // "CREATE" | "UPDATE" | "DELETE"
 
   // 誰が変えたか（将来的な認証導入時に役立つ）
@@ -103,4 +103,5 @@ model Label {
 
   cards     Card[]   @relation("CardToLabel") // 多対多のリレーション
   createdAt DateTime @default(now())
+	updatedAt DateTime @updatedAt @default(now())
 }

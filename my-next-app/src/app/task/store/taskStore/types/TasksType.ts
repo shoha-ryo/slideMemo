@@ -68,16 +68,26 @@ export interface CardType {
   dueAt: number | null;
   simpleView: boolean;
   childrenIds: string[];
-	labels: string[]
+	labelIds: string[]
   createdAt: number;
   updatedAt: number;
+}
+
+export interface LabelType {
+	id: string
+	name: string
+	color: string
+	projectId: string
+	createdAt: number
+	updatedAt: number
 }
 
 // アプリのオブジェクト情報
 export interface AppState {
   boardOrder: string[]; // まずはボードの順番を取得する。
-  boards: { [id: string]: BoardType }; // ボードを並べて、カードの順番も取得する。
-  cards: { [id: string]: CardType }; // カードを並べて完了。
+	boards: Record<string, BoardType>;
+  cards: Record<string, CardType>;
+  labels: Record<string, LabelType>;
 }
 
 // 各タスクロジックの戻り値

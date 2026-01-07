@@ -12,7 +12,7 @@ export interface CardEntity {
   progress: 'todo' | 'doing' | 'done';
   status: 'active' | 'archived';
   simpleView: boolean;
-	labels: string[]
+	labelIds: string[]
   startAt: number | null;
   dueAt: number | null;
   createdAt: number; // Dexie(IndexedDB)では数値かDateで保存
@@ -37,6 +37,15 @@ export interface ProjectEntity {
   updatedAt: number;
 }
 
+export interface LabelEntity {
+  id: string;
+  name: string;
+  color: string;
+  projectId: string;
+  createdAt: number;
+	updatedAt: number
+}
+
 // 同期情報を管理するメタデータ
 export interface SyncMeta {
   id: string;           // projectIdを入れる
@@ -47,6 +56,7 @@ export class TaskFlowDB extends Dexie {
   projects!: Table<ProjectEntity>;
   boards!: Table<BoardEntity>;
   cards!: Table<CardEntity>;
+	labels!: Table<LabelEntity>;
   syncMeta!: Table<SyncMeta>;
 
   constructor() {
@@ -54,10 +64,11 @@ export class TaskFlowDB extends Dexie {
 
     // stores の定義（カンマ区切りで最初に書くのがプライマリキー）
     // 2つ目以降は「検索（Index）」対象にしたいキー
-    this.version(3).stores({
+    this.version(7).stores({
       projects: 'id, userId',
       boards: 'id, projectId',
       cards: 'id, boardId, parentId, projectId', // 親子関係やボード移動の高速化
+			labels: 'id, projectId',
       syncMeta: 'id' // プロジェクトIDをキーにして最終同期時刻を引けるようにする
     });
   }
