@@ -29,8 +29,8 @@ import Board from "./components/Board/Board";
 import BoardList from "./components/Board/BoardList";
 import BoardModal from "./components/Board/BoardModal";
 import TrashDropArea, { TRASH_ID } from "./components/TrashArea/TrashDropArea"; // ★ 追加
-import { TaskLabel } from "./components/Label/TaskLabel";
-import { DraggableLabel } from "./components/Card/Label";
+import { DraggableLabel } from "./components/Label/Label";
+import { LabelSidebar } from "./components/Sidebar/LabelSidebar";
 
 import { DebugInfo } from "./components/devOnly/DebugInfo";
 
@@ -146,6 +146,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
 
   const { isShowModal, modalType, clickedActiveId } = useModalStore();
   const { x, y } = useMousePointer();
+	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const labelList = Object.values(labels);
 
 
@@ -328,26 +329,45 @@ export default function AppContent({ projectId }: { projectId: string }) {
 					onDragEnd={handleDragEnd}
 					sensors={sensors}
 				>
-					{/* ★ 追加: 削除エリア (DndContextの中に配置する必要があります) */}
-					{/* activeIdが存在する(=ドラッグ中)ときだけスライドダウン表示 */}
+					{/* ゴミ箱エリア */}
 					<TrashDropArea isVisible={!!activeId}/>
-					{/* <TaskLabel id="label-12345" color="red" name="重要"></TaskLabel> */}
-					<div className="flex gap-2 p-4">
-						{labelList.map((label) => (
-							<DraggableLabel key={label.id} label={label} cardId="master"></DraggableLabel>
-						))}
-					</div>
+
 					<div
-						className="h-full w-full overflow-auto overflow-y-hidden"
-						>
-						<BoardList/>
+						className="flex h-full w-full overflow-auto overflow-y-hidden"
+						style={{ height: 'calc(100vh - 65px)' }}
+					>
+						{/* サイドバーが閉じている時だけ「ラベル」ボタンを表示する */}
+						{!isSidebarOpen && (
+							<button
+								onClick={() => setIsSidebarOpen(true)}
+								className="fixed top-20 left-4 z-30 p-2 bg-gray-800 rounded-md hover:bg-gray-700 text-white border border-white/10"
+							>
+								ラベルを表示
+							</button>
+						)}
+						{/* サイドバー本体 */}
+						<LabelSidebar
+							isOpen={isSidebarOpen}
+							onClose={() => setIsSidebarOpen(false)}
+							labels={labels}
+						/>
+
+						<main className="flex-1 relative overflow-x-auto overflow-y-hidden">
+							{/* ボードリスト */}
+							<BoardList/>
+						</main>
+
+						{/* オーバーレイ */}
 						<DragOverlay>
 							{activeId && cards[activeId] ? <Card cardId={activeId} /> : null}
 							{activeId && boards[activeId] ? <Board board={boards[activeId]}></Board> : null}
 							{activeOriginalLabelId && labels[activeOriginalLabelId] ? <DraggableLabel label={labels[activeOriginalLabelId]} cardId="overlay"></DraggableLabel> : null}
 						</DragOverlay>
 					</div>
-					<DebugInfo></DebugInfo>
+
+					{/* デバッグ情報 */}
+					<DebugInfo/>
+
 				</DndContext>
 				<Toaster richColors />
 			</div>

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useShallow } from "zustand/shallow";
 import DraftTask from "./DraftTask";
 import { handleKeyDown } from "../../actions/handler";
-import { DraggableLabel } from "./Label";
+import { DraggableLabel } from "../Label/Label";
 
 // Draggable/Droppable コンポーネント
 const Card = ({ cardId }: { cardId: string }) => {
