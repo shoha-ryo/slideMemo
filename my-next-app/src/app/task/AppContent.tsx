@@ -76,7 +76,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
     setProjectId,
 		applyDiff,
 		initializeProject,
-		addLabelToCard,
+		moveLabel,
   } = useTaskStore(
     useShallow((state) => ({
       activeId: state.activeId,
@@ -88,20 +88,15 @@ export default function AppContent({ projectId }: { projectId: string }) {
 			labels: state.labels,
 			projectTitle: state.projectTitle,
       setActiveId: state.setActiveId,
-      setOverId: state.setOverId,
       setHoverInfo: state.setPayload,
       moveTask: state.moveTask,
-      deleteTask: state.deleteTask,
       moveBoard: state.moveBoard,
+			moveLabel: state.moveLabel,
+      deleteTask: state.deleteTask,
       deleteBoard: state.deleteBoard,
       setProjectId: state.setProjectId,
-      setProjectTitle: state.setProjectTitle,
-      setBoardOrder: state.setBoardOrder,
-      setBoards: state.setBoards,
-      setCards: state.setCards,
 			applyDiff: state.applyDiff,
 			initializeProject: state.initializeProject,
-			addLabelToCard: state.addLabelToCard,
     })),
   );
 
@@ -147,7 +142,6 @@ export default function AppContent({ projectId }: { projectId: string }) {
   const { isShowModal, modalType, clickedActiveId } = useModalStore();
   const { x, y } = useMousePointer();
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-	const labelList = Object.values(labels);
 
 
   const mouseSensor = useSensor(MouseSensor, {
@@ -213,6 +207,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
     const { active, over } = event;
     const currentActiveId = String(active.id);
 
+		// ラベルから純粋ラベルIDを保存する
 		if (currentActiveId?.includes("label-")) {
 			useTaskStore.setState({
 				activeOriginalLabelId: null
@@ -239,16 +234,6 @@ export default function AppContent({ projectId }: { projectId: string }) {
       return;
     }
 
-		// ラベル移動ロジック
-		if (activeId?.includes("label") && overId?.includes("card")) {
-      const labelId = activeId.split("_")[0];
-      const cardId = overId
-
-      addLabelToCard(cardId, labelId); // ストアのアクションを呼び出す
-      console.log(`ラベル ${labelId} をカード ${cardId} に追加しました。`);
-      // 必要に応じてトースト通知などを表示
-    }
-
     // --- 以下、通常の移動ロジック ---
     const currentOverId = String(over.id);
     const currentDropPosition = dropPosition;
@@ -264,8 +249,15 @@ export default function AppContent({ projectId }: { projectId: string }) {
       dropPosition: currentDropPosition,
     };
 
-    if (activeId?.includes("card-")) moveTask(payload);
-    else moveBoard(payload);
+    if (activeId?.includes("card-")) {
+			moveTask(payload)
+		}
+    if (activeId?.includes("card-")){
+			moveBoard(payload);
+		}
+		if (activeId?.includes("label") && overId?.includes("card")){
+			moveLabel(payload);
+		}
 
     setHoverInfo({
       activeId: null,

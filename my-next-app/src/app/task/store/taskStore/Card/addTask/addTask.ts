@@ -3,7 +3,7 @@ import { CardType, BoardType, Source, AppState } from "@/app/task/store/taskStor
 import { getObjectDiff } from "@/app/task/actions/getDiff";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 import { ReturnTasks } from "@/app/task/store/taskStore/types/TasksType";
-import { useTaskStore } from "../taskStore";
+import { useTaskStore } from "../../taskStore";
 
 // 新しいカードの情報を作成
 function createNewCard(
@@ -25,7 +25,7 @@ function createNewCard(
     dueAt: null,
     simpleView: false,
     childrenIds: [],
-		labels: [],
+		labelIds: [],
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };

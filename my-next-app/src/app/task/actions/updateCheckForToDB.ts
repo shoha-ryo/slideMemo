@@ -5,6 +5,9 @@ import { toLocalDataBase } from "./toLocalDataBase";
 type DiffTasks = typeof emptyTasks;
 
 export const updateCheckForToDB = (diffTasks: DiffTasks, projectId: string) => {
-  if (diffTasks === emptyTasks) return;
+  if (diffTasks === emptyTasks) {
+		console.log("空データの為、DB保存前に早期リターン");
+		return
+	};
   toDataBase(diffTasks, projectId);
 };

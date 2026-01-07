@@ -26,9 +26,17 @@ export interface TaskStore extends AppState, Payload {
   moveBoard: (payload: Payload) => void;
   deleteTask: (cardId: string) => void;
   deleteBoard: (boardId: string) => void;
-	// deleteLabelFromCard:
   updateTask: (cardId: string, updates: Partial<CardType>) => void;
   updateBoard: (boardId: string, updates: Partial<BoardType>) => void;
+
+	moveLabel: (payload: Payload) => void
+  createLabel: (name: string, color: string) => void
+  deleteLabel: (activeId: string) => void
+  editMasterLabel: (labelId: string, updates: {
+    name: string | undefined;
+    color: string | undefined;
+	}) => void
+	deleteMasterLabel: (labelId: string) => void
 
   isTaskCreating: boolean;
   setIsTaskCreating: (isTaskCreating: boolean) => void;
@@ -98,3 +106,5 @@ export type ReturnTasks = {
   newState: AppState;
   diffTasks: typeof emptyTasks;
 };
+
+

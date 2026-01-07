@@ -138,6 +138,9 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
               childrenIds: card.childrenIds
                 ? { set: card.childrenIds }
                 : undefined,
+							labels: card.labelIds ? {
+								set: card.labelIds.map(id => ({ id }))
+							} : undefined,
             },
           });
         }

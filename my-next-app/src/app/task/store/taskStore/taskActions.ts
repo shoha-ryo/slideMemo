@@ -8,17 +8,23 @@ import {
   BoardType,
 } from "@/app/task/store/taskStore/types/TasksType";
 
-import { applyMoveLogic } from "./moveTask/applyMoveLogic";
-import { addCardLogic } from "./addTask/addTask";
-import { deleteCardLogic } from "./deleteTask/deleteTask";
-import { updateCardLogic } from "./updateTask/updateTask";
-import { moveBoardLogic } from "./moveBoard/moveBoard";
-import { addBoardLogic } from "./addBoard/addBoard";
-import { deleteBoardLogic } from "./deleteBoard/deleteBoard";
-import { updateBoardLogic } from "./updateBoard/updateBoard";
+import { applyMoveLogic } from "./Card/moveTask/applyMoveLogic";
+import { addCardLogic } from "./Card/addTask/addTask";
+import { deleteCardLogic } from "./Card/deleteTask/deleteTask";
+import { updateCardLogic } from "./Card/updateTask/updateTask";
+
+import { moveBoardLogic } from "./Board/moveBoard/moveBoard";
+import { addBoardLogic } from "./Board/addBoard/addBoard";
+import { deleteBoardLogic } from "./Board/deleteBoard/deleteBoard";
+import { updateBoardLogic } from "./Board/updateBoard/updateBoard";
+
+import { moveLabelLogic } from "./Label/moveLabel/moveLabel";
+import { createLabelLogic } from "./Label/createLabel/createLabel";
+import { deleteLabelFromCardLogic } from "./Label/deleteLabel/deleteLabelFromCard";
+import { editMasterLabelLogic } from "./Label/editLabel/editMasterLabel";
+import { deleteMasterLabelLogic } from "./Label/editLabel/deleteMasterLabel";
 
 import { updateCheckForToDB } from "../../actions/updateCheckForToDB";
-import { useUserStore } from "@/store/userStore";
 
 export const taskActions = (
   set: (
@@ -27,99 +33,120 @@ export const taskActions = (
   get: () => TaskStore,
 ) => ({
 
-  moveTask: (payload: Payload) => {
-    // storeの状態を取得
-    const state = get();
-    // 移動ロジックを実行
-    const { newState, diffTasks } = applyMoveLogic(payload, state);
 
+
+  moveTask: (payload: Payload) => {
+    const state = get();
+    const { newState, diffTasks } = applyMoveLogic(payload, state);
     if (!state.projectId) return;
-    // storeの状態を更新
     set(newState);
-    // DBへ登録
     updateCheckForToDB(diffTasks, state.projectId);
   },
 
   addTask: (title: string, source: Source) => {
-    // storeの状態を取得
     const state = get();
-    // 追加ロジックを実行
     const { newState, diffTasks } = addCardLogic(title, source, state);
-
     if (!state.projectId) return;
-    // storeの状態を更新
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
   },
 
   deleteTask: (cardId: string) => {
-    // storeの状態を取得
     const state = get();
-    // 削除ロジックを実行
     const { newState, diffTasks } = deleteCardLogic(cardId, state);
-
     if (!state.projectId) return;
-    // storeの状態を更新
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
   },
 
   updateTask: (cardId: string, updates: Partial<CardType>) => {
-    // storeの状態を取得
     const state = get();
-    // 削除ロジックを実行
     const { newState, diffTasks } = updateCardLogic(cardId, updates, state);
-
     if (!state.projectId) return;
-    // storeの状態を更新
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
   },
 
-  moveBoard: (payload: Payload) => {
-    // storeの状態を取得
-    const state = get();
-    // 移動ロジックを実行
-    const { newState, diffTasks } = moveBoardLogic(payload, state);
 
+
+
+
+  moveBoard: (payload: Payload) => {
+    const state = get();
+    const { newState, diffTasks } = moveBoardLogic(payload, state);
     if (!state.projectId) return;
-    // storeの状態を更新
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
   },
 
   addBoard: (title: string) => {
-    // storeの状態を取得
     const state = get();
-    // 追加ロジックを実行
     const { newState, diffTasks } = addBoardLogic(title, state);
-
     if (!state.projectId) return;
-    // storeの状態を更新
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
   },
 
   deleteBoard: (cardId: string) => {
-    // storeの状態を取得
     const state = get();
-    // 削除ロジックを実行
     const { newState, diffTasks } = deleteBoardLogic(cardId, state);
-
     if (!state.projectId) return;
-    // storeの状態を更新
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
   },
 
   updateBoard: (boardId: string, updates: Partial<BoardType>) => {
-    // storeの状態を取得
     const state = get();
-    // 削除ロジックを実行
     const { newState, diffTasks } = updateBoardLogic(boardId, updates, state);
-
     if (!state.projectId) return;
-    // storeの状態を更新
+    set(newState);
+    updateCheckForToDB(diffTasks, state.projectId);
+  },
+
+
+
+
+
+	moveLabel: (payload: Payload) => {
+    const state = get();
+    const { newState, diffTasks } = moveLabelLogic(payload, state);
+		console.log(newState, diffTasks);
+    if (!state.projectId) return;
+    set(newState);
+    updateCheckForToDB(diffTasks, state.projectId);
+  },
+
+  createLabel: (name: string, color: string) => {
+    const state = get();
+    const { newState, diffTasks } = createLabelLogic(name, color, state);
+    if (!state.projectId) return;
+    set(newState);
+    updateCheckForToDB(diffTasks, state.projectId);
+  },
+
+  deleteLabel: (activeId: string) => {
+    const state = get();
+    const { newState, diffTasks } = deleteLabelFromCardLogic(activeId, state);
+    if (!state.projectId) return;
+    set(newState);
+    updateCheckForToDB(diffTasks, state.projectId);
+  },
+
+  editMasterLabel: (labelId: string, updates: {
+    name: string | undefined;
+    color: string | undefined;
+	}) => {
+    const state = get();
+    const { newState, diffTasks } = editMasterLabelLogic(labelId, updates, state);
+    if (!state.projectId) return;
+    set(newState);
+    updateCheckForToDB(diffTasks, state.projectId);
+  },
+
+	deleteMasterLabel: (labelId: string) => {
+    const state = get();
+    const { newState, diffTasks } = deleteMasterLabelLogic(labelId, state);
+    if (!state.projectId) return;
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
   },

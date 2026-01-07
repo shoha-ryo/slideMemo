@@ -10,6 +10,7 @@ import { useShallow } from "zustand/shallow";
 import DraftTask from "./DraftTask";
 import { handleKeyDown } from "../../actions/handler";
 import { DraggableLabel } from "../Label/Label";
+import { LabelSidebar } from "../Sidebar/LabelSidebar";
 
 // Draggable/Droppable コンポーネント
 const Card = ({ cardId }: { cardId: string }) => {
@@ -127,7 +128,7 @@ const Card = ({ cardId }: { cardId: string }) => {
 							{/* ラベル */}
 							<div className="flex gap-1">
 								{card.labelIds.map(labelId => (
-									<DraggableLabel label={labels[labelId]} cardId={cardId}></DraggableLabel>
+									<DraggableLabel key={`${labelId}_${cardId}`} label={labels[labelId]} cardId={cardId}></DraggableLabel>
 								))}
 							</div>
 
