@@ -1,4 +1,8 @@
-import { AppState, ReturnTasks, LabelType } from "@/app/task/store/taskStore/types/TasksType";
+import {
+  AppState,
+  ReturnTasks,
+  LabelType,
+} from "@/app/task/store/taskStore/types/TasksType";
 import { getObjectDiff } from "@/app/task/actions/getDiff";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
@@ -11,7 +15,7 @@ import { emptyTasks } from "@/app/task/actions/emptyTasks";
 export function editMasterLabelLogic(
   labelId: string,
   updates: Partial<Pick<LabelType, "name" | "color">>,
-  state: AppState
+  state: AppState,
 ): ReturnTasks {
   const { labels } = state;
 

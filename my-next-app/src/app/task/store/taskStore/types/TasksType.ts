@@ -3,8 +3,7 @@
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 export interface TaskStore extends AppState, Payload {
-
-	activeOriginalLabelId: string | null
+  activeOriginalLabelId: string | null;
 
   setActiveId: (activeId: Pick<Payload, "activeId">["activeId"]) => void;
   setOverId: (overId: Pick<Payload, "overId">["overId"]) => void;
@@ -15,13 +14,15 @@ export interface TaskStore extends AppState, Payload {
   setProjectId: (projectId: string) => void;
   setProjectTitle: (projectTitle: string) => void;
 
-  setBoardOrder: (boardOrder: Pick<AppState, "boardOrder">["boardOrder"]) => void;
+  setBoardOrder: (
+    boardOrder: Pick<AppState, "boardOrder">["boardOrder"],
+  ) => void;
   setBoards: (boards: Pick<AppState, "boards">["boards"]) => void;
   setCards: (cards: Pick<AppState, "cards">["cards"]) => void;
 
   addTask: (title: string, source: Source) => void;
   addBoard: (title: string) => void;
-	addLabelToCard: (labelId: string, cardId: string) => void,
+  addLabelToCard: (labelId: string, cardId: string) => void;
   moveTask: (payload: Payload) => void;
   moveBoard: (payload: Payload) => void;
   deleteTask: (cardId: string) => void;
@@ -29,21 +30,24 @@ export interface TaskStore extends AppState, Payload {
   updateTask: (cardId: string, updates: Partial<CardType>) => void;
   updateBoard: (boardId: string, updates: Partial<BoardType>) => void;
 
-	moveLabel: (payload: Payload) => void
-  createLabel: (name: string, color: string) => void
-  deleteLabel: (activeId: string) => void
-  editMasterLabel: (labelId: string, updates: {
-    name: string | undefined;
-    color: string | undefined;
-	}) => void
-	deleteMasterLabel: (labelId: string) => void
+  moveLabel: (payload: Payload) => void;
+  createLabel: (name: string, color: string) => void;
+  deleteLabel: (activeId: string) => void;
+  editMasterLabel: (
+    labelId: string,
+    updates: {
+      name: string | undefined;
+      color: string | undefined;
+    },
+  ) => void;
+  deleteMasterLabel: (labelId: string) => void;
 
   isTaskCreating: boolean;
   setIsTaskCreating: (isTaskCreating: boolean) => void;
 
-	syncStatus: "initializing" | "syncing" | "synced"
-	initializeProject: (userId: string, projectId: string) => void,
-	applyDiff: (diffTasks: typeof emptyTasks, userId: string) => void
+  syncStatus: "initializing" | "syncing" | "synced";
+  initializeProject: (userId: string, projectId: string) => void;
+  applyDiff: (diffTasks: typeof emptyTasks, userId: string) => void;
 }
 
 export type Payload = {
@@ -62,13 +66,13 @@ export interface BoardType {
   projectId: string;
   title: string;
   cardIds: string[];
-	createdAt: number;
+  createdAt: number;
   updatedAt: number;
 }
 
 export interface CardType {
   id: string;
-	projectId: string
+  projectId: string;
   parentId: string | null;
   boardId: string;
   title: string;
@@ -79,24 +83,24 @@ export interface CardType {
   dueAt: number | null;
   simpleView: boolean;
   childrenIds: string[];
-	labelIds: string[]
+  labelIds: string[];
   createdAt: number;
   updatedAt: number;
 }
 
 export interface LabelType {
-	id: string
-	name: string
-	color: string
-	projectId: string
-	createdAt: number
-	updatedAt: number
+  id: string;
+  name: string;
+  color: string;
+  projectId: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
 // アプリのオブジェクト情報
 export interface AppState {
   boardOrder: string[]; // まずはボードの順番を取得する。
-	boards: Record<string, BoardType>;
+  boards: Record<string, BoardType>;
   cards: Record<string, CardType>;
   labels: Record<string, LabelType>;
 }
@@ -106,5 +110,3 @@ export type ReturnTasks = {
   newState: AppState;
   diffTasks: typeof emptyTasks;
 };
-
-

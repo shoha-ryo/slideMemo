@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { deleteCardLogic } from "./deleteTask"; // パスは適宜調整してください
-import { CardType, TaskStore } from "@/app/task/store/taskStore/types/TasksType";
+import {
+  CardType,
+  TaskStore,
+} from "@/app/task/store/taskStore/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 describe("deleteCardLogic", () => {

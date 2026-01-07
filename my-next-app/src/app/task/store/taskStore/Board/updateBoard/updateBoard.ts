@@ -1,5 +1,8 @@
 // src/app/task/store/taskStore/updateBoard/updateBoardLogic.ts
-import { AppState, BoardType } from "@/app/task/store/taskStore/types/TasksType";
+import {
+  AppState,
+  BoardType,
+} from "@/app/task/store/taskStore/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 import { getObjectDiff } from "@/app/task/actions/getDiff";
 

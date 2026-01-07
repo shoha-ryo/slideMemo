@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useModalStore } from "../../store/ModalStore";
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import { BoardType } from "@/app/task/store/taskStore/types/TasksType";
@@ -60,20 +60,19 @@ export default function BoardModal() {
   }, [title]);
 
   // --- 保存処理 ---
-  const onSave = async () => {
+  const onSave = useCallback(async () => {
     if (!title.trim()) {
       setTitle("");
       return;
     }
     if (!activeBoard || !clickedActiveId) return;
 
-    // 更新内容が増えたらキーを追加
     updateBoard(clickedActiveId, {
       title: title,
     });
 
     hideModal();
-  };
+  }, [title, activeBoard, clickedActiveId, updateBoard, hideModal]);
 
   // --- グローバルキーイベント（Escで閉じる、Enterで保存） ---
   useEffect(() => {

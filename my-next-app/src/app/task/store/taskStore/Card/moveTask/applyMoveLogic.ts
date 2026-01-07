@@ -1,5 +1,12 @@
-import { Payload, ReturnTasks } from "@/app/task/store/taskStore/types/TasksType";
-import { AppState, CardType, BoardType } from "@/app/task/store/taskStore/types/TasksType";
+import {
+  Payload,
+  ReturnTasks,
+} from "@/app/task/store/taskStore/types/TasksType";
+import {
+  AppState,
+  CardType,
+  BoardType,
+} from "@/app/task/store/taskStore/types/TasksType";
 import { getObjectDiff } from "@/app/task/actions/getDiff";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
@@ -7,7 +14,6 @@ export const applyMoveLogic = (
   payload: Payload,
   state: AppState,
 ): ReturnTasks => {
-
   // 必要なデータの読み込み
   const { activeId, overId, dropPosition } = payload;
   const { boardOrder, boards, cards } = state;
@@ -123,18 +129,22 @@ export const applyMoveLogic = (
   // --- 移動ロジック終了 ---
 
   // 3. APIへの送信準備 (オブジェクトの配列化など)
-  const updateCards = Array.from(dirtyCardIds).map((id) => {
-    const updates = getObjectDiff(cards[id], newCards[id]);
-    if (Object.keys(updates).length === 0) return null;
-    return { id, ...updates }; // idは確実に返せるように必ず追加
-  }).filter((item) => item !== null)
-  const updateBoards = Array.from(dirtyBoardIds).map((id) => {
-    const updates = getObjectDiff(boards[id], newBoards[id]);
-    if (Object.keys(updates).length === 0) return null;
-    return { id, ...updates };
-  }).filter((item) => item !== null)
+  const updateCards = Array.from(dirtyCardIds)
+    .map((id) => {
+      const updates = getObjectDiff(cards[id], newCards[id]);
+      if (Object.keys(updates).length === 0) return null;
+      return { id, ...updates }; // idは確実に返せるように必ず追加
+    })
+    .filter((item) => item !== null);
+  const updateBoards = Array.from(dirtyBoardIds)
+    .map((id) => {
+      const updates = getObjectDiff(boards[id], newBoards[id]);
+      if (Object.keys(updates).length === 0) return null;
+      return { id, ...updates };
+    })
+    .filter((item) => item !== null);
 
-	console.log({
+  console.log({
     newState: {
       cards: newCards,
       boards: newBoards,
@@ -150,10 +160,10 @@ export const applyMoveLogic = (
     },
   });
 
-
   // 4. Zustandへの返却
   return {
     newState: {
+			...state,
       cards: newCards,
       boards: newBoards,
       boardOrder: newBoardOrder,

@@ -1,18 +1,16 @@
-"use client" // アニメーションを使うため client component にします
+"use client"; // アニメーションを使うため client component にします
 
-import Link from "next/link"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { ArrowRight, Zap, Shield, Sparkles, Menu } from "lucide-react"
-import MarketingHeader from "./header/MarketingHeader"
-
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Zap, Shield, Sparkles } from "lucide-react";
+import MarketingHeader from "./header/MarketingHeader";
 
 export default function HomePage() {
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6 }
-  }
+    transition: { duration: 0.6 },
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-slate-900">
@@ -28,8 +26,9 @@ export default function HomePage() {
                 次世代のタスク管理ツール
               </span>
               <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8">
-                作業を、<br className="md:hidden" />
-                <span className="bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent">
+                作業を、
+                <br className="md:hidden" />
+                <span className="bg-linear-to-r from-indigo-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent">
                   もっとシンプルに。
                 </span>
               </h1>
@@ -38,11 +37,18 @@ export default function HomePage() {
                 直感的な操作で、あなたのチームの可能性を引き出します。
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Button size="lg" className="w-full sm:w-auto h-14 px-8 text-lg rounded-full">
+                <Button
+                  size="lg"
+                  className="w-full sm:w-auto h-14 px-8 text-lg rounded-full"
+                >
                   <div className="pl-2">無料で試してみる</div>
-									<ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-                <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 px-8 text-lg rounded-full">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full sm:w-auto h-14 px-8 text-lg rounded-full"
+                >
                   デモを確認
                 </Button>
               </div>
@@ -54,19 +60,19 @@ export default function HomePage() {
         <section id="features" className="py-24 bg-slate-50">
           <div className="container mx-auto px-4">
             <div className="grid md:grid-cols-3 gap-8">
-              <FeatureCard 
+              <FeatureCard
                 delay={0.1}
                 icon={<Zap className="h-6 w-6 text-white" />}
                 title="超高速レスポンス"
                 description="Next.jsの最新機能により、瞬時の画面遷移と快適な操作を実現。"
               />
-              <FeatureCard 
+              <FeatureCard
                 delay={0.2}
                 icon={<Shield className="h-6 w-6 text-white" />}
                 title="エンタープライズ級セキュリティ"
                 description="最高水準の暗号化技術で、あなたの貴重なデータを守り抜きます。"
               />
-              <FeatureCard 
+              <FeatureCard
                 delay={0.3}
                 icon={<Sparkles className="h-6 w-6 text-white" />}
                 title="AI自動最適化"
@@ -77,12 +83,22 @@ export default function HomePage() {
         </section>
       </main>
     </div>
-  )
+  );
 }
 
-function FeatureCard({ icon, title, description, delay }: { icon: React.ReactNode, title: string, description: string, delay: number }) {
+function FeatureCard({
+  icon,
+  title,
+  description,
+  delay,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  delay: number;
+}) {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -95,5 +111,5 @@ function FeatureCard({ icon, title, description, delay }: { icon: React.ReactNod
       <h3 className="text-xl font-bold mb-3">{title}</h3>
       <p className="text-slate-600 leading-relaxed">{description}</p>
     </motion.div>
-  )
+  );
 }

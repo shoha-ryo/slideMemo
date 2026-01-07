@@ -1,4 +1,8 @@
-import { AppState, ReturnTasks, CardType } from "@/app/task/store/taskStore/types/TasksType";
+import {
+  AppState,
+  ReturnTasks,
+  CardType,
+} from "@/app/task/store/taskStore/types/TasksType";
 import { getObjectDiff } from "@/app/task/actions/getDiff";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
@@ -10,13 +14,13 @@ import { emptyTasks } from "@/app/task/actions/emptyTasks";
  */
 export function deleteLabelFromCardLogic(
   activeId: string,
-  state: AppState
+  state: AppState,
 ): ReturnTasks {
   const { cards } = state;
 
   // 1. 合成IDからカードIDとラベルIDを抽出 ("label-uuid_card-uuid")
   const cardId = activeId.split("_")[1];
-	const originalLabelId = activeId.split("_")[0]
+  const originalLabelId = activeId.split("_")[0];
 
   // マスター(サイドバー)のものを消そうとしている場合は何もしない
   if (!cardId || cardId === "master") {

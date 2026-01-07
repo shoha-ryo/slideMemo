@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDraggable, useDroppable, useDndContext } from "@dnd-kit/core";
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import { useModalStore } from "../../store/ModalStore";
@@ -10,7 +10,6 @@ import { useShallow } from "zustand/shallow";
 import DraftTask from "./DraftTask";
 import { handleKeyDown } from "../../actions/handler";
 import { DraggableLabel } from "../Label/Label";
-import { LabelSidebar } from "../Sidebar/LabelSidebar";
 
 // Draggable/Droppable コンポーネント
 const Card = ({ cardId }: { cardId: string }) => {
@@ -32,7 +31,7 @@ const Card = ({ cardId }: { cardId: string }) => {
 
   const { cards, dropPosition, labels } = useTaskStore(
     useShallow((state) => ({
-			cards: state.cards,
+      cards: state.cards,
       labels: state.labels,
       dropPosition: state.dropPosition,
     })),
@@ -56,8 +55,8 @@ const Card = ({ cardId }: { cardId: string }) => {
           : "ring-4 ring-cyan-500 bg-cyan-50" // center（真ん中）
       : "bg-white border-gray-300"; // ホバーしていない、または自分が動いている時
   const hoveredStyle = isHovered
-  ? "-translate-y-1 ring-2 ring-gray-500 shadow-xl z-100 relative"
-  : "transition-all duration-200";
+    ? "-translate-y-1 ring-2 ring-gray-500 shadow-xl z-100 relative"
+    : "transition-all duration-200";
 
   const setNodeRef = (node: HTMLElement | null) => {
     setDroppableRef(node);
@@ -81,15 +80,12 @@ const Card = ({ cardId }: { cardId: string }) => {
     return null;
   }
 
-
-
-
   return (
     <div
       ref={setNodeRef}
-			data-card-id={cardId}
+      data-card-id={cardId}
       className={`card relative
-				p-2.5 pl-2.5 mb-[5px] ml-1 mr-1
+				p-2.5 pl-2.5 mb-1.25 ml-1 mr-1
 				border rounded-lg
 				transition-all duration-200
 				${hoveredStyle}
@@ -100,8 +96,8 @@ const Card = ({ cardId }: { cardId: string }) => {
       {...listeners}
       {...attributes}
       onClick={handleCardClick}
-			tabIndex={0}
-			onKeyDown={e => handleKeyDown(e, showModal)}
+      tabIndex={0}
+      onKeyDown={(e) => handleKeyDown(e, showModal)}
     >
       <>
         <div
@@ -112,30 +108,30 @@ const Card = ({ cardId }: { cardId: string }) => {
           <div className="flex justify-between p-2">
             <div className="min-w-0 flex-1">
               {/* タイトル */}
-							<strong className="block text-sm text-foreground/80">
+              <strong className="block text-sm text-foreground/80">
                 <FormattedText text={card.title} />
               </strong>
 
-							{/* 詳細 */}
-							{card.details
-								?
-									<div className="text-xs text-gray-500 mt-1">
-										<FormattedText text={card.details} />
-									</div>
-								: null
-							}
+              {/* 詳細 */}
+              {card.details ? (
+                <div className="text-xs text-gray-500 mt-1">
+                  <FormattedText text={card.details} />
+                </div>
+              ) : null}
 
-							{/* ラベル */}
-							<div className="flex gap-1">
-								{card.labelIds.map(labelId => (
-									<DraggableLabel key={`${labelId}_${cardId}`} label={labels[labelId]} cardId={cardId}></DraggableLabel>
-								))}
-							</div>
-
+              {/* ラベル */}
+              <div className="flex gap-1">
+                {card.labelIds.map((labelId) => (
+                  <DraggableLabel
+                    key={`${labelId}_${cardId}`}
+                    label={labels[labelId]}
+                    cardId={cardId}
+                  ></DraggableLabel>
+                ))}
+              </div>
             </div>
-						{/* ホバー時のボタンチラつき防止 */}
+            {/* ホバー時のボタンチラつき防止 */}
           </div>
-
 
           {/* 自身にホバー時のみ表示 */}
           {isHovered && (

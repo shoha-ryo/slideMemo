@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useModalStore } from "../../store/ModalStore";
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import { CardType } from "@/app/task/store/taskStore/types/TasksType";
@@ -59,19 +59,19 @@ export default function CardModal() {
   }, [title]);
 
   // --- 保存処理 ---
-  const onSave = async () => {
+  const onSave = useCallback(async () => {
     if (!title.trim()) {
       setTitle("");
       return;
     }
     if (!activeNode || !clickedActiveId) return;
-    // 更新内容が増えたらキーを追加
+
     updateTask(clickedActiveId, {
       title: title,
       details: details,
     });
     hideModal();
-  };
+  }, [title, details, activeNode, clickedActiveId, updateTask, hideModal]);
 
   // --- グローバルキーイベント（Escで閉じる、Enterで保存） ---
   useEffect(() => {

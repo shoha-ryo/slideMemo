@@ -1,43 +1,58 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import Link from "next/link"
-import { ArrowLeft, CheckSquare, Mail } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import Link from "next/link";
+import { ArrowLeft, CheckSquare, Mail } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+} from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("有効なメールアドレスを入力してください"),
-})
+});
 
-type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>
+type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPasswordPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const form = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: "",
     },
-  })
+  });
 
   async function onSubmit(values: ForgotPasswordFormData) {
-    setIsLoading(true)
+    setIsLoading(true);
     // TODO: Implement actual password reset logic
-    console.log("[v0] Password reset request:", values)
+    console.log("[v0] Password reset request:", values);
 
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    setIsLoading(false)
-    setIsSubmitted(true)
+    setIsLoading(false);
+    setIsSubmitted(true);
   }
 
   if (isSubmitted) {
@@ -75,7 +90,7 @@ export default function ForgotPasswordPage() {
           </CardFooter>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -101,9 +116,15 @@ export default function ForgotPasswordPage() {
                   <FormItem>
                     <FormLabel>メールアドレス</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="example@taskflow.com" {...field} />
+                      <Input
+                        type="email"
+                        placeholder="example@taskflow.com"
+                        {...field}
+                      />
                     </FormControl>
-                    <FormDescription>このメールアドレス宛にリセットリンクを送信します</FormDescription>
+                    <FormDescription>
+                      このメールアドレス宛にリセットリンクを送信します
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -126,5 +147,5 @@ export default function ForgotPasswordPage() {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }

@@ -1,4 +1,8 @@
-import { BoardType, CardType, LabelType } from "@/app/task/store/taskStore/types/TasksType";
+import {
+  BoardType,
+  CardType,
+  LabelType,
+} from "@/app/task/store/taskStore/types/TasksType";
 
 // ここには "use server" を書かない！ただの定数ファイルにする
 export const emptyTasks = {
@@ -6,7 +10,7 @@ export const emptyTasks = {
     boardOrder: [] as string[],
     boards: [] as BoardType[],
     cards: [] as CardType[],
-		labels: [] as LabelType[],
+    labels: [] as LabelType[],
   },
   updateTasks: {
     boardOrder: [] as string[],

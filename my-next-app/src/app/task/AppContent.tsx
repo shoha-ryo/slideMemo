@@ -17,9 +17,7 @@ import {
   DragMoveEvent,
   DragEndEvent,
   CollisionDetection,
-	KeyboardSensor
 } from "@dnd-kit/core";
-
 
 // 必要なコンポーネント
 import TaskHeader from "../header/TaskHeader";
@@ -41,12 +39,11 @@ import { useMousePointer } from "./components/useMousePointer";
 // Store
 import { useTaskStore } from "./store/taskStore/taskStore";
 import { useModalStore } from "./store/ModalStore";
-import { AppState, Payload } from "@/app/task/store/taskStore/types/TasksType";
+import { Payload } from "@/app/task/store/taskStore/types/TasksType";
 import { useShallow } from "zustand/shallow";
 import { useUserStore } from "../../store/userStore";
 import { emptyTasks } from "./actions/emptyTasks";
 import { toLocalDataBase } from "./actions/toLocalDataBase";
-import { LabelEntity } from "../../../dexie/dexie";
 
 export default function AppContent({ projectId }: { projectId: string }) {
   const auth = getAuth();
@@ -62,11 +59,11 @@ export default function AppContent({ projectId }: { projectId: string }) {
     activeId,
     overId,
     dropPosition,
-		activeOriginalLabelId,
+    activeOriginalLabelId,
     cards,
     boards,
-		labels,
-		projectTitle,
+    labels,
+    projectTitle,
     setActiveId,
     setHoverInfo,
     moveTask,
@@ -74,44 +71,44 @@ export default function AppContent({ projectId }: { projectId: string }) {
     deleteTask,
     deleteBoard,
     setProjectId,
-		applyDiff,
-		initializeProject,
-		moveLabel,
+    applyDiff,
+    initializeProject,
+    moveLabel,
   } = useTaskStore(
     useShallow((state) => ({
       activeId: state.activeId,
       overId: state.overId,
       dropPosition: state.dropPosition,
-			activeOriginalLabelId: state.activeOriginalLabelId,
+      activeOriginalLabelId: state.activeOriginalLabelId,
       cards: state.cards,
       boards: state.boards,
-			labels: state.labels,
-			projectTitle: state.projectTitle,
+      labels: state.labels,
+      projectTitle: state.projectTitle,
       setActiveId: state.setActiveId,
       setHoverInfo: state.setPayload,
       moveTask: state.moveTask,
       moveBoard: state.moveBoard,
-			moveLabel: state.moveLabel,
+      moveLabel: state.moveLabel,
       deleteTask: state.deleteTask,
       deleteBoard: state.deleteBoard,
       setProjectId: state.setProjectId,
-			applyDiff: state.applyDiff,
-			initializeProject: state.initializeProject,
+      applyDiff: state.applyDiff,
+      initializeProject: state.initializeProject,
     })),
   );
 
-	// 初期値取得
+  // 初期値取得
   useEffect(() => {
     const user = auth.currentUser;
     if (user) {
-      initializeProject(user.uid, projectId)
-			setUserId(user.uid);
-			setProjectId(projectId);
+      initializeProject(user.uid, projectId);
+      setUserId(user.uid);
+      setProjectId(projectId);
     }
 
-		// キーイベントの設定と解除
-		window.addEventListener("keydown", handleGlobalKeyDown)
-		return () => window.removeEventListener("keydown", handleGlobalKeyDown)
+    // キーイベントの設定と解除
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
   }, [auth]);
 
   // DB更新時の処理
@@ -123,26 +120,24 @@ export default function AppContent({ projectId }: { projectId: string }) {
     // チャンネルを購読
     const channel = pusher.subscribe(`project-${projectId}`);
     // "task-updated" という叫び声が聞こえたら実行
-    channel.bind("task-updated", (payload: {
-			diffTasks: typeof emptyTasks,
-			lastSyncAt: number
-		}) => {
-      toast.info("他のユーザーがタスクを更新しました！", {});
-			const { diffTasks, lastSyncAt } = payload
-			if (!userId || !projectTitle) return;
-			applyDiff(diffTasks, userId)
-			toLocalDataBase(diffTasks, projectId, projectTitle, userId, lastSyncAt)
-    });
+    channel.bind(
+      "task-updated",
+      (payload: { diffTasks: typeof emptyTasks; lastSyncAt: number }) => {
+        toast.info("他のユーザーがタスクを更新しました！", {});
+        const { diffTasks, lastSyncAt } = payload;
+        if (!userId || !projectTitle) return;
+        applyDiff(diffTasks, userId);
+        toLocalDataBase(diffTasks, projectId, projectTitle, userId, lastSyncAt);
+      },
+    );
     return () => {
       pusher.unsubscribe(`project-${projectId}`);
     };
   }, [projectId, userId, applyDiff]);
 
-
   const { isShowModal, modalType, clickedActiveId } = useModalStore();
   const { x, y } = useMousePointer();
-	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
@@ -162,11 +157,11 @@ export default function AppContent({ projectId }: { projectId: string }) {
       overId: null,
       dropPosition: null,
     });
-		if (currentActiveId?.includes("label-")) {
-			useTaskStore.setState({
-				activeOriginalLabelId: currentActiveId.split("_")[0]
-			})
-		}
+    if (currentActiveId?.includes("label-")) {
+      useTaskStore.setState({
+        activeOriginalLabelId: currentActiveId.split("_")[0],
+      });
+    }
   };
 
   const handleDragMove = (event: DragMoveEvent) => {
@@ -207,12 +202,12 @@ export default function AppContent({ projectId }: { projectId: string }) {
     const { active, over } = event;
     const currentActiveId = String(active.id);
 
-		// ラベルから純粋ラベルIDを保存する
-		if (currentActiveId?.includes("label-")) {
-			useTaskStore.setState({
-				activeOriginalLabelId: null
-			})
-		}
+    // ラベルから純粋ラベルIDを保存する
+    if (currentActiveId?.includes("label-")) {
+      useTaskStore.setState({
+        activeOriginalLabelId: null,
+      });
+    }
 
     // ドロップ先がない場合はリセットして終了
     if (!over) {
@@ -250,14 +245,14 @@ export default function AppContent({ projectId }: { projectId: string }) {
     };
 
     if (activeId?.includes("card-")) {
-			moveTask(payload)
-		}
-    if (activeId?.includes("card-")){
-			moveBoard(payload);
-		}
-		if (activeId?.includes("label") && overId?.includes("card")){
-			moveLabel(payload);
-		}
+      moveTask(payload);
+    }
+    if (activeId?.includes("card-")) {
+      moveBoard(payload);
+    }
+    if (activeId?.includes("label") && overId?.includes("card")) {
+      moveLabel(payload);
+    }
 
     setHoverInfo({
       activeId: null,
@@ -265,7 +260,6 @@ export default function AppContent({ projectId }: { projectId: string }) {
       dropPosition: null,
     });
   };
-
 
   const customCollisionDetection: CollisionDetection = (args) => {
     const { active } = args;
@@ -300,69 +294,72 @@ export default function AppContent({ projectId }: { projectId: string }) {
     return pointerCollisions;
   };
 
-
-
-
   return (
-		<div className="min-h-screen">
-			<TaskHeader/>
-			<div style={{ position: "relative" }}>
-				{isShowModal && (
-					<>
-						{modalType === "card" && <CardModal key={clickedActiveId} />}
-						{modalType === "board" && <BoardModal key={clickedActiveId} />}
-					</>
-				)}
+    <div className="min-h-screen">
+      <TaskHeader />
+      <div style={{ position: "relative" }}>
+        {isShowModal && (
+          <>
+            {modalType === "card" && <CardModal key={clickedActiveId} />}
+            {modalType === "board" && <BoardModal key={clickedActiveId} />}
+          </>
+        )}
 
-				<DndContext
-					collisionDetection={customCollisionDetection}
-					onDragStart={handleDragStart}
-					onDragMove={handleDragMove}
-					onDragEnd={handleDragEnd}
-					sensors={sensors}
-				>
-					{/* ゴミ箱エリア */}
-					<TrashDropArea isVisible={!!activeId}/>
+        <DndContext
+          collisionDetection={customCollisionDetection}
+          onDragStart={handleDragStart}
+          onDragMove={handleDragMove}
+          onDragEnd={handleDragEnd}
+          sensors={sensors}
+        >
+          {/* ゴミ箱エリア */}
+          <TrashDropArea isVisible={!!activeId} />
 
-					<div
-						className="flex h-full w-full overflow-auto overflow-y-hidden"
-						style={{ height: 'calc(100vh - 65px)' }}
-					>
-						{/* サイドバーが閉じている時だけ「ラベル」ボタンを表示する */}
-						{!isSidebarOpen && (
-							<button
-								onClick={() => setIsSidebarOpen(true)}
-								className="fixed top-20 left-4 z-30 p-2 bg-gray-800 rounded-md hover:bg-gray-700 text-white border border-white/10"
-							>
-								ラベルを表示
-							</button>
-						)}
-						{/* サイドバー本体 */}
-						<LabelSidebar
-							isOpen={isSidebarOpen}
-							onClose={() => setIsSidebarOpen(false)}
-							labels={labels}
-						/>
+          <div
+            className="flex h-full w-full overflow-auto overflow-y-hidden"
+            style={{ height: "calc(100vh - 65px)" }}
+          >
+            {/* サイドバーが閉じている時だけ「ラベル」ボタンを表示する */}
+            {!isSidebarOpen && (
+              <button
+                onClick={() => setIsSidebarOpen(true)}
+                className="fixed top-20 left-4 z-30 p-2 bg-gray-800 rounded-md hover:bg-gray-700 text-white border border-white/10"
+              >
+                ラベルを表示
+              </button>
+            )}
+            {/* サイドバー本体 */}
+            <LabelSidebar
+              isOpen={isSidebarOpen}
+              onClose={() => setIsSidebarOpen(false)}
+              labels={labels}
+            />
 
-						<main className="flex-1 relative overflow-x-auto overflow-y-hidden">
-							{/* ボードリスト */}
-							<BoardList/>
-						</main>
+            <main className="flex-1 relative overflow-x-auto overflow-y-hidden">
+              {/* ボードリスト */}
+              <BoardList />
+            </main>
 
-						{/* オーバーレイ */}
-						<DragOverlay>
-							{activeId && cards[activeId] ? <Card cardId={activeId} /> : null}
-							{activeId && boards[activeId] ? <Board board={boards[activeId]}></Board> : null}
-							{activeOriginalLabelId && labels[activeOriginalLabelId] ? <DraggableLabel label={labels[activeOriginalLabelId]} cardId="overlay"></DraggableLabel> : null}
-						</DragOverlay>
-					</div>
+            {/* オーバーレイ */}
+            <DragOverlay>
+              {activeId && cards[activeId] ? <Card cardId={activeId} /> : null}
+              {activeId && boards[activeId] ? (
+                <Board board={boards[activeId]}></Board>
+              ) : null}
+              {activeOriginalLabelId && labels[activeOriginalLabelId] ? (
+                <DraggableLabel
+                  label={labels[activeOriginalLabelId]}
+                  cardId="overlay"
+                ></DraggableLabel>
+              ) : null}
+            </DragOverlay>
+          </div>
 
-					{/* デバッグ情報 */}
-					<DebugInfo/>
-
-				</DndContext>
-				<Toaster richColors />
-			</div>
-		</div>
+          {/* デバッグ情報 */}
+          <DebugInfo />
+        </DndContext>
+        <Toaster richColors />
+      </div>
+    </div>
   );
 }

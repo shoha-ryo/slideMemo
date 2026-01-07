@@ -32,9 +32,6 @@ export const taskActions = (
   ) => void,
   get: () => TaskStore,
 ) => ({
-
-
-
   moveTask: (payload: Payload) => {
     const state = get();
     const { newState, diffTasks } = applyMoveLogic(payload, state);
@@ -66,10 +63,6 @@ export const taskActions = (
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
   },
-
-
-
-
 
   moveBoard: (payload: Payload) => {
     const state = get();
@@ -103,14 +96,10 @@ export const taskActions = (
     updateCheckForToDB(diffTasks, state.projectId);
   },
 
-
-
-
-
-	moveLabel: (payload: Payload) => {
+  moveLabel: (payload: Payload) => {
     const state = get();
     const { newState, diffTasks } = moveLabelLogic(payload, state);
-		console.log(newState, diffTasks);
+    console.log(newState, diffTasks);
     if (!state.projectId) return;
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
@@ -132,18 +121,25 @@ export const taskActions = (
     updateCheckForToDB(diffTasks, state.projectId);
   },
 
-  editMasterLabel: (labelId: string, updates: {
-    name: string | undefined;
-    color: string | undefined;
-	}) => {
+  editMasterLabel: (
+    labelId: string,
+    updates: {
+      name: string | undefined;
+      color: string | undefined;
+    },
+  ) => {
     const state = get();
-    const { newState, diffTasks } = editMasterLabelLogic(labelId, updates, state);
+    const { newState, diffTasks } = editMasterLabelLogic(
+      labelId,
+      updates,
+      state,
+    );
     if (!state.projectId) return;
     set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
   },
 
-	deleteMasterLabel: (labelId: string) => {
+  deleteMasterLabel: (labelId: string) => {
     const state = get();
     const { newState, diffTasks } = deleteMasterLabelLogic(labelId, state);
     if (!state.projectId) return;

@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Flow",
   description: "ここにアプリの説明を記入",
-	icons: {
-		icon: "../../public/FLOW-logo.svg"
-	}
+  icons: {
+    icon: "../../public/FLOW-logo.svg",
+  },
 };
 
 export default function RootLayout({

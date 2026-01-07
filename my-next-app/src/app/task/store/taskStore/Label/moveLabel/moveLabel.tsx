@@ -1,12 +1,17 @@
-import { AppState, ReturnTasks, CardType, Payload } from "@/app/task/store/taskStore/types/TasksType";
+import {
+  AppState,
+  ReturnTasks,
+  CardType,
+  Payload,
+} from "@/app/task/store/taskStore/types/TasksType";
 import { getObjectDiff } from "@/app/task/actions/getDiff";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 export function moveLabelLogic(
   payload: Payload, // ドロップ先ID: "card-uuid"
-  state: AppState
+  state: AppState,
 ): ReturnTasks {
-	const { activeId, overId } = payload
+  const { activeId, overId } = payload;
   const { cards } = state;
 
   // 1. 基本チェック：ドロップ先がカードであること
@@ -14,7 +19,7 @@ export function moveLabelLogic(
     return { newState: state, diffTasks: emptyTasks };
   }
 
-	const originalLabelId = activeId.split("_")[0]
+  const originalLabelId = activeId.split("_")[0];
   const targetCardId = overId;
   const targetCard = cards[targetCardId];
   if (!targetCard) return { newState: state, diffTasks: emptyTasks };
@@ -44,7 +49,9 @@ export function moveLabelLogic(
         createTasks: { ...emptyTasks.createTasks },
         updateTasks: {
           ...emptyTasks.updateTasks,
-          cards: [{ id: targetCardId, ...getObjectDiff(targetCard, newTargetCard) }] as Partial<CardType>[],
+          cards: [
+            { id: targetCardId, ...getObjectDiff(targetCard, newTargetCard) },
+          ] as Partial<CardType>[],
         },
       },
     };
@@ -74,7 +81,9 @@ export function moveLabelLogic(
     // 移動先：ラベルを追加（重複チェック済み）
     const newTargetCard: CardType = {
       ...targetCard,
-      labelIds: isDuplicate ? targetCard.labelIds : [...targetCard.labelIds, originalLabelId],
+      labelIds: isDuplicate
+        ? targetCard.labelIds
+        : [...targetCard.labelIds, originalLabelId],
       updatedAt: now,
     };
 

@@ -13,7 +13,6 @@ import DraftTask from "../Card/DraftTask";
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import { useShallow } from "zustand/shallow";
 import { useModalStore } from "../../store/ModalStore";
-import { Ghost } from "lucide-react"
 import { handleKeyDown } from "../../actions/handler";
 
 export default function Board({ board }: { board: BoardType }) {
@@ -36,8 +35,8 @@ export default function Board({ board }: { board: BoardType }) {
 
   const style =
     "flex flex-col self-start " +
-		"w-[400px] shrink-0 " + // ★重要: shrink-0 を追加して潰れないようにする
-    "max-h-[90vh] " +       // ★重要: ボードの最大高さを決めてスクロールを有効にする
+    "w-[400px] shrink-0 " + // ★重要: shrink-0 を追加して潰れないようにする
+    "max-h-[90vh] " + // ★重要: ボードの最大高さを決めてスクロールを有効にする
     "w-[400px] gap-[3px] p-3 " +
     "bg-gray-100 rounded-lg ";
 
@@ -61,7 +60,7 @@ export default function Board({ board }: { board: BoardType }) {
   return (
     <div
       ref={setNodeRef}
-			data-board-id={board.id}
+      data-board-id={board.id}
       className={`
 				board
 				overflow-hidden
@@ -76,20 +75,20 @@ export default function Board({ board }: { board: BoardType }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleBoardClick}
-			onKeyDown={e => handleKeyDown(e, showModal)}
-			tabIndex={0}
+      onKeyDown={(e) => handleKeyDown(e, showModal)}
+      tabIndex={0}
     >
       <div className="font-black text-center">{board.title}</div>
       <div className="overflow-auto pt-2">
-				<SortableContext
-					items={board.cardIds}
-					strategy={verticalListSortingStrategy}
-				>
-					{board.cardIds.map((cardId: string) => (
-						<Card key={cardId} cardId={cardId} />
-					))}
-				</SortableContext>
-			</div>
+        <SortableContext
+          items={board.cardIds}
+          strategy={verticalListSortingStrategy}
+        >
+          {board.cardIds.map((cardId: string) => (
+            <Card key={cardId} cardId={cardId} />
+          ))}
+        </SortableContext>
+      </div>
 
       {isDrafting ? (
         <DraftTask
@@ -102,7 +101,7 @@ export default function Board({ board }: { board: BoardType }) {
             e.stopPropagation();
             setIsDrafting(true);
           }} // モーダル表示をブロックする。
-					variant="ghost"
+          variant="ghost"
           className="mt-2 mr-2 h-8 rounded-full"
         >
           ＋カードを追加

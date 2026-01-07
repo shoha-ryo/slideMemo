@@ -1,5 +1,9 @@
 import { v4 as uuidv4 } from "uuid";
-import { LabelType, AppState, ReturnTasks } from "@/app/task/store/taskStore/types/TasksType";
+import {
+  LabelType,
+  AppState,
+  ReturnTasks,
+} from "@/app/task/store/taskStore/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 import { useTaskStore } from "../../taskStore";
 

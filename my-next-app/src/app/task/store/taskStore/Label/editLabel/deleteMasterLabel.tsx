@@ -1,4 +1,8 @@
-import { AppState, ReturnTasks, CardType, LabelType } from "@/app/task/store/taskStore/types/TasksType";
+import {
+  AppState,
+  ReturnTasks,
+  CardType,
+} from "@/app/task/store/taskStore/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 /**
@@ -8,7 +12,7 @@ import { emptyTasks } from "@/app/task/actions/emptyTasks";
  */
 export function deleteMasterLabelLogic(
   labelId: string,
-  state: AppState
+  state: AppState,
 ): ReturnTasks {
   const { labels, cards } = state;
 
@@ -34,14 +38,14 @@ export function deleteMasterLabelLogic(
         labelIds: newLabelIds,
         updatedAt: Date.now(),
       };
-      
+
       updatedCards[card.id] = updatedCard;
-      
+
       // DB更新用リストに追加
       cardsToUpdateInDB.push({
         id: card.id,
         labelIds: newLabelIds,
-        updatedAt: updatedCard.updatedAt
+        updatedAt: updatedCard.updatedAt,
       });
     } else {
       // 変更がないカードはそのまま

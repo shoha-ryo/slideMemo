@@ -8,7 +8,7 @@ import DashBoardHeader from "../header/DashBoardHeader";
 export default function DashboardPage() {
   return (
     <AuthGuard>
-			<DashBoardHeader></DashBoardHeader>
+      <DashBoardHeader></DashBoardHeader>
       <div className="max-w-4xl mx-auto p-8">
         <h1 className="text-3xl font-bold mb-8">マイダッシュボード</h1>
 
@@ -25,7 +25,7 @@ export default function DashboardPage() {
           <ProjectList></ProjectList>
         </section>
       </div>
-				<ProjectGrid></ProjectGrid>
+      <ProjectGrid></ProjectGrid>
     </AuthGuard>
   );
 }
