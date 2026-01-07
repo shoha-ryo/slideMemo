@@ -3,6 +3,9 @@
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 
 export interface TaskStore extends AppState, Payload {
+
+	activeOriginalLabelId: string | null
+
   setActiveId: (activeId: Pick<Payload, "activeId">["activeId"]) => void;
   setOverId: (overId: Pick<Payload, "overId">["overId"]) => void;
   setPayload: (payload: Payload) => void;

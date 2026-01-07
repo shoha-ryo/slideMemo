@@ -12,6 +12,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   activeId: null,
   overId: null,
   dropPosition: null,
+	activeOriginalLabelId: null,
   setActiveId: (activeId) => set({ activeId }),
   setOverId: (overId) => set({ overId }),
   setPayload: ({ activeId, overId, dropPosition }) =>

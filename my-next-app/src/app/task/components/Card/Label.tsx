@@ -6,9 +6,10 @@ import { color } from 'framer-motion';
 
 type Props = {
   label: LabelType;
+	cardId: string
 };
 
-export const DraggableLabel = ({ label }: Props) => {
+export const DraggableLabel = ({ label, cardId }: Props) => {
   const {
     attributes,
     listeners,
@@ -17,7 +18,10 @@ export const DraggableLabel = ({ label }: Props) => {
     transition,
     isDragging,
   } = useSortable({
-    id: label.id,
+    id: `${label.id}_${cardId}`,
+		data: {
+			originalId: label.id
+		}
   });
 
 	const {color} = label

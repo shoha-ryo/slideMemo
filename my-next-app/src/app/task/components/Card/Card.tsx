@@ -127,13 +127,12 @@ const Card = ({ cardId }: { cardId: string }) => {
 							{/* ラベル */}
 							<div className="flex gap-1">
 								{card.labelIds.map(labelId => (
-									<DraggableLabel label={labels[labelId]}></DraggableLabel>
+									<DraggableLabel label={labels[labelId]} cardId={cardId}></DraggableLabel>
 								))}
 							</div>
 
             </div>
 						{/* ホバー時のボタンチラつき防止 */}
-            <div className="w-12 shrink-0" />
           </div>
 
 

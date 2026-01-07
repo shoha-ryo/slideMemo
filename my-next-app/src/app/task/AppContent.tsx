@@ -32,6 +32,8 @@ import TrashDropArea, { TRASH_ID } from "./components/TrashArea/TrashDropArea"; 
 import { TaskLabel } from "./components/Label/TaskLabel";
 import { DraggableLabel } from "./components/Card/Label";
 
+import { DebugInfo } from "./components/devOnly/DebugInfo";
+
 import { handleGlobalKeyDown } from "./actions/handler";
 import { getDropPosition } from "./lib/getDropPosition";
 import { useMousePointer } from "./components/useMousePointer";
@@ -60,6 +62,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
     activeId,
     overId,
     dropPosition,
+		activeOriginalLabelId,
     cards,
     boards,
 		labels,
@@ -79,11 +82,11 @@ export default function AppContent({ projectId }: { projectId: string }) {
       activeId: state.activeId,
       overId: state.overId,
       dropPosition: state.dropPosition,
+			activeOriginalLabelId: state.activeOriginalLabelId,
       cards: state.cards,
       boards: state.boards,
 			labels: state.labels,
 			projectTitle: state.projectTitle,
-			syncStatus: state.syncStatus,
       setActiveId: state.setActiveId,
       setOverId: state.setOverId,
       setHoverInfo: state.setPayload,
@@ -164,6 +167,11 @@ export default function AppContent({ projectId }: { projectId: string }) {
       overId: null,
       dropPosition: null,
     });
+		if (currentActiveId?.includes("label-")) {
+			useTaskStore.setState({
+				activeOriginalLabelId: currentActiveId.split("_")[0]
+			})
+		}
   };
 
   const handleDragMove = (event: DragMoveEvent) => {
@@ -204,6 +212,12 @@ export default function AppContent({ projectId }: { projectId: string }) {
     const { active, over } = event;
     const currentActiveId = String(active.id);
 
+		if (currentActiveId?.includes("label-")) {
+			useTaskStore.setState({
+				activeOriginalLabelId: null
+			})
+		}
+
     // ドロップ先がない場合はリセットして終了
     if (!over) {
       setHoverInfo({ activeId: null, overId: null, dropPosition: null });
@@ -226,7 +240,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
 
 		// ラベル移動ロジック
 		if (activeId?.includes("label") && overId?.includes("card")) {
-      const labelId = activeId;
+      const labelId = activeId.split("_")[0];
       const cardId = overId
 
       addLabelToCard(cardId, labelId); // ストアのアクションを呼び出す
@@ -320,7 +334,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
 					{/* <TaskLabel id="label-12345" color="red" name="重要"></TaskLabel> */}
 					<div className="flex gap-2 p-4">
 						{labelList.map((label) => (
-							<DraggableLabel key={label.id} label={label}></DraggableLabel>
+							<DraggableLabel key={label.id} label={label} cardId="master"></DraggableLabel>
 						))}
 					</div>
 					<div
@@ -330,13 +344,10 @@ export default function AppContent({ projectId }: { projectId: string }) {
 						<DragOverlay>
 							{activeId && cards[activeId] ? <Card cardId={activeId} /> : null}
 							{activeId && boards[activeId] ? <Board board={boards[activeId]}></Board> : null}
-							{activeId === "label-12345" && (
-								<div className="p-2 bg-red-500 w-20 rounded-2xl text-center text-white font-bold shadow-xl">
-									重要
-								</div>
-							)}
+							{activeOriginalLabelId && labels[activeOriginalLabelId] ? <DraggableLabel label={labels[activeOriginalLabelId]} cardId="overlay"></DraggableLabel> : null}
 						</DragOverlay>
 					</div>
+					<DebugInfo></DebugInfo>
 				</DndContext>
 				<Toaster richColors />
 			</div>
