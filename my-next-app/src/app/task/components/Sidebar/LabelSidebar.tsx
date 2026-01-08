@@ -14,7 +14,6 @@ export const LabelSidebar = ({ isOpen, onClose, labels }: Props) => {
       {/* 背景のオーバーレイ（クリックで閉じる） */}
       {isOpen && (
         <div
-          // className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity"
           onClick={onClose}
         />
       )}
@@ -22,7 +21,7 @@ export const LabelSidebar = ({ isOpen, onClose, labels }: Props) => {
       {/* サイドバー本体 */}
       <aside
         className={`
-					relative h-full bg-[#1a1a1a] border-r border-white/10 shadow-2xl 
+					relative h-full bg-[#1a1a1a] border-r border-white/10 shadow-2xl
 					transition-all duration-300 ease-in-out overflow-hidden shrink-0
 				`}
         style={{

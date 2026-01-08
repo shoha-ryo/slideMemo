@@ -98,8 +98,8 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       } else {
         lastSyncAt = 0; // もし30日以上ローカルDBにアクセスしていなければすべてのデータを再取得する（未実装）
       }
-      lastSyncAt = 0;
-      console.log("初期データ全取得モード中...");
+      // lastSyncAt = 0;
+      // console.log("初期データ全取得モード中...");
 
       // 2. 外部DBから最新データを取得 (差分しか取らないのでtoLocalDataBase()でローカルに保存)
       const { diffTasks, newLastSyncAt, projectTitle } = await getInitialData(

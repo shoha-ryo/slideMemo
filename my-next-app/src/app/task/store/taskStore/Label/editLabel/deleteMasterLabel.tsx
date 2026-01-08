@@ -18,7 +18,7 @@ export function deleteMasterLabelLogic(
 
   // 1. 対象のラベルが存在しない場合は何もしない
   if (!labels[labelId]) {
-    return { newState: state, diffTasks: emptyTasks };
+		return { newState: state, diffTasks: emptyTasks };
   }
 
   // 2. labelsオブジェクトから該当ラベルを削除
@@ -28,6 +28,8 @@ export function deleteMasterLabelLogic(
   //    同時に、変更があったカードだけを抽出してupdateTasksに含める
   const updatedCards: { [key: string]: CardType } = {};
   const cardsToUpdateInDB: Partial<CardType>[] = [];
+
+	console.log(2)
 
   Object.values(cards).forEach((card) => {
     if (card.labelIds.includes(labelId)) {
@@ -52,6 +54,18 @@ export function deleteMasterLabelLogic(
       updatedCards[card.id] = card;
     }
   });
+
+	console.log("差分データ", {
+      ...emptyTasks,
+      updateTasks: {
+        ...emptyTasks.updateTasks,
+        cards: cardsToUpdateInDB,
+      },
+      deleteTasks: {
+        ...emptyTasks.deleteTasks,
+        labelIds: [labelId], // マスターラベルの削除を通知
+      },
+    },)
 
   // 4. Stateと差分を返す
   return {

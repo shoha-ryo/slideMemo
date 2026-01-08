@@ -23,6 +23,9 @@ export async function getInitialData(
   projectId: string,
   lastSyncAt: number,
 ): Promise<GetInitialData> {
+
+	console.log("初期データ取得開始");
+
   // 1. 基本的なプロジェクト情報の取得
   // lastSyncAtが0の場合は、ログではなく実データを全部持ってくる
   const project = await prisma.project.findFirst({
@@ -149,35 +152,40 @@ export async function getInitialData(
     }
   });
 
-  const [
-    createBoards,
-    updateBoards,
-    createCards,
-    updateCards,
-    createLabels,
-    updateLabels,
-  ] = await Promise.all([
-    prisma.board.findMany({
-      where: { id: { in: Array.from(ids.board.create) } },
-    }),
-    prisma.board.findMany({
-      where: { id: { in: Array.from(ids.board.update) } },
-    }),
-    prisma.card.findMany({
-      where: { id: { in: Array.from(ids.card.create) } },
-      include: { labels: true },
-    }),
-    prisma.card.findMany({
-      where: { id: { in: Array.from(ids.card.update) } },
-      include: { labels: true },
-    }),
-    prisma.label.findMany({
-      where: { id: { in: Array.from(ids.label.create) } },
-    }),
-    prisma.label.findMany({
-      where: { id: { in: Array.from(ids.label.update) } },
-    }),
-  ]);
+	// prisma取得を1回にするために一旦IDを統合
+  const targetBoardIds = Array.from(new Set([...ids.board.create, ...ids.board.update]));
+  const targetCardIds = Array.from(new Set([...ids.card.create, ...ids.card.update]));
+  const targetLabelIds = Array.from(new Set([...ids.label.create, ...ids.label.update]));
+	// projectからまとめて取得
+  const refreshedData = await prisma.project.findUnique({
+    where: { id: projectId },
+    select: {
+      boards: {
+        where: { id: { in: targetBoardIds } },
+      },
+      cards: {
+        where: { id: { in: targetCardIds } },
+        include: { labels: true },
+      },
+      labels: {
+        where: { id: { in: targetLabelIds } },
+      },
+    },
+  });
+
+  // 取得したデータを、元の create/update 変数に振り分ける
+  const allBoards = refreshedData?.boards || [];
+  const allCards = (refreshedData?.cards || []) as CardWithLabels[];
+  const allLabels = refreshedData?.labels || [];
+
+  const createBoards = allBoards.filter((b) => ids.board.create.has(b.id));
+  const updateBoards = allBoards.filter((b) => ids.board.update.has(b.id));
+  const createCards = allCards.filter((c) => ids.card.create.has(c.id));
+  const updateCards = allCards.filter((c) => ids.card.update.has(c.id));
+  const createLabels = allLabels.filter((l) => ids.label.create.has(l.id));
+  const updateLabels = allLabels.filter((l) => ids.label.update.has(l.id));
+
+
 
   return {
     diffTasks: {

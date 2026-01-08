@@ -74,7 +74,8 @@ export default function AppContent({ projectId }: { projectId: string }) {
     applyDiff,
     initializeProject,
     moveLabel,
-		deleteLabel
+		deleteLabel,
+		deleteMasterLabel,
   } = useTaskStore(
     useShallow((state) => ({
       activeId: state.activeId,
@@ -93,6 +94,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
       deleteTask: state.deleteTask,
       deleteBoard: state.deleteBoard,
 			deleteLabel: state.deleteLabel,
+			deleteMasterLabel: state.deleteMasterLabel,
       setProjectId: state.setProjectId,
       applyDiff: state.applyDiff,
       initializeProject: state.initializeProject,
@@ -224,8 +226,13 @@ export default function AppContent({ projectId }: { projectId: string }) {
     if (activeId?.includes("board-")) {
       deleteBoard(currentActiveId);
     }
-    if (activeId?.includes("label")) {
-      deleteLabel(currentActiveId);
+    if (activeId?.includes("label-") && !activeId?.includes("master")) {
+			// カードIDの抽出も必要なのでactiveIdを渡す
+			deleteLabel(currentActiveId);
+    }
+    if (activeId?.includes("label-") && activeId?.includes("master") && activeOriginalLabelId) {
+			// ラベルIDだけ必要なので純正のIDを渡す
+			deleteMasterLabel(activeOriginalLabelId)
     }
 
       // 状態リセットして早期リターン (移動ロジックを実行させない)
@@ -358,7 +365,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
           </div>
 
           {/* デバッグ情報 */}
-          <DebugInfo />
+          {/* <DebugInfo /> */}
         </DndContext>
         <Toaster richColors />
       </div>

@@ -1,10 +1,8 @@
 "use server";
 
 import { pusherServer } from "@/lib/pusher-server";
-import { PrismaClient } from "@prisma/client";
 import { emptyTasks } from "./emptyTasks";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 type ToDataBase = typeof emptyTasks;
 
@@ -270,7 +268,7 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
       }
 
       // トランザクションの中で、このプロジェクトの最新の更新時刻を1つ取得する
-      const latestProject = await prisma.project.findUnique({
+      const latestProject = await tx.project.findUnique({
         where: { id: projectId },
         select: { updatedAt: true },
       });
