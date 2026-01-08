@@ -74,6 +74,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
     applyDiff,
     initializeProject,
     moveLabel,
+		deleteLabel
   } = useTaskStore(
     useShallow((state) => ({
       activeId: state.activeId,
@@ -91,6 +92,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
       moveLabel: state.moveLabel,
       deleteTask: state.deleteTask,
       deleteBoard: state.deleteBoard,
+			deleteLabel: state.deleteLabel,
       setProjectId: state.setProjectId,
       applyDiff: state.applyDiff,
       initializeProject: state.initializeProject,
@@ -202,13 +204,12 @@ export default function AppContent({ projectId }: { projectId: string }) {
     const { active, over } = event;
     const currentActiveId = String(active.id);
 
-    // ラベルから純粋ラベルIDを保存する
+    // ラベルID保持をクリア
     if (currentActiveId?.includes("label-")) {
       useTaskStore.setState({
         activeOriginalLabelId: null,
       });
     }
-
     // ドロップ先がない場合はリセットして終了
     if (!over) {
       setHoverInfo({ activeId: null, overId: null, dropPosition: null });
@@ -217,43 +218,44 @@ export default function AppContent({ projectId }: { projectId: string }) {
 
     // ゴミ箱ロジック
     if (over.id === TRASH_ID) {
-      // 削除アクションを実行
-      if (activeId?.includes("card-")) {
-        deleteTask(currentActiveId);
-      } else {
-        deleteBoard(currentActiveId);
-      }
+          if (activeId?.includes("card-")) {
+      deleteTask(currentActiveId);
+    }
+    if (activeId?.includes("board-")) {
+      deleteBoard(currentActiveId);
+    }
+    if (activeId?.includes("label")) {
+      deleteLabel(currentActiveId);
+    }
 
-      // 状態リセットして早期リターン (moveTaskを実行させない)
+      // 状態リセットして早期リターン (移動ロジックを実行させない)
       setHoverInfo({ activeId: null, overId: null, dropPosition: null });
       return;
     }
 
-    // --- 以下、通常の移動ロジック ---
+    // 移動ロジック
     const currentOverId = String(over.id);
     const currentDropPosition = dropPosition;
-
     if (!currentActiveId || !currentOverId || !currentDropPosition) {
       setHoverInfo({ activeId: null, overId: null, dropPosition: null });
       return;
     }
-
     const payload: Payload = {
       activeId: currentActiveId,
       overId: currentOverId,
       dropPosition: currentDropPosition,
     };
-
     if (activeId?.includes("card-")) {
       moveTask(payload);
     }
-    if (activeId?.includes("card-")) {
+    if (activeId?.includes("board-")) {
       moveBoard(payload);
     }
     if (activeId?.includes("label") && overId?.includes("card")) {
       moveLabel(payload);
     }
 
+		// リセット処理
     setHoverInfo({
       activeId: null,
       overId: null,
