@@ -11,23 +11,16 @@ type Props = {
 export const LabelSidebar = ({ isOpen, onClose, labels }: Props) => {
   return (
     <>
-      {/* 背景のオーバーレイ（クリックで閉じる） */}
-      {isOpen && (
-        <div
-          onClick={onClose}
-        />
-      )}
-
       {/* サイドバー本体 */}
       <aside
         className={`
-					relative h-full bg-[#1a1a1a] border-r border-white/10 shadow-2xl
+					relative bg-[#1a1a1a] border-r border-white/10 shadow-2xl
 					transition-all duration-300 ease-in-out overflow-hidden shrink-0
 				`}
         style={{
           width: isOpen ? "288px" : "0px", // widthを直接変えることで隣を押し出す
           opacity: isOpen ? 1 : 0, // 閉じている時は透明にする
-          height: "100vh",
+          height: "calc(100vh - 65px)",
         }}
       >
         <div className="w-72 h-full flex flex-col">

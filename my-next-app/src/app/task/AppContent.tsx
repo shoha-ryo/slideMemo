@@ -325,7 +325,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
           <TrashDropArea isVisible={!!activeId} />
 
           <div
-            className="flex h-full w-full overflow-auto overflow-y-hidden"
+            className="flex h-full w-full overflow-auto"
             style={{ height: "calc(100vh - 65px)" }}
           >
             {/* サイドバーが閉じている時だけ「ラベル」ボタンを表示する */}
