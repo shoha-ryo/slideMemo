@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useShallow } from "zustand/shallow";
 import DraftTask from "./DraftTask";
 import { handleKeyDown } from "../../actions/handler";
-import { DraggableLabel } from "../Label/Label";
+import { DraggableLabel } from "../Sidebar/Label/Label";
 
 // Draggable/Droppable コンポーネント
 const Card = ({ cardId }: { cardId: string }) => {
@@ -42,7 +42,7 @@ const Card = ({ cardId }: { cardId: string }) => {
   const isActive = active?.id === cardId;
 
   const draggableStyle = isDragging
-    ? "ring-2 ring-gray-300 bg-gray-100" // 移動元
+    ? "ring-2 ring-gray-300 bg-card" // 移動元
     : isActive
       ? "opacity-20 cursor-grabbing" // 掴んでいる時
       : "cursor-grab"; // 掴んでいない時
@@ -53,7 +53,7 @@ const Card = ({ cardId }: { cardId: string }) => {
         : dropPosition === "bottom"
           ? "ring-2 ring-cyan-500 border-b-10 border-b-cyan-500 bg-cyan-50" // 下部に青線
           : "ring-4 ring-cyan-500 bg-cyan-50" // center（真ん中）
-      : "bg-white border-gray-300"; // ホバーしていない、または自分が動いている時
+      : "bg-card border"; // ホバーしていない、または自分が動いている時
   const hoveredStyle = isHovered
     ? "-translate-y-1 ring-2 ring-gray-500 shadow-xl z-100 relative"
     : "transition-all duration-200";
@@ -86,7 +86,7 @@ const Card = ({ cardId }: { cardId: string }) => {
       data-card-id={cardId}
       className={`card relative
 				p-2.5 pl-2.5 mb-1.25 ml-1 mr-1
-				border rounded-lg
+				border rounded-lg bg-card
 				transition-all duration-200
 				${hoveredStyle}
 				${draggableStyle}
@@ -114,7 +114,7 @@ const Card = ({ cardId }: { cardId: string }) => {
 
               {/* 詳細 */}
               {card.details ? (
-                <div className="text-xs text-gray-500 mt-1">
+                <div className="text-xs text-card-foreground/50 mt-1">
                   <FormattedText text={card.details} />
                 </div>
               ) : null}
@@ -147,7 +147,7 @@ const Card = ({ cardId }: { cardId: string }) => {
                   setIsDrafting(true);
                 }} // モーダル表示をブロックする。
                 variant="ghost"
-                className="mt-2 mr-2 h-8 w-8 rounded-full border bg-white"
+                className="mt-2 mr-2 h-8 w-8 rounded-full border"
               >
                 ＋
               </Button>

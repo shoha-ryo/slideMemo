@@ -21,7 +21,9 @@ function BoardList({}) {
 
   return (
     <SortableContext items={boardOrder}>
-      <div className="flex flex-nowrap items-start gap-3 p-3 shrink-0 m-2">
+      <div
+				className="h-full flex items-start gap-3 p-5 shrink-0"
+			>
         {boardOrder.map((boardId) => (
           <Board key={boardId} board={boards[boardId]} />
         ))}

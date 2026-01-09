@@ -36,15 +36,15 @@ export default function Board({ board }: { board: BoardType }) {
   const style =
     "flex flex-col self-start " +
     "w-[400px] shrink-0 " + // ★重要: shrink-0 を追加して潰れないようにする
-    "max-h-[90vh] " + // ★重要: ボードの最大高さを決めてスクロールを有効にする
+    "max-h-[100%] " + // ★重要: ボードの最大高さを決めてスクロールを有効にする
     "w-[400px] gap-[3px] p-3 " +
-    "bg-gray-100 rounded-lg ";
+    "bg-board rounded-lg ";
 
   const [isHovered, setIsHovered] = useState(false);
   const isActive = activeId?.includes(board.id);
 
   const draggableStyle = isDragging
-    ? "ring-2 ring-gray-300 bg-gray-100" // 移動元
+    ? "ring-2 ring-gray-300 bg-board" // 移動元
     : isActive
       ? "opacity-20 cursor-grabbing" // 掴んでいる時
       : "cursor-grab"; // 掴んでいない時

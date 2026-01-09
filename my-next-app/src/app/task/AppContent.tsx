@@ -2,6 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { useEffect, useState } from "react";
+import { ThemeProvider } from "@/app/settings/system/ThemeProvider"
 import Pusher from "pusher-js";
 import { toast, Toaster } from "sonner";
 import { getAuth } from "firebase/auth";
@@ -27,8 +28,10 @@ import Board from "./components/Board/Board";
 import BoardList from "./components/Board/BoardList";
 import BoardModal from "./components/Board/BoardModal";
 import TrashDropArea, { TRASH_ID } from "./components/TrashArea/TrashDropArea"; // ★ 追加
-import { DraggableLabel } from "./components/Label/Label";
-import { LabelSidebar } from "./components/Sidebar/LabelSidebar";
+import { DraggableLabel } from "./components/Sidebar/Label/Label";
+import { LabelSidebar } from "./components/Sidebar/Label/LabelSidebar";
+
+import { Button } from "@/components/ui/button";
 
 import { DebugInfo } from "./components/devOnly/DebugInfo";
 
@@ -304,71 +307,78 @@ export default function AppContent({ projectId }: { projectId: string }) {
   };
 
   return (
-    <div className="min-h-screen">
-      <TaskHeader />
-      <div style={{ position: "relative" }}>
-        {isShowModal && (
-          <>
-            {modalType === "card" && <CardModal key={clickedActiveId} />}
-            {modalType === "board" && <BoardModal key={clickedActiveId} />}
-          </>
-        )}
+    <div className="
+			min-h-screen
+			bg-background text-foreground
+		">
+			<ThemeProvider>
+				<TaskHeader />
+				<div style={{
+					position: "relative",
+					height: "calc(100vh - 65px)"
+				}}>
+					{isShowModal && (
+						<>
+							{modalType === "card" && <CardModal key={clickedActiveId} />}
+							{modalType === "board" && <BoardModal key={clickedActiveId} />}
+						</>
+					)}
 
-        <DndContext
-          collisionDetection={customCollisionDetection}
-          onDragStart={handleDragStart}
-          onDragMove={handleDragMove}
-          onDragEnd={handleDragEnd}
-          sensors={sensors}
-        >
-          {/* ゴミ箱エリア */}
-          <TrashDropArea isVisible={!!activeId} />
+					<DndContext
+						collisionDetection={customCollisionDetection}
+						onDragStart={handleDragStart}
+						onDragMove={handleDragMove}
+						onDragEnd={handleDragEnd}
+						sensors={sensors}
+					>
+						{/* ゴミ箱エリア */}
+						<TrashDropArea isVisible={!!activeId} />
 
-          <div
-            className="flex h-full w-full overflow-auto"
-            style={{ height: "calc(100vh - 65px)" }}
-          >
-            {/* サイドバーが閉じている時だけ「ラベル」ボタンを表示する */}
-            {!isSidebarOpen && (
-              <button
-                onClick={() => setIsSidebarOpen(true)}
-                className="fixed top-20 left-4 z-30 p-2 bg-gray-800 rounded-md hover:bg-gray-700 text-white border border-white/10"
-              >
-                ラベルを表示
-              </button>
-            )}
-            {/* サイドバー本体 */}
-            <LabelSidebar
-              isOpen={isSidebarOpen}
-              onClose={() => setIsSidebarOpen(false)}
-              labels={labels}
-            />
+						<div
+							className="flex h-full w-full overflow-auto"
+						>
+							{/* サイドバーが閉じている時だけ「ラベル」ボタンを表示する */}
+							{!isSidebarOpen && (
+								<Button
+									onClick={() => setIsSidebarOpen(true)}
+									className="fixed top-20 left-4 z-30"
+								>
+									ラベルを表示
+								</Button>
+							)}
+							{/* サイドバー本体 */}
+							<LabelSidebar
+								isOpen={isSidebarOpen}
+								onClose={() => setIsSidebarOpen(false)}
+								labels={labels}
+							/>
 
-            <main className="flex-1 relative overflow-x-auto overflow-y-hidden">
-              {/* ボードリスト */}
-              <BoardList />
-            </main>
+							<main className="flex-1 relative overflow-x-auto">
+								{/* ボードリスト */}
+								<BoardList />
+							</main>
 
-            {/* オーバーレイ */}
-            <DragOverlay>
-              {activeId && cards[activeId] ? <Card cardId={activeId} /> : null}
-              {activeId && boards[activeId] ? (
-                <Board board={boards[activeId]}></Board>
-              ) : null}
-              {activeOriginalLabelId && labels[activeOriginalLabelId] ? (
-                <DraggableLabel
-                  label={labels[activeOriginalLabelId]}
-                  cardId="overlay"
-                ></DraggableLabel>
-              ) : null}
-            </DragOverlay>
-          </div>
+							{/* オーバーレイ */}
+							<DragOverlay>
+								{activeId && cards[activeId] ? <Card cardId={activeId} /> : null}
+								{activeId && boards[activeId] ? (
+									<Board board={boards[activeId]}></Board>
+								) : null}
+								{activeOriginalLabelId && labels[activeOriginalLabelId] ? (
+									<DraggableLabel
+										label={labels[activeOriginalLabelId]}
+										cardId="overlay"
+									></DraggableLabel>
+								) : null}
+							</DragOverlay>
+						</div>
 
-          {/* デバッグ情報 */}
-          {/* <DebugInfo /> */}
-        </DndContext>
-        <Toaster richColors />
-      </div>
+						{/* デバッグ情報 */}
+						{/* <DebugInfo /> */}
+					</DndContext>
+					<Toaster richColors />
+				</div>
+			</ThemeProvider>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ThemeToggle } from "../settings/system/ThemeToggle";
 import { Search, Bell, Settings, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +37,7 @@ export default function TaskHeader() {
               <span>FLOW</span>
             </div>
           </Link>
+					<ThemeToggle/>
         </div>
 
         <div className="text-xl font-bold text-foreground/80">

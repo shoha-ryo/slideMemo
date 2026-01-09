@@ -1,7 +1,7 @@
 // src/app/task/components/Label/DraggableLabel.tsx
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
-import { LabelType } from "../../store/taskStore/types/TasksType";
+import { LabelType } from "../../../store/taskStore/types/TasksType";
 
 type Props = {
   label: LabelType;
