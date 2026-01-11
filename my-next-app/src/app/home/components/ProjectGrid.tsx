@@ -2,11 +2,16 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { getProjects } from "@/app/actions/projectActions";
+
 import { Plus, MoreVertical, Folder, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,9 +21,7 @@ import {
 
 type Project = {
   id: string;
-  name: string;
-  tasksCount: number;
-  status: "planning" | "in-progress" | "completed";
+  title: string;
 };
 
 const statusLabels = {
@@ -28,38 +31,29 @@ const statusLabels = {
 };
 
 export function ProjectGrid() {
-  const [projects, setProjects] = useState<Project[]>([
-    {
-      id: "1",
-      name: "Webアプリケーション開発",
-      tasksCount: 12,
-      status: "planning",
-    },
-    { id: "2", name: "モバイルアプリ設計", tasksCount: 8, status: "planning" },
-    {
-      id: "3",
-      name: "ランディングページ制作",
-      tasksCount: 15,
-      status: "in-progress",
-    },
-    {
-      id: "4",
-      name: "ブランディング戦略",
-      tasksCount: 20,
-      status: "completed",
-    },
-    {
-      id: "5",
-      name: "UIデザインシステム",
-      tasksCount: 18,
-      status: "completed",
-    },
-  ]);
+  const [projects, setProjects] = useState<Project[]>([]);
 
   const [newProjectName, setNewProjectName] = useState("");
   const [isAddingProject, setIsAddingProject] = useState(false);
   const [draggedProject, setDraggedProject] = useState<string | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+	const [loading, setLoading] = useState(true);
+	useEffect(() => {
+		// 認証状態を監視して、UIDが取れたらフェッチ
+		const unsubscribe = onAuthStateChanged(auth, async (user) => {
+			if (user) {
+				const result = await getProjects(user.uid);
+				if (result.success && result.data) {
+					setProjects(result.data);
+				}
+			}
+			setLoading(false);
+		});
+
+		return () => unsubscribe();
+	}, []);
+
 
   const handleAddProject = () => {
     const projectName = newProjectName.trim();
@@ -69,9 +63,7 @@ export function ProjectGrid() {
       ...prev,
       {
         id: Date.now().toString(),
-        name: projectName,
-        tasksCount: 0,
-        status: "planning",
+      	title: projectName,
       },
     ]);
 
@@ -119,16 +111,6 @@ export function ProjectGrid() {
     setDragOverIndex(null);
   };
 
-  const getStatusColor = (status: Project["status"]) => {
-    switch (status) {
-      case "planning":
-        return "bg-zinc-200 text-zinc-700";
-      case "in-progress":
-        return "bg-zinc-700 text-white";
-      case "completed":
-        return "bg-zinc-900 text-white";
-    }
-  };
 
   return (
     <div className="p-6">
@@ -190,63 +172,60 @@ export function ProjectGrid() {
         style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}
       >
         {projects.map((project, index) => (
-          <Card
-            key={project.id}
-            draggable
-            onDragStart={(e) => handleDragStart(e, project.id)}
-            onDragOver={(e) => handleDragOver(e, index)}
-            onDragEnd={handleDragEnd}
-            onDrop={(e) => handleDrop(e, index)}
-            className={`cursor-move p-4 transition-all hover:shadow-lg ${
-              draggedProject === project.id ? "opacity-50" : ""
-            } ${dragOverIndex === index ? "ring-2 ring-foreground" : ""}`}
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex flex-1 items-start gap-3">
-                <div className="mt-1 cursor-grab active:cursor-grabbing">
-                  <GripVertical className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <div className="flex-1">
-                  <div className="mb-2 flex items-center gap-2">
-                    <div className="rounded-md bg-muted p-2">
-                      <Folder className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  </div>
-                  <h3 className="mb-2 font-medium leading-tight text-foreground">
-                    {project.name}
-                  </h3>
-                  <div className="mb-3 flex items-center gap-2">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${getStatusColor(project.status)}`}
-                    >
-                      {statusLabels[project.status]}
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {project.tasksCount} タスク
-                  </p>
-                </div>
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <MoreVertical className="h-4 w-4" />
-                    <span className="sr-only">メニュー</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>編集</DropdownMenuItem>
-                  <DropdownMenuItem>複製</DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="text-destructive"
-                    onClick={() => handleDeleteProject(project.id)}
-                  >
-                    削除
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </Card>
+					<Link
+						key={project.id}
+						href={`/task/${project.id}`}
+					>
+						<Card
+							key={project.id}
+							draggable
+							onDragStart={(e) => handleDragStart(e, project.id)}
+							onDragOver={(e) => handleDragOver(e, index)}
+							onDragEnd={handleDragEnd}
+							onDrop={(e) => handleDrop(e, index)}
+							className={`cursor-move p-4 transition-all hover:shadow-lg ${
+								draggedProject === project.id ? "opacity-50" : ""
+							} ${dragOverIndex === index ? "ring-2 ring-foreground" : ""}`}
+						>
+							<div className="flex items-start justify-between gap-2">
+								<div className="flex flex-1 items-start gap-3">
+									<div className="mt-1 cursor-grab active:cursor-grabbing">
+										<GripVertical className="h-5 w-5 text-muted-foreground" />
+									</div>
+									<div className="flex-1">
+										<div className="mb-2 flex items-center gap-2">
+											<div className="rounded-md bg-muted p-2">
+												<Folder className="h-4 w-4 text-muted-foreground" />
+											</div>
+										</div>
+										<h3 className="mb-2 font-medium leading-tight text-foreground">
+											{project.title}
+										</h3>
+										<div className="mb-3 flex items-center gap-2">
+										</div>
+									</div>
+								</div>
+								<DropdownMenu>
+									<DropdownMenuTrigger asChild>
+										<Button variant="ghost" size="icon" className="h-8 w-8">
+											<MoreVertical className="h-4 w-4" />
+											<span className="sr-only">メニュー</span>
+										</Button>
+									</DropdownMenuTrigger>
+									<DropdownMenuContent align="end">
+										<DropdownMenuItem>編集</DropdownMenuItem>
+										<DropdownMenuItem>複製</DropdownMenuItem>
+										<DropdownMenuItem
+											className="text-destructive"
+											onClick={() => handleDeleteProject(project.id)}
+										>
+											削除
+										</DropdownMenuItem>
+									</DropdownMenuContent>
+								</DropdownMenu>
+							</div>
+						</Card>
+					</Link>
         ))}
       </div>
     </div>

@@ -17,7 +17,9 @@ export const LabelSidebar = ({ isOpen, onClose, labels }: Props) => {
     <>
       <aside
         className={`
-          relative border-r border-border/10 shadow-2xl text-sidebar-accent-foreground
+          relative
+					border-r border-border/10 shadow-2xl
+					bg-sidebar text-sidebar-accent-foreground
           transition-all duration-300 ease-in-out overflow-hidden shrink-0
         `}
         style={{
@@ -33,7 +35,7 @@ export const LabelSidebar = ({ isOpen, onClose, labels }: Props) => {
             </h2>
             <button
               onClick={onClose}
-              className="p-1 hover:bg-white/5 rounded-md hover:text-white transition-colors"
+              className="p-1 hover:bg-sidebar-primary-foreground/5 rounded-md hover:text-sidebar-foreground transition-colors"
             >
               <X size={18} />
             </button>
@@ -47,7 +49,7 @@ export const LabelSidebar = ({ isOpen, onClose, labels }: Props) => {
               ))}
               {Object.values(labels).length === 0 && (
                 <p className="text-center text-gray-600 text-xs py-10">
-                  No labels created yet.
+                  まだラベルが作成されていません。
                 </p>
               )}
             </div>
@@ -69,7 +71,9 @@ export const LabelSidebar = ({ isOpen, onClose, labels }: Props) => {
                 size={16}
                 className="group-hover:rotate-90 transition-transform"
               />
-              <span className="text-sm font-medium">Create New Label</span>
+              <span
+								className="text-sm font-medium pr-4"
+							>ラベルを作成</span>
             </button>
           </div>
         </div>

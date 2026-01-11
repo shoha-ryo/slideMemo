@@ -144,21 +144,6 @@ export const applyMoveLogic = (
     })
     .filter((item) => item !== null);
 
-  console.log({
-    newState: {
-      cards: newCards,
-      boards: newBoards,
-      boardOrder: newBoardOrder,
-    },
-    diffTasks: {
-      ...emptyTasks,
-      updateTasks: {
-        ...emptyTasks.updateTasks,
-        boards: updateBoards,
-        cards: updateCards,
-      },
-    },
-  });
 
   // 4. Zustandへの返却
   return {

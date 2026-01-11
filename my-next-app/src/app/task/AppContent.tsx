@@ -2,7 +2,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { useEffect, useState } from "react";
-import { ThemeProvider } from "@/app/settings/system/ThemeProvider"
 import Pusher from "pusher-js";
 import { toast, Toaster } from "sonner";
 import { getAuth } from "firebase/auth";
@@ -30,6 +29,7 @@ import BoardModal from "./components/Board/BoardModal";
 import TrashDropArea, { TRASH_ID } from "./components/TrashArea/TrashDropArea"; // ★ 追加
 import { DraggableLabel } from "./components/Sidebar/Label/Label";
 import { LabelSidebar } from "./components/Sidebar/Label/LabelSidebar";
+import { SideToolBar } from "./components/Sidebar/SaidToolMenu";
 
 import { Button } from "@/components/ui/button";
 
@@ -307,11 +307,10 @@ export default function AppContent({ projectId }: { projectId: string }) {
   };
 
   return (
-    <div className="
-			min-h-screen
-			bg-background text-foreground
-		">
-			<ThemeProvider>
+			<div className="
+				min-h-screen
+				bg-background text-foreground
+			">
 				<TaskHeader />
 				<div style={{
 					position: "relative",
@@ -337,15 +336,13 @@ export default function AppContent({ projectId }: { projectId: string }) {
 						<div
 							className="flex h-full w-full overflow-auto"
 						>
-							{/* サイドバーが閉じている時だけ「ラベル」ボタンを表示する */}
-							{!isSidebarOpen && (
-								<Button
-									onClick={() => setIsSidebarOpen(true)}
-									className="fixed top-20 left-4 z-30"
-								>
-									ラベルを表示
-								</Button>
-							)}
+							{/* ツールバー */}
+							<SideToolBar
+								isLabelOpen={isSidebarOpen}
+								onToggleLabel={() => setIsSidebarOpen(!isSidebarOpen)}
+							/>
+
+
 							{/* サイドバー本体 */}
 							<LabelSidebar
 								isOpen={isSidebarOpen}
@@ -378,7 +375,6 @@ export default function AppContent({ projectId }: { projectId: string }) {
 					</DndContext>
 					<Toaster richColors />
 				</div>
-			</ThemeProvider>
-    </div>
+   	  </div>
   );
 }

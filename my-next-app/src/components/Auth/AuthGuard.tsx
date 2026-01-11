@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import { AuthLoading } from "./AuthLoading";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
@@ -20,7 +21,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     });
   }, [router]);
 
-  if (loading) return <p>Loading...</p>; // 判定中はローディングを表示
+  if (loading) return <AuthLoading></AuthLoading>
 
   return <>{children}</>;
 }

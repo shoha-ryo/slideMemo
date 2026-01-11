@@ -8,7 +8,7 @@ export function ThemeToggle() {
 			className=""
 			onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
 		>
-      {theme === "dark" ? "🌙" : "☀️"}
+      {theme === "dark" ? "DARK" : "LIGHT"}
     </button>
   );
 }

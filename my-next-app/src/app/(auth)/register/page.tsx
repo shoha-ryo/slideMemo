@@ -37,6 +37,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { FlowLogo } from "../../../../public/FLOW";
 
 const registerSchema = z
   .object({
@@ -176,8 +177,8 @@ export default function RegisterPage() {
     <div className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-3 text-center">
-          <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-foreground">
-            <CheckSquare className="h-6 w-6 text-background" />
+          <div className="mx-auto mb-2 flex items-center justify-center rounded-xl">
+            <FlowLogo className="w-25"/>
           </div>
           <CardTitle className="text-2xl">新規登録</CardTitle>
           <CardDescription>
@@ -195,7 +196,7 @@ export default function RegisterPage() {
                   <FormItem>
                     <FormLabel>ユーザー名</FormLabel>
                     <FormControl>
-                      <Input placeholder="taskflow_user" {...field} />
+                      <Input placeholder="" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

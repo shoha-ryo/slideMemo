@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { getAuth, signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
 import { ThemeToggle } from "../settings/system/ThemeToggle";
 import { Search, Bell, Settings, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,6 +27,19 @@ export default function TaskHeader() {
       projectTitle: state.projectTitle,
     })),
   );
+
+	const auth = getAuth();
+  const router = useRouter();
+
+  const onLogout = async () => {
+    try {
+      await signOut(auth);
+      // 成功したらログインページへ移動
+      router.push("/login");
+    } catch (error) {
+      alert("ログアウトに失敗しました");
+    }
+  };
 
   return (
     <header className="border-b border-border bg-background">
@@ -146,7 +161,11 @@ export default function TaskHeader() {
               <DropdownMenuItem>プロフィール</DropdownMenuItem>
               <DropdownMenuItem>アカウント設定</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>ログアウト</DropdownMenuItem>
+              <DropdownMenuItem>
+								<Button onClick={onLogout}>
+									ログアウト
+								</Button>
+							</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
