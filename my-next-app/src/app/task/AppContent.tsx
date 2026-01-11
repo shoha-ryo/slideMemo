@@ -47,6 +47,7 @@ import { useShallow } from "zustand/shallow";
 import { useUserStore } from "../../store/userStore";
 import { emptyTasks } from "./actions/emptyTasks";
 import { toLocalDataBase } from "./actions/toLocalDataBase";
+import { DebugCollision } from "./components/devOnly/DebugCollision";
 
 export default function AppContent({ projectId }: { projectId: string }) {
   const auth = getAuth();
@@ -273,38 +274,39 @@ export default function AppContent({ projectId }: { projectId: string }) {
     });
   };
 
-  const customCollisionDetection: CollisionDetection = (args) => {
-    const { active } = args;
+	const customCollisionDetection: CollisionDetection = (args) => {
+		const { active } = args;
 
-    // 1. まずは標準の判定（ポインタの下にある要素を探す）を行う
-    const pointerCollisions = pointerWithin(args);
+		// マウスの下にあるものをすべて取得
+		const collisions = pointerWithin(args);
+		if (collisions.length === 0) {
+			return [];
+		}
 
-    // 衝突がない、またはドラッグしているのが「ボード」ではない場合は、標準の結果を返す
-    if (
-      pointerCollisions.length === 0 ||
-      !active.id.toString().startsWith("board-")
-    ) {
-      return pointerCollisions;
-    }
+		// ヒットしたものを ID の種類で仕分ける
+		const cardCollisions = collisions.filter(c => !c.id.toString().startsWith("board-") && c.id !== "trash");
+		const boardCollisions = collisions.filter(c => c.id.toString().startsWith("board-"));
 
-    // 2. ドラッグ中の要素が「ボード」の場合の特別処理
-    const overId = pointerCollisions[0].id.toString();
+		// 【ケースA】ドラッグしているのが「ボード」の場合
+		if (active.id.toString().startsWith("board-")) {
+			// ボード移動中は、カードの上にいてもその「親ボード」をターゲットにする
+			if (boardCollisions.length > 0) return boardCollisions;
+			if (cardCollisions.length > 0) {
+				const overCardId = cardCollisions[0].id.toString();
+				const overCard = cards[overCardId];
+				if (overCard) return [{ id: overCard.boardId }];
+			}
+			return collisions;
+		}
+		// 【ケースB】ドラッグしているのが「カード」の場合
+		if (cardCollisions.length > 0) {
+			// ひとつでもカードがあれば「カード」をターゲットにする
+			return cardCollisions;
+		}
 
-    // もしマウスの下にあるのが「ボード」なら、そのまま返す
-    if (overId.startsWith("board-")) {
-      return pointerCollisions;
-    }
-
-    // もしマウスの下にあるのが「カード」なら、「親ボード」を見つけて返す
-    const overCard = cards[overId];
-    if (overCard) {
-      // ここが魔法の処理：ヒットした対象を「親ボード」にすり替える
-      return [{ id: overCard.boardId }];
-    }
-
-    // それ以外（念のため）
-    return pointerCollisions;
-  };
+		// カードがヒットせず、ボードだけがヒットしているならボードを返す
+		return boardCollisions.length > 0 ? boardCollisions : collisions;
+	};
 
   return (
 			<div className="
@@ -372,6 +374,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
 
 						{/* デバッグ情報 */}
 						{/* <DebugInfo /> */}
+						{/* <DebugCollision/> */}
 					</DndContext>
 					<Toaster richColors />
 				</div>
