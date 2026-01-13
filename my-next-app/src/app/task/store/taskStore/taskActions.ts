@@ -36,8 +36,8 @@ export const taskActions = (
     const state = get();
     const { newState, diffTasks } = applyMoveLogic(payload, state);
     if (!state.projectId) return;
-    set(newState);
     updateCheckForToDB(diffTasks, state.projectId);
+    set(newState);
   },
 
   addTask: (title: string, source: Source) => {

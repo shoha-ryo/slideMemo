@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import Pusher from "pusher-js";
 import { toast, Toaster } from "sonner";
 import { getAuth } from "firebase/auth";
+import { useLiveQuery } from "dexie-react-hooks";
+import { db } from "../../../dexie/dexie";
 
 import {
   DndContext,
@@ -30,9 +32,9 @@ import TrashDropArea, { TRASH_ID } from "./components/TrashArea/TrashDropArea"; 
 import { DraggableLabel } from "./components/Sidebar/Label/Label";
 import { LabelSidebar } from "./components/Sidebar/Label/LabelSidebar";
 import { SideToolBar } from "./components/Sidebar/SaidToolMenu";
-
 import { Button } from "@/components/ui/button";
 
+// デバッグ
 import { DebugInfo } from "./components/devOnly/DebugInfo";
 
 import { handleGlobalKeyDown } from "./actions/handler";
@@ -46,7 +48,7 @@ import { Payload } from "@/app/task/store/taskStore/types/TasksType";
 import { useShallow } from "zustand/shallow";
 import { useUserStore } from "../../store/userStore";
 import { emptyTasks } from "./actions/emptyTasks";
-import { toLocalDataBase } from "./actions/toLocalDataBase";
+import { toLocalDataBase, updateLocalSyncMeta } from "./actions/toLocalDataBase";
 import { DebugCollision } from "./components/devOnly/DebugCollision";
 
 export default function AppContent({ projectId }: { projectId: string }) {
@@ -105,11 +107,20 @@ export default function AppContent({ projectId }: { projectId: string }) {
     })),
   );
 
+	// まずはローカルから取得
+	const projects = useLiveQuery(
+		async () => {
+			if (!userId) return [];
+			return await db.projects.where("userId").equals(userId).toArray();
+		},
+		[userId]
+	) || [];
+
   // 初期値取得
   useEffect(() => {
     const user = auth.currentUser;
     if (user) {
-      initializeProject(user.uid, projectId);
+      initializeProject(user.uid, projectId); // ストアのサーバー→ローカルまで一元管理
       setUserId(user.uid);
       setProjectId(projectId);
     }
@@ -135,7 +146,8 @@ export default function AppContent({ projectId }: { projectId: string }) {
         const { diffTasks, lastSyncAt } = payload;
         if (!userId || !projectTitle) return;
         applyDiff(diffTasks, userId);
-        toLocalDataBase(diffTasks, projectId, projectTitle, userId, lastSyncAt);
+        toLocalDataBase(diffTasks, projectId);
+				updateLocalSyncMeta(lastSyncAt, projectId)
       },
     );
     return () => {

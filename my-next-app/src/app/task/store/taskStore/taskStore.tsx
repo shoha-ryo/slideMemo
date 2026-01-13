@@ -7,7 +7,7 @@ import {
   CardType,
   TaskStore,
 } from "@/app/task/store/taskStore/types/TasksType";
-import { toLocalDataBase } from "../../actions/toLocalDataBase";
+import { toLocalDataBase, updateLocalSyncMeta } from "../../actions/toLocalDataBase";
 import { getInitialData } from "../../actions/getInitialData";
 import { produce } from "immer";
 
@@ -101,6 +101,10 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       // lastSyncAt = 0;
       // console.log("初期データ全取得モード中...");
 
+			console.log("user",userId,
+        "project",projectId,
+        lastSyncAt,)
+			// todo
       // 2. 外部DBから最新データを取得 (差分しか取らないのでtoLocalDataBase()でローカルに保存)
       const { diffTasks, newLastSyncAt, projectTitle } = await getInitialData(
         userId,
@@ -115,10 +119,8 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       await toLocalDataBase(
         diffTasks,
         projectId,
-        newProjectTitle,
-        userId,
-        newLastSyncAt,
       );
+			await updateLocalSyncMeta( newLastSyncAt, projectId )
 
       // 4. Storeを最新に更新(ローカルDB更新後)
       const updatedCards = await db.cards.where({ projectId }).toArray();
@@ -140,6 +142,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     }
   },
 
+	// store更新？
   applyDiff: (diff) => {
     set((state) => {
       const nextCards = { ...state.cards };

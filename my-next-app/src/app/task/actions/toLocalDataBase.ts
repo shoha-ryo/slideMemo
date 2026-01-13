@@ -2,11 +2,8 @@ import { db } from "../../../../dexie/dexie";
 import { emptyTasks } from "./emptyTasks";
 
 export const toLocalDataBase = async (
-  diff: typeof emptyTasks,
-  projectId: string,
-  projectTitle: string,
-  userId: string,
-  newLastSyncAt: number,
+  diff: typeof emptyTasks, // 更新データ
+  projectId: string,       // プロジェクトの存在確認のため...もしかして不要かも？
 ) => {
   try {
     // トランザクションで一括処理（途中でエラーが出たらロールバックされるので安全）
@@ -71,31 +68,26 @@ export const toLocalDataBase = async (
           diff.createTasks.boardOrder.length > 0
             ? diff.createTasks.boardOrder
             : diff.updateTasks.boardOrder;
-
         if (latestOrder.length > 0) {
-          // まず、そのプロジェクトがDexieに存在するか確認
-          const existingProject = await db.projects.get(projectId);
-          if (existingProject) {
-            // 【2回目以降】データがあるので、並び順だけ「更新」
-            await db.projects.update(projectId, {
-              title: projectTitle,
-              boardOrder: latestOrder,
-              updatedAt: Date.now(),
-            });
-          } else {
-            // 【初回】データがないので、新しくレコードを「作成」
-            // ※ project全体の情報を入れる必要があります
-            console.log("タイトル：", projectTitle);
-            await db.projects.put({
-              id: projectId,
-              title: projectTitle,
-              userId: userId, // 引数などで渡す
-              boardOrder: latestOrder,
-              createdAt: Date.now(),
-              updatedAt: Date.now(),
-            });
-          }
+					await db.projects.update(projectId, {
+						boardOrder: latestOrder,
+						updatedAt: Date.now(),
+					});
         }
+      },
+    );
+  } catch (error) {
+    console.error("Failed to sync Dexie (DiffTasks):", error);
+  }
+};
+
+export const updateLocalSyncMeta = async(newLastSyncAt: number, projectId: string) => {
+try {
+    // トランザクションで一括処理（途中でエラーが出たらロールバックされるので安全）
+    await db.transaction(
+      "rw",
+      [db.syncMeta],
+      async () => {
         await db.syncMeta.put({
           id: projectId,
           lastSyncAt: newLastSyncAt,
@@ -103,6 +95,6 @@ export const toLocalDataBase = async (
       },
     );
   } catch (error) {
-    console.error("Failed to sync Dexie:", error);
+    console.error("Failed to sync Dexie (SyncMeta):", error);
   }
-};
+}

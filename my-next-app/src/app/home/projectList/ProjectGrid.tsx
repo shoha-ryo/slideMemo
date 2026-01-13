@@ -64,8 +64,9 @@ export function ProjectGrid() {
     const title = newProjectName.trim();
     if (!title || !userId) return;
 
+		const newProjectId = `project-${crypto.randomUUID()}`
     const newProject = {
-      id: crypto.randomUUID(), // クライアント側でIDを確定
+      id: newProjectId, // クライアント側でIDを確定
       title,
       userId,
       boardOrder: [],
@@ -75,9 +76,9 @@ export function ProjectGrid() {
 
     // UI更新は不要（Dexieが検知する）。DBに突っ込むだけ。
     await db.projects.add(newProject);
-    
+
     // 裏でサーバーに送信
-    createProject(title, userId);
+    createProject(title, userId, newProjectId);
 
     setNewProjectName("");
     setIsAddingProject(false);

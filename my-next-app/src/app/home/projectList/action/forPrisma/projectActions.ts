@@ -3,10 +3,11 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
-export async function createProject(title: string, userId: string) {
+export async function createProject(title: string, userId: string, projectId: string) {
   try {
     const newProject = await prisma.project.create({
       data: {
+				id: projectId,
         title: title,
         userId: userId,
         boardOrder: [], // 初期状態は空
