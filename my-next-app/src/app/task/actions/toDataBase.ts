@@ -241,7 +241,7 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
     });
 
     // Pusherへの通知
-    await pusherServer.trigger(`project-${projectId}`, "task-updated", {
+    pusherServer.trigger(`project-${projectId}`, "task-updated", {
       diffTasks: diffTasks,
       lastSyncAt: lastSyncAt,
     });

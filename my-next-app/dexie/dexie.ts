@@ -46,7 +46,7 @@ export interface LabelEntity {
   updatedAt: number;
 }
 
-// 同期情報を管理するメタデータ
+// 各プロジェクトの同期情報を管理するメタデータ
 export interface SyncMeta {
   id: string; // projectIdを入れる
   lastSyncAt: number; // 最後にサーバーと成功したUnixタイムスタンプ
