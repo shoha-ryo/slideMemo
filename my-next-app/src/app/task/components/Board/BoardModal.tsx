@@ -6,6 +6,8 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useModalStore } from "../../store/ModalStore";
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import { BoardType } from "@/app/task/store/taskStore/types/TasksType";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 
 export default function BoardModal() {
   // --- 状態とストアからのデータ取得 ---
@@ -26,7 +28,7 @@ export default function BoardModal() {
   // --- 高さ調整ロジック (タイトル用) ---
   const resizeTitleHeight = () => {
     const textarea = titleRef.current;
-    const MAX_HEIGHT_FOR_ONE_LINE = 64; // 必要に応じて調整
+    const MAX_HEIGHT_FOR_ONE_LINE = 55; // 必要に応じて調整
 
     if (textarea) {
       textarea.style.height = "auto";
@@ -58,6 +60,20 @@ export default function BoardModal() {
       resizeTitleHeight();
     }
   }, [title]);
+
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // 日本語入力中の確定（IME）の Enter で送信されないようにチェック
+    if (e.nativeEvent.isComposing) return;
+
+    // Enter だけが押された場合（Shift は押されていない）
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // 改行を防ぐ
+      onSave(); // 保存実行
+    }
+    if (e.key === "Escape") {
+      hideModal();
+    }
+  };
 
   // --- 保存処理 ---
   const onSave = useCallback(async () => {
@@ -107,91 +123,70 @@ export default function BoardModal() {
   if (!activeBoard) return null;
 
   return (
-    <div
-      id="modal-background"
-      onClick={handleBackgroundClick}
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.3)",
-        backdropFilter: "blur(5px)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 9999,
-        pointerEvents: "auto",
-      }}
-    >
-      <div
-        style={{
-          background: "#fff",
-          padding: "20px",
-          borderRadius: "8px",
-          width: "400px", // ボードなので少し小さめに
-          boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
-          position: "relative",
-          pointerEvents: "auto",
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={hideModal}
-          style={{
-            position: "absolute",
-            right: "10px",
-            top: "10px",
-            border: "none",
-            background: "transparent",
-            fontSize: "36px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            lineHeight: "1",
-            color: "#666",
-          }}
-        >
-          ×
-        </button>
+		<div
+			id="modal-background"
+			onClick={handleBackgroundClick}
+			className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
+		>
+			<div
+				onClick={(e) => e.stopPropagation()}
+				className="relative w-full max-w-2xl rounded-xl bg-card p-8 shadow-2xl ring-1 ring-border animate-in zoom-in-95 duration-200"
+			>
+				{/* 閉じるボタン */}
+				<button
+					onClick={hideModal}
+					className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+				>
+					<X className="h-5 w-5" />
+					<span className="sr-only">Close</span>
+				</button>
 
-        <h3>ボード編集</h3>
+				<div className="mb-6 flex items-center justify-between">
+					<h3 className="text-xl font-semibold leading-none tracking-tight text-foreground">
+						ボード編集
+					</h3>
+				</div>
 
-        <div style={{ marginTop: "15px" }}>
-          <label>タイトル</label>
-          <textarea
-            ref={titleRef}
-            value={title}
-            placeholder="ボード名を入力してください"
-            onChange={(e) => setTitle(e.target.value)}
-            style={{
-              width: "100%",
-              minHeight: "40px",
-              padding: "8px",
-              marginTop: "4px",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-              resize: "none",
-              height: "40px",
-              overflowY: "hidden",
-              fontFamily: "inherit",
-            }}
-          />
-        </div>
+				<div className="space-y-6">
+					{/* タイトルセクション */}
+					<div className="space-y-2">
+						<label className="text-sm font-medium leading-none text-muted-foreground">
+							タイトル
+						</label>
+						<textarea
+							ref={titleRef}
+							value={title}
+							placeholder="タイトルを入力してください"
+							onChange={(e) => setTitle(e.target.value)}
+							onKeyDown={handleKeyDown}
+							style={{minHeight: 40}}
+							className="
+								flex w-full
+								rounded-md border border-input
+								bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background
+								placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2
+								focus-visible:ring-ring focus-visible:border-accent resize-none font-medium"
+						/>
+					</div>
+				</div>
 
-        <button
-          onClick={onSave}
-          style={{
-            marginTop: "20px",
-            width: "100%",
-            padding: "10px",
-            background: "#0070f3",
-            color: "#fff",
-            borderRadius: "4px",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          保存
-        </button>
-      </div>
-    </div>
-  );
+				{/* アクションボタン */}
+				<div className="mt-8 flex gap-3">
+					<Button
+						variant="outline"
+						onClick={hideModal}
+						className="flex-1"
+					>
+						キャンセル
+					</Button>
+					<Button
+						onClick={() => onSave()}
+						className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 shadow"
+					>
+						保存する
+					</Button>
+				</div>
+			</div>
+		</div>
+	);
 }

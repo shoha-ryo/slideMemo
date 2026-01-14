@@ -38,7 +38,12 @@ function BoardList({}) {
               e.stopPropagation();
               setIsDrafting(true);
             }} // モーダル表示をブロックする。
-            className="mt-2 mr-2 h-8 w-40 rounded-full border bg-neutral-800"
+            className="
+							mt-2 mr-2 h-8 w-40
+							rounded-full
+							bg-board text-board-foreground
+							hover:bg-board-foreground/20
+						"
           >
             ＋ボードを追加
           </Button>

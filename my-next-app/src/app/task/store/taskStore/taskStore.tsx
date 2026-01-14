@@ -98,7 +98,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       } else {
         lastSyncAt = 0; // もし30日以上ローカルDBにアクセスしていなければすべてのデータを再取得する（未実装）
       }
-      // lastSyncAt = 0;
+      lastSyncAt = 0;
       // console.log("初期データ全取得モード中...");
 
 			console.log("user",userId,

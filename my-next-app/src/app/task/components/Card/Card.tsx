@@ -42,20 +42,20 @@ const Card = ({ cardId }: { cardId: string }) => {
   const isActive = active?.id === cardId;
 
   const draggableStyle = isDragging
-    ? "ring-2 ring-gray-300 bg-card" // 移動元
+    ? "ring-2 ring-accent/50 bg-card" // 移動元
     : isActive
       ? "opacity-20 cursor-grabbing" // 掴んでいる時
       : "cursor-grab"; // 掴んでいない時
   const droppableStyle =
     isOver && !isActive
       ? dropPosition === "top"
-        ? "ring-2 ring-cyan-500 border-t-10 border-t-cyan-500 bg-cyan-50" // 上部に青線
+        ? "ring-2 ring-accent-border border-t-10 border-t-accent-border bg-accent/30" // 上部
         : dropPosition === "bottom"
-          ? "ring-2 ring-cyan-500 border-b-10 border-b-cyan-500 bg-cyan-50" // 下部に青線
-          : "ring-4 ring-cyan-500 bg-cyan-50" // center（真ん中）
+          ? "ring-2 ring-accent-border border-b-10 border-b-accent-border bg-accent/30" // 下部
+          : "ring-4 ring-accent-border bg-accent/30" // 真ん中
       : "bg-card border"; // ホバーしていない、または自分が動いている時
   const hoveredStyle = isHovered
-    ? "-translate-y-1 ring-2 ring-gray-500 shadow-xl z-100 relative"
+    ? "-translate-y-1 ring-2 ring-accent-border shadow-lg shadow-accent-shadow z-100 relative"
     : "transition-all duration-200";
 
   const setNodeRef = (node: HTMLElement | null) => {
@@ -86,12 +86,12 @@ const Card = ({ cardId }: { cardId: string }) => {
       data-card-id={cardId}
       className={`card relative
 				p-2.5 pl-2.5 mb-1.25 ml-1 mr-1
-				border rounded-lg bg-card
+				border rounded-lg
 				transition-all duration-200
 				${hoveredStyle}
 				${draggableStyle}
 				${droppableStyle}
-				focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:z-10
+				focus-visible:ring-3 focus-visible:ring-accent-border focus-visible:z-100
 			`}
       {...listeners}
       {...attributes}
@@ -136,9 +136,11 @@ const Card = ({ cardId }: { cardId: string }) => {
           {/* 自身にホバー時のみ表示 */}
           {isHovered && (
             <div
+							// グラデーション配置
               className="absolute inset-y-0 right-0 flex ml-auto items-start
                   pl-15
-                  bg-linear-to-r from-transparent from-0% via-white via-20% to-white to-100%"
+                  bg-linear-to-r from-transparent from-0%
+									via-card via-20% to-card to-100%"
             >
               {/* カード追加ボタン */}
               <Button

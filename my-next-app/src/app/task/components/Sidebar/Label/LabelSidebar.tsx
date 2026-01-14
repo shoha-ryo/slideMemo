@@ -52,6 +52,7 @@ export const LabelSidebar = ({ isOpen, onClose, labels }: Props) => {
                   まだラベルが作成されていません。
                 </p>
               )}
+							
             </div>
           </div>
 

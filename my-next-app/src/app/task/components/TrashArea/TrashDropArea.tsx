@@ -1,5 +1,6 @@
 import React from "react";
 import { useDroppable } from "@dnd-kit/core";
+import { Trash2 } from "lucide-react";
 
 export const TRASH_ID = "trash-drop-area";
 
@@ -35,7 +36,7 @@ export default function TrashDropArea({ isVisible }: Props) {
         pointerEvents: isVisible ? "auto" : "none", // 非表示時はクリック等を無効化
       }}
     >
-      ×
+      <Trash2 size={35}></Trash2>
     </div>
   );
 }

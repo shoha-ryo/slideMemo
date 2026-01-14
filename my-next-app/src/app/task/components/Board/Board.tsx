@@ -44,11 +44,11 @@ export default function Board({ board }: { board: BoardType }) {
   const isActive = activeId?.includes(board.id);
 
   const draggableStyle = isDragging
-    ? "ring-2 ring-gray-300 bg-board" // 移動元
+    ? "ring-2 ring-accent-border bg-board" // 移動元
     : isActive
       ? "opacity-20 cursor-grabbing" // 掴んでいる時
       : "cursor-grab"; // 掴んでいない時
-  const droppableStyle = isOver && !isActive ? "ring-2 ring-cyan-500" : "";
+  const droppableStyle = isOver && !isActive ? "ring-2 ring-accent-border" : "";
   const hoveredStyle = isHovered ? "shadow-xl" : "";
 
   const handleBoardClick = () => {
@@ -102,7 +102,12 @@ export default function Board({ board }: { board: BoardType }) {
             setIsDrafting(true);
           }} // モーダル表示をブロックする。
           variant="ghost"
-          className="mt-2 mr-2 h-8 rounded-full"
+          className="
+						mt-2 mr-2 h-8
+						rounded-full
+						bg-board text-board-foreground
+						hover:bg-board-foreground/10
+					"
         >
           ＋カードを追加
         </Button>

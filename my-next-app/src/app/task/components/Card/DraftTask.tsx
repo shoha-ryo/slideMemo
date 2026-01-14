@@ -41,14 +41,14 @@ export default function DraftTask({ source, onClose }: DraftTaskProps) {
 
   const addBoardStyle =
     source.type === "boardList"
-      ? "w-100 bg-neutral-300 self-start"
-      : "bg-white";
+      ? "w-100 bg-board self-start" // ボード追加
+      : "bg-card"; // カード追加
 
   return (
     <>
       {/* 1. 画面全体の操作をブロックする透明なオーバーレイ */}
       <div
-        className="fixed inset-0 z-40 cursor-default bg-black/10"
+        className="fixed inset-0 z-40 cursor-default bg-background-overlay/10"
         onClick={(e) => {
           e.stopPropagation();
           handleCancel();
@@ -59,7 +59,7 @@ export default function DraftTask({ source, onClose }: DraftTaskProps) {
       <div
         className={`
 					relative z-50 p-4
-					border-2 rounded-lg	border-gray-300 shadow-xl
+					border-2 rounded-lg	border-accent-border shadow-xl
 					${addBoardStyle}
 					`}
         onClick={(e) => e.stopPropagation()} // フォーム内クリックで閉じないようにする
@@ -74,7 +74,7 @@ export default function DraftTask({ source, onClose }: DraftTaskProps) {
             if (e.key === "Enter") handleSubmit();
             if (e.key === "Escape") handleCancel();
           }}
-          className="mb-4 bg-white"
+          className="mb-4"
         />
         <div className="flex gap-2">
           <Button onClick={handleSubmit} className="shrink-0 rounded-2xl">

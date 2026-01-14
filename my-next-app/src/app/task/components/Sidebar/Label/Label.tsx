@@ -45,13 +45,21 @@ export const DraggableLabel = ({ label, cardId }: Props) => {
     );
   };
 
-  const style: React.CSSProperties = {
+  // const style: React.CSSProperties = {
+  //   transform: CSS.Transform.toString(transform),
+  //   transition,
+  //   opacity: isDragging ? 0.5 : 1,
+  //   color: lightenColor(color, 80),
+  //   backgroundColor: color,
+  //   borderColor: lightenColor(color, 80),
+  // };
+	const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-    color: lightenColor(color, 80),
-    backgroundColor: color,
-    borderColor: lightenColor(color, 80),
+    color: `${color}`,
+    backgroundColor: `${color}40`,
+    borderColor: `${color}`,
   };
 
   return (
