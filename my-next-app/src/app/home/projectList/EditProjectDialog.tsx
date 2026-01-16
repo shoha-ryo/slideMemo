@@ -31,7 +31,7 @@ export function EditProjectDialog({
     setTitle(initialTitle);
   }, [initialTitle, open]);
 
-	// ダイアログが閉じられた時、強制的に body の pointer-events を復元する
+  // ダイアログが閉じられた時、強制的に body の pointer-events を復元する
   useEffect(() => {
     if (!open) {
       const timer = setTimeout(() => {
@@ -62,7 +62,11 @@ export function EditProjectDialog({
             autoFocus
           />
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               キャンセル
             </Button>
             <Button type="submit">保存</Button>

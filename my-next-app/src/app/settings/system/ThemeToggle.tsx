@@ -5,9 +5,9 @@ export function ThemeToggle() {
 
   return (
     <button
-			className=""
-			onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-		>
+      className=""
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+    >
       {theme === "dark" ? "DARK" : "LIGHT"}
     </button>
   );

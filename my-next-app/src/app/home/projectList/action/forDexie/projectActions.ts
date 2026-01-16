@@ -21,7 +21,7 @@ export function getLocalProjects(userId: string) {
 
       try {
         // 2. 最後に同期した時刻を取得
-        const syncMeta = await db.syncMeta.get("all_projects_list"); 
+        const syncMeta = await db.syncMeta.get("all_projects_list");
         const lastSyncAt = syncMeta?.lastSyncAt || 0;
 
         // 3. サーバーから「前回同期以降の差分」を取得
@@ -38,9 +38,9 @@ export function getLocalProjects(userId: string) {
             await db.projects.bulkDelete(deleted);
           }
           // 最終同期時刻を更新
-          await db.syncMeta.put({ 
-            id: "all_projects_list", 
-            lastSyncAt: Date.now() 
+          await db.syncMeta.put({
+            id: "all_projects_list",
+            lastSyncAt: Date.now(),
           });
         });
 
@@ -50,7 +50,6 @@ export function getLocalProjects(userId: string) {
           .equals(userId)
           .toArray();
         setProjects(latestProjects);
-
       } catch (error) {
         console.error("Sync failed:", error);
         // 同期に失敗してもローカルデータがあるのでユーザーは操作を続けられる

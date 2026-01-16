@@ -1,27 +1,38 @@
 "use client";
 
-import { Tag, LayoutDashboard, Settings, User } from "lucide-react";
+import { Tag, LayoutDashboard, Settings, User, Sparkles, SwatchBook } from "lucide-react";
 
+export type SidebarType = 'label' | 'theme' | 'settings' | null;
 type Props = {
-  isLabelOpen: boolean;
-  onToggleLabel: () => void;
+	activeSidebar: SidebarType;
+	onToggle: (type: SidebarType) => void;
 };
 
-export const SideToolBar = ({ isLabelOpen, onToggleLabel }: Props) => {
+export const SideToolBar = ({ // >> AppContent
+	activeSidebar, onToggle
+}: Props) => {
+
   return (
-    <nav className="w-16 h-full flex flex-col items-center py-4 bg-sidebar border-r border-sidebar-border shrink-0">
+    <nav className="
+			w-16 h-full flex flex-col items-center py-4 shrink-0
+			bg-sidebar border-r border-sidebar-border">
       {/* メニュー項目 */}
       <div className="flex flex-col gap-4 flex-1">
-        {/* ラベル切り替えボタン */}
-        <ToolButton 
-          icon={<Tag size={22} />} 
-          active={isLabelOpen} 
-          onClick={onToggleLabel}
+        {/* ラベルマスター */}
+        <ToolButton
+          icon={<Tag size={22} />}
+          active={activeSidebar === "label"}
+          onClick={() => onToggle("label")}
           label="ラベル"
         />
-        
-        <ToolButton icon={<LayoutDashboard size={22} />} label="Boards" />
-        <ToolButton icon={<User size={22} />} label="Profile" />
+				{/* ラベル切り替えボタン */}
+        <ToolButton
+          icon={<SwatchBook size={22} />}
+          active={activeSidebar === "theme"}
+          onClick={() => onToggle("theme")}
+          label="テーマ"
+        />
+
       </div>
 
       {/* ボトム項目 */}
@@ -33,15 +44,27 @@ export const SideToolBar = ({ isLabelOpen, onToggleLabel }: Props) => {
 };
 
 // ツールチップ付きのボタン（共通パーツ）
-const ToolButton = ({ icon, active, onClick, label }: { icon: React.ReactNode, active?: boolean, onClick?: () => void, label: string }) => (
+const ToolButton = ({
+  icon,
+  active,
+  onClick,
+  label,
+}: {
+  icon: React.ReactNode;
+  active?: boolean;
+  onClick?: () => void;
+  label: string;
+}) => (
   <button
     onClick={onClick}
     title={label}
     className={`
       p-3 rounded-xl transition-all duration-200 group relative
-      ${active 
-        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
-        : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"}
+      ${
+        active
+          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+          : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+      }
     `}
   >
     {icon}

@@ -122,84 +122,80 @@ export default function CardModal() {
   // 編集対象がない場合は何も表示しない（安全策）
   if (!activeNode) return null;
 
-	return (
-		<div
-			id="modal-background"
-			onClick={handleBackgroundClick}
-			className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
-		>
-			<div
-				onClick={(e) => e.stopPropagation()}
-				className="relative w-full max-w-2xl rounded-xl bg-card p-8 shadow-2xl ring-1 ring-border animate-in zoom-in-95 duration-200"
-			>
-				{/* 閉じるボタン */}
-				<button
-					onClick={hideModal}
-					className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
-				>
-					<X className="h-5 w-5" />
-					<span className="sr-only">Close</span>
-				</button>
+  return (
+    <div
+      id="modal-background"
+      onClick={handleBackgroundClick}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-2xl rounded-xl bg-card p-8 shadow-2xl ring-1 ring-border animate-in zoom-in-95 duration-200"
+      >
+        {/* 閉じるボタン */}
+        <button
+          onClick={hideModal}
+          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+        >
+          <X className="h-5 w-5" />
+          <span className="sr-only">Close</span>
+        </button>
 
-				<div className="mb-6 flex items-center justify-between">
-					<h3 className="text-xl font-semibold leading-none tracking-tight text-foreground">
-						カード編集
-					</h3>
-				</div>
+        <div className="mb-6 flex items-center justify-between">
+          <h3 className="text-xl font-semibold leading-none tracking-tight text-foreground">
+            カード編集
+          </h3>
+        </div>
 
-				<div className="space-y-6">
-					{/* タイトルセクション */}
-					<div className="space-y-2">
-						<label className="text-sm font-medium leading-none text-muted-foreground">
-							タイトル
-						</label>
-						<textarea
-							ref={titleRef}
-							value={title}
-							placeholder="タイトルを入力してください"
-							onChange={(e) => setTitle(e.target.value)}
-							onKeyDown={handleKeyDown}
-							style={{minHeight: 40}}
-							className="
+        <div className="space-y-6">
+          {/* タイトルセクション */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium leading-none text-muted-foreground">
+              タイトル
+            </label>
+            <textarea
+              ref={titleRef}
+              value={title}
+              placeholder="タイトルを入力してください"
+              onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={handleKeyDown}
+              style={{ minHeight: 40 }}
+              className="
 								flex w-full
 								rounded-md border border-input
 								bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background
 								placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2
 								focus-visible:ring-ring focus-visible:border-accent resize-none font-medium"
-						/>
-					</div>
+            />
+          </div>
 
-					{/* 詳細セクション */}
-					<div className="space-y-2">
-						<label className="text-sm font-medium leading-none text-muted-foreground">
-							詳細説明
-						</label>
-						<textarea
-							value={details}
-							onChange={(e) => setDetails(e.target.value)}
-							onKeyDown={handleKeyDown}
-							className="flex min-h-[300px] w-full rounded-md border border-input bg-transparent px-3 py-3 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-accent resize-vertical leading-relaxed"
-						/>
-					</div>
-				</div>
+          {/* 詳細セクション */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium leading-none text-muted-foreground">
+              詳細説明
+            </label>
+            <textarea
+              value={details}
+              onChange={(e) => setDetails(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="flex min-h-[300px] w-full rounded-md border border-input bg-transparent px-3 py-3 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-accent resize-vertical leading-relaxed"
+            />
+          </div>
+        </div>
 
-				{/* アクションボタン */}
-				<div className="mt-8 flex gap-3">
-					<Button
-						variant="outline"
-						onClick={hideModal}
-						className="flex-1"
-					>
-						キャンセル
-					</Button>
-					<Button
-						onClick={() => onSave()}
-						className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 shadow"
-					>
-						保存する
-					</Button>
-				</div>
-			</div>
-		</div>
-	);
+        {/* アクションボタン */}
+        <div className="mt-8 flex gap-3">
+          <Button variant="outline" onClick={hideModal} className="flex-1">
+            キャンセル
+          </Button>
+          <Button
+            onClick={() => onSave()}
+            className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 shadow"
+          >
+            保存する
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
 }

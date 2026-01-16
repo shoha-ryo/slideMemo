@@ -78,7 +78,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-3 text-center">
           <div className="mx-auto mb-2 flex flex-col items-center justify-center rounded-xl">
-            <FlowLogo className="w-25"/>
+            <FlowLogo className="w-25" />
           </div>
           <CardTitle className="text-2xl">ログイン</CardTitle>
           <CardDescription>

@@ -53,7 +53,7 @@ export const DraggableLabel = ({ label, cardId }: Props) => {
   //   backgroundColor: color,
   //   borderColor: lightenColor(color, 80),
   // };
-	const style: React.CSSProperties = {
+  const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
@@ -69,11 +69,11 @@ export const DraggableLabel = ({ label, cardId }: Props) => {
       {...attributes}
       {...listeners}
       className={`
-				px-2 py-0.5
+				px-2.5 py-1
         border rounded-4xl
         text-xs font-bold
         cursor-grab select-none
-        whitespace-nowrap
+        whitespace-nowrap truncate
 			`}
     >
       {label.name}

@@ -68,7 +68,7 @@ export default function Board({ board }: { board: BoardType }) {
 				${hoveredStyle}
 				${draggableStyle}
 				${droppableStyle}
-				focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:z-10
+				focus-visible:ring-4 focus-visible:ring-accent-border focus-visible:z-10
 				`}
       {...attributes}
       {...listeners}

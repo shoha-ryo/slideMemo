@@ -42,7 +42,7 @@ const Card = ({ cardId }: { cardId: string }) => {
   const isActive = active?.id === cardId;
 
   const draggableStyle = isDragging
-    ? "ring-2 ring-accent/50 bg-card" // 移動元
+    ? "ring-20 ring-accent/50 bg-card" // 移動元
     : isActive
       ? "opacity-20 cursor-grabbing" // 掴んでいる時
       : "cursor-grab"; // 掴んでいない時
@@ -91,7 +91,7 @@ const Card = ({ cardId }: { cardId: string }) => {
 				${hoveredStyle}
 				${draggableStyle}
 				${droppableStyle}
-				focus-visible:ring-3 focus-visible:ring-accent-border focus-visible:z-100
+				focus-visible:ring-3 focus-visible:ring-accent-border focus-visible:z-100 active:scale-95
 			`}
       {...listeners}
       {...attributes}
@@ -120,13 +120,17 @@ const Card = ({ cardId }: { cardId: string }) => {
               ) : null}
 
               {/* ラベル */}
-              <div className="flex gap-1">
+              <div className="flex flex-wrap -space-x-2">
                 {card.labelIds.map((labelId) => (
-                  <DraggableLabel
+                  <div
+                    className="scale-75 origin-left max-w-full"
                     key={`${labelId}_${cardId}`}
-                    label={labels[labelId]}
-                    cardId={cardId}
-                  ></DraggableLabel>
+                  >
+                    <DraggableLabel
+                      label={labels[labelId]}
+                      cardId={cardId}
+                    ></DraggableLabel>
+                  </div>
                 ))}
               </div>
             </div>
@@ -136,7 +140,7 @@ const Card = ({ cardId }: { cardId: string }) => {
           {/* 自身にホバー時のみ表示 */}
           {isHovered && (
             <div
-							// グラデーション配置
+              // グラデーション配置
               className="absolute inset-y-0 right-0 flex ml-auto items-start
                   pl-15
                   bg-linear-to-r from-transparent from-0%

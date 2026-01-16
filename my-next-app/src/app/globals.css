@@ -20,7 +20,7 @@
      ========================================= */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);            /* 基本の角丸（カード、ボタン等） */
+  --radius-lg: var(--radius); /* 基本の角丸（カード、ボタン等） */
   --radius-xl: calc(var(--radius) + 4px);
 
   /* =========================================
@@ -34,39 +34,51 @@
   /* =========================================
      コンテンツ要素 (Card / Popover)
      ========================================= */
-  --color-card: var(--card);                             /* カードの背景 */
-  --color-card-foreground: var(--card-foreground);       /* カード内のテキスト */
-  --color-board: var(--board);                             /* ボードの背景 */
-  --color-board-foreground: var(--board-foreground);       /* ボード内のテキスト */
-  --color-popover: var(--popover);                       /* メニューやツールチップの背景 */
-  --color-popover-foreground: var(--popover-foreground); /* メニュー内のテキスト */
+  --color-card: var(--card); /* カードの背景 */
+  --color-card-foreground: var(--card-foreground); /* カード内のテキスト */
+  --color-board: var(--board); /* ボードの背景 */
+  --color-board-foreground: var(--board-foreground); /* ボード内のテキスト */
+  --color-popover: var(--popover); /* メニューやツールチップの背景 */
+  --color-popover-foreground: var(
+    --popover-foreground
+  ); /* メニュー内のテキスト */
 
   /* =========================================
      アクション・状態 (Main Actions)
      ========================================= */
-  --color-primary: var(--primary);                       /* 主要なアクションボタンの背景 */
-  --color-primary-foreground: var(--primary-foreground); /* プライマリボタン上のテキスト */
-  
-  --color-secondary: var(--secondary);                   /* 補助的なアクションの背景 */
+  --color-primary: var(--primary); /* 主要なアクションボタンの背景 */
+  --color-primary-foreground: var(
+    --primary-foreground
+  ); /* プライマリボタン上のテキスト */
+
+  --color-secondary: var(--secondary); /* 補助的なアクションの背景 */
   --color-secondary-foreground: var(--secondary-foreground);
 
-  --color-muted: var(--muted);                           /* 非活性な領域、または控えめな背景 */
-  --color-muted-foreground: var(--muted-foreground);     /* 補足、注釈、プレースホルダ等の薄いテキスト */
+  --color-muted: var(--muted); /* 非活性な領域、または控えめな背景 */
+  --color-muted-foreground: var(
+    --muted-foreground
+  ); /* 補足、注釈、プレースホルダ等の薄いテキスト */
 
-  --color-accent: var(--accent);                         /* ホバー時や選択状態の強調背景 */
-  --color-accent-border: var(--accent-border);           /* ホバー時や選択状態の強調背景 */
-  --color-accent-shadow: var(--accent-shadow);           /* ホバー時や選択状態の強調背景 */
+  --color-accent: var(--accent); /* ホバー時や選択状態の強調背景 */
+  --color-accent-border: var(
+    --accent-border
+  ); /* ホバー時や選択状態の強調背景 */
+  --color-accent-shadow: var(
+    --accent-shadow
+  ); /* ホバー時や選択状態の強調背景 */
   --color-accent-foreground: var(--accent-foreground);
 
-  --color-destructive: var(--destructive);               /* 削除や警告などの背景 */
-  --color-destructive-foreground: var(--primary-foreground); /* 削除ボタン上のテキスト（共通化） */
+  --color-destructive: var(--destructive); /* 削除や警告などの背景 */
+  --color-destructive-foreground: var(
+    --primary-foreground
+  ); /* 削除ボタン上のテキスト（共通化） */
 
   /* =========================================
      境界・入力・フォーカス (UI Elements)
      ========================================= */
   --color-border: var(--border); /* セクション、カード等の区切り線 */
-  --color-input: var(--input);   /* 入力フォームの枠線 */
-  --color-ring: var(--ring);     /* フォーカス時のアウトライン光輪 */
+  --color-input: var(--input); /* 入力フォームの枠線 */
+  --color-ring: var(--ring); /* フォーカス時のアウトライン光輪 */
 
   /* =========================================
      ナビゲーション (Sidebar)
@@ -92,12 +104,6 @@
   --color-chart-5: var(--chart-5);
 }
 
-
-
-
-
-
-
 /* OKLCHは「Lightness明度・Chroma彩度・Hue色相」を設定できる */
 :root {
   --radius: 0.625rem;
@@ -105,9 +111,9 @@
   --background-overlay: oklch(0 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
-	--card-foreground: oklch(0.145 0 0);
-	--board: oklch(0.97 0 0);
-	--board-foreground: oklch(0.3 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --board: oklch(0.97 0 0);
+  --board-foreground: oklch(0.3 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
 
@@ -149,8 +155,8 @@
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.25 0 0);
   --card-foreground: oklch(0.985 0 0);
-	--board: oklch(0.2 0 0);
-	--board-foreground: oklch(0.985 0 0);
+  --board: oklch(0.2 0 0);
+  --board-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
 

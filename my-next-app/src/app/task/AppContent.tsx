@@ -7,6 +7,7 @@ import { toast, Toaster } from "sonner";
 import { getAuth } from "firebase/auth";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "../../../dexie/dexie";
+import { motion, AnimatePresence } from "framer-motion";
 
 import {
   DndContext,
@@ -34,9 +35,14 @@ import { LabelSidebar } from "./components/Sidebar/Label/LabelSidebar";
 import { SideToolBar } from "./components/Sidebar/SaidToolMenu";
 import { Button } from "@/components/ui/button";
 
+// 型設定
+import { SidebarType } from "./components/Sidebar/SaidToolMenu";
+
 // デバッグ
 import { DebugInfo } from "./components/devOnly/DebugInfo";
+import { DebugCollision } from "./components/devOnly/DebugCollision";
 
+// 操作
 import { handleGlobalKeyDown } from "./actions/handler";
 import { getDropPosition } from "./lib/getDropPosition";
 import { useMousePointer } from "./components/useMousePointer";
@@ -48,8 +54,12 @@ import { Payload } from "@/app/task/store/taskStore/types/TasksType";
 import { useShallow } from "zustand/shallow";
 import { useUserStore } from "../../store/userStore";
 import { emptyTasks } from "./actions/emptyTasks";
-import { toLocalDataBase, updateLocalSyncMeta } from "./actions/toLocalDataBase";
-import { DebugCollision } from "./components/devOnly/DebugCollision";
+import {
+  toLocalDataBase,
+  updateLocalSyncMeta,
+} from "./actions/toLocalDataBase";
+import { ThemeSidebar } from "./components/Sidebar/Theme/ThemeSideBar";
+
 
 export default function AppContent({ projectId }: { projectId: string }) {
   const auth = getAuth();
@@ -80,8 +90,8 @@ export default function AppContent({ projectId }: { projectId: string }) {
     applyDiff,
     initializeProject,
     moveLabel,
-		deleteLabel,
-		deleteMasterLabel,
+    deleteLabel,
+    deleteMasterLabel,
   } = useTaskStore(
     useShallow((state) => ({
       activeId: state.activeId,
@@ -99,22 +109,20 @@ export default function AppContent({ projectId }: { projectId: string }) {
       moveLabel: state.moveLabel,
       deleteTask: state.deleteTask,
       deleteBoard: state.deleteBoard,
-			deleteLabel: state.deleteLabel,
-			deleteMasterLabel: state.deleteMasterLabel,
+      deleteLabel: state.deleteLabel,
+      deleteMasterLabel: state.deleteMasterLabel,
       setProjectId: state.setProjectId,
       applyDiff: state.applyDiff,
       initializeProject: state.initializeProject,
     })),
   );
 
-	// まずはローカルから取得
-	const projects = useLiveQuery(
-		async () => {
-			if (!userId) return [];
-			return await db.projects.where("userId").equals(userId).toArray();
-		},
-		[userId]
-	) || [];
+  // まずはローカルから取得
+  const projects =
+    useLiveQuery(async () => {
+      if (!userId) return [];
+      return await db.projects.where("userId").equals(userId).toArray();
+    }, [userId]) || [];
 
   // 初期値取得
   useEffect(() => {
@@ -147,7 +155,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
         if (!userId || !projectTitle) return;
         applyDiff(diffTasks, userId);
         toLocalDataBase(diffTasks, projectId);
-				updateLocalSyncMeta(lastSyncAt, projectId)
+        updateLocalSyncMeta(lastSyncAt, projectId);
       },
     );
     return () => {
@@ -155,9 +163,15 @@ export default function AppContent({ projectId }: { projectId: string }) {
     };
   }, [projectId, userId, applyDiff]);
 
-  const { isShowModal, modalType, clickedActiveId } = useModalStore();
+
+
+	const { isShowModal, modalType, clickedActiveId } = useModalStore();
   const { x, y } = useMousePointer();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	// サイドバー
+	const [activeSidebar, setActiveSidebar] = useState<SidebarType>(null);
+	const toggleSidebar = (type: SidebarType) => {
+		setActiveSidebar((prev) => (prev === type ? null : type));
+	};
 
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
@@ -236,20 +250,24 @@ export default function AppContent({ projectId }: { projectId: string }) {
 
     // ゴミ箱ロジック
     if (over.id === TRASH_ID) {
-          if (activeId?.includes("card-")) {
-      deleteTask(currentActiveId);
-    }
-    if (activeId?.includes("board-")) {
-      deleteBoard(currentActiveId);
-    }
-    if (activeId?.includes("label-") && !activeId?.includes("master")) {
-			// カードIDの抽出も必要なのでactiveIdを渡す
-			deleteLabel(currentActiveId);
-    }
-    if (activeId?.includes("label-") && activeId?.includes("master") && activeOriginalLabelId) {
-			// ラベルIDだけ必要なので純正のIDを渡す
-			deleteMasterLabel(activeOriginalLabelId)
-    }
+      if (activeId?.includes("card-")) {
+        deleteTask(currentActiveId);
+      }
+      if (activeId?.includes("board-")) {
+        deleteBoard(currentActiveId);
+      }
+      if (activeId?.includes("label-") && !activeId?.includes("master")) {
+        // カードIDの抽出も必要なのでactiveIdを渡す
+        deleteLabel(currentActiveId);
+      }
+      if (
+        activeId?.includes("label-") &&
+        activeId?.includes("master") &&
+        activeOriginalLabelId
+      ) {
+        // ラベルIDだけ必要なので純正のIDを渡す
+        deleteMasterLabel(activeOriginalLabelId);
+      }
 
       // 状態リセットして早期リターン (移動ロジックを実行させない)
       setHoverInfo({ activeId: null, overId: null, dropPosition: null });
@@ -278,7 +296,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
       moveLabel(payload);
     }
 
-		// リセット処理
+    // リセット処理
     setHoverInfo({
       activeId: null,
       overId: null,
@@ -286,110 +304,136 @@ export default function AppContent({ projectId }: { projectId: string }) {
     });
   };
 
-	const customCollisionDetection: CollisionDetection = (args) => {
-		const { active } = args;
+  const customCollisionDetection: CollisionDetection = (args) => {
+    const { active } = args;
 
-		// マウスの下にあるものをすべて取得
-		const collisions = pointerWithin(args);
-		if (collisions.length === 0) {
-			return [];
-		}
+    // マウスの下にあるものをすべて取得
+    const collisions = pointerWithin(args);
+    if (collisions.length === 0) {
+      return [];
+    }
 
-		// ヒットしたものを ID の種類で仕分ける
-		const cardCollisions = collisions.filter(c => !c.id.toString().startsWith("board-") && c.id !== "trash");
-		const boardCollisions = collisions.filter(c => c.id.toString().startsWith("board-"));
+    // ヒットしたものを ID の種類で仕分ける
+    const cardCollisions = collisions.filter(
+      (c) => !c.id.toString().startsWith("board-") && c.id !== "trash",
+    );
+    const boardCollisions = collisions.filter((c) =>
+      c.id.toString().startsWith("board-"),
+    );
 
-		// 【ケースA】ドラッグしているのが「ボード」の場合
-		if (active.id.toString().startsWith("board-")) {
-			// ボード移動中は、カードの上にいてもその「親ボード」をターゲットにする
-			if (boardCollisions.length > 0) return boardCollisions;
-			if (cardCollisions.length > 0) {
-				const overCardId = cardCollisions[0].id.toString();
-				const overCard = cards[overCardId];
-				if (overCard) return [{ id: overCard.boardId }];
-			}
-			return collisions;
-		}
-		// 【ケースB】ドラッグしているのが「カード」の場合
-		if (cardCollisions.length > 0) {
-			// ひとつでもカードがあれば「カード」をターゲットにする
-			return cardCollisions;
-		}
+    // 【ケースA】ドラッグしているのが「ボード」の場合
+    if (active.id.toString().startsWith("board-")) {
+      // ボード移動中は、カードの上にいてもその「親ボード」をターゲットにする
+      if (boardCollisions.length > 0) return boardCollisions;
+      if (cardCollisions.length > 0) {
+        const overCardId = cardCollisions[0].id.toString();
+        const overCard = cards[overCardId];
+        if (overCard) return [{ id: overCard.boardId }];
+      }
+      return collisions;
+    }
+    // 【ケースB】ドラッグしているのが「カード」の場合
+    if (cardCollisions.length > 0) {
+      // ひとつでもカードがあれば「カード」をターゲットにする
+      return cardCollisions;
+    }
 
-		// カードがヒットせず、ボードだけがヒットしているならボードを返す
-		return boardCollisions.length > 0 ? boardCollisions : collisions;
-	};
+    // カードがヒットせず、ボードだけがヒットしているならボードを返す
+    return boardCollisions.length > 0 ? boardCollisions : collisions;
+  };
 
   return (
-			<div className="
+    <div
+      className="
 				min-h-screen
 				bg-background text-foreground
-			">
-				<TaskHeader />
-				<div style={{
-					position: "relative",
-					height: "calc(100vh - 65px)"
-				}}>
-					{isShowModal && (
-						<>
-							{modalType === "card" && <CardModal key={clickedActiveId} />}
-							{modalType === "board" && <BoardModal key={clickedActiveId} />}
-						</>
-					)}
+			"
+    >
+      <TaskHeader />
+      <div
+        style={{
+          position: "relative",
+          height: "calc(100vh - 65px)",
+        }}
+      >
+        {isShowModal && (
+          <>
+            {modalType === "card" && <CardModal key={clickedActiveId} />}
+            {modalType === "board" && <BoardModal key={clickedActiveId} />}
+          </>
+        )}
 
-					<DndContext
-						collisionDetection={customCollisionDetection}
-						onDragStart={handleDragStart}
-						onDragMove={handleDragMove}
-						onDragEnd={handleDragEnd}
-						sensors={sensors}
-					>
-						{/* ゴミ箱エリア */}
-						<TrashDropArea isVisible={!!activeId} />
+        <DndContext
+          collisionDetection={customCollisionDetection}
+          onDragStart={handleDragStart}
+          onDragMove={handleDragMove}
+          onDragEnd={handleDragEnd}
+          sensors={sensors}
+        >
+          {/* ゴミ箱エリア */}
+          <TrashDropArea isVisible={!!activeId} />
 
-						<div
-							className="flex h-full w-full overflow-auto"
+          <div className="flex h-full w-full overflow-auto">
+            {/* ツールバー */}
+            <SideToolBar
+							activeSidebar={activeSidebar}
+    					onToggle={toggleSidebar}
+            />
+						{/* 1. 外側の枠：activeSidebarが「あるかないか」で幅をアニメーションさせる */}
+						<motion.div
+							initial={false} // 初回レンダリング時はアニメーションさせない
+							animate={{ width: activeSidebar ? 280 : 0 }}
+							transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+							className="relative z-100 border-r border-border/10 bg-sidebar overflow-hidden shrink-0 h-full shadow-[10px_0_10px_0] shadow-accent-foreground/20"
 						>
-							{/* ツールバー */}
-							<SideToolBar
-								isLabelOpen={isSidebarOpen}
-								onToggleLabel={() => setIsSidebarOpen(!isSidebarOpen)}
-							/>
+							<div className="w-[280px]">
+								{/* 2. 中身：activeSidebarの「値が変わる時」にフェードで切り替える */}
+								<AnimatePresence mode="wait">
+									<motion.div
+										key={activeSidebar} // IDが変わるたびにこれが走る
+										initial={{ opacity: 0 }}
+										animate={{ opacity: 1 }}
+										exit={{ opacity: 0 }}
+										transition={{ duration: 0.15 }} // 切り替えは素早く
+										className="h-full w-full"
+									>
+										{activeSidebar === 'label' && (
+											<LabelSidebar activeSidebar={activeSidebar} labels={labels} onToggle={toggleSidebar} />
+										)}
+										{activeSidebar === 'theme' && (
+											<ThemeSidebar activeSidebar={activeSidebar} onToggle={toggleSidebar} />
+										)}
+									</motion.div>
+								</AnimatePresence>
+							</div>
+						</motion.div>
 
+						{/* ボードリスト */}
+            <main className="flex-1 relative overflow-x-auto">
+              <BoardList />
+            </main>
 
-							{/* サイドバー本体 */}
-							<LabelSidebar
-								isOpen={isSidebarOpen}
-								onClose={() => setIsSidebarOpen(false)}
-								labels={labels}
-							/>
+            {/* オーバーレイ */}
+            <DragOverlay>
+              {activeId && cards[activeId] ? <Card cardId={activeId} /> : null}
+              {activeId && boards[activeId] ? (
+                <Board board={boards[activeId]}></Board>
+              ) : null}
+              {activeOriginalLabelId && labels[activeOriginalLabelId] ? (
+                <DraggableLabel
+                  label={labels[activeOriginalLabelId]}
+                  cardId="overlay"
+                ></DraggableLabel>
+              ) : null}
+            </DragOverlay>
+          </div>
 
-							<main className="flex-1 relative overflow-x-auto">
-								{/* ボードリスト */}
-								<BoardList />
-							</main>
-
-							{/* オーバーレイ */}
-							<DragOverlay>
-								{activeId && cards[activeId] ? <Card cardId={activeId} /> : null}
-								{activeId && boards[activeId] ? (
-									<Board board={boards[activeId]}></Board>
-								) : null}
-								{activeOriginalLabelId && labels[activeOriginalLabelId] ? (
-									<DraggableLabel
-										label={labels[activeOriginalLabelId]}
-										cardId="overlay"
-									></DraggableLabel>
-								) : null}
-							</DragOverlay>
-						</div>
-
-						{/* デバッグ情報 */}
-						{/* <DebugInfo /> */}
-						{/* <DebugCollision/> */}
-					</DndContext>
-					<Toaster richColors />
-				</div>
-   	  </div>
+          {/* デバッグ情報 */}
+          {/* <DebugInfo /> */}
+          {/* <DebugCollision/> */}
+        </DndContext>
+        <Toaster richColors />
+      </div>
+    </div>
   );
 }

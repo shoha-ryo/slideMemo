@@ -178,7 +178,7 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-3 text-center">
           <div className="mx-auto mb-2 flex items-center justify-center rounded-xl">
-            <FlowLogo className="w-25"/>
+            <FlowLogo className="w-25" />
           </div>
           <CardTitle className="text-2xl">新規登録</CardTitle>
           <CardDescription>

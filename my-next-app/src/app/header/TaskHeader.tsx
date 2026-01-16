@@ -28,7 +28,7 @@ export default function TaskHeader() {
     })),
   );
 
-	const auth = getAuth();
+  const auth = getAuth();
   const router = useRouter();
 
   const onLogout = async () => {
@@ -52,7 +52,7 @@ export default function TaskHeader() {
               <span>FLOW</span>
             </div>
           </Link>
-					<ThemeToggle/>
+          <ThemeToggle />
         </div>
 
         <div className="text-xl font-bold text-foreground/80">
@@ -162,10 +162,8 @@ export default function TaskHeader() {
               <DropdownMenuItem>アカウント設定</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-								<Button onClick={onLogout}>
-									ログアウト
-								</Button>
-							</DropdownMenuItem>
+                <Button onClick={onLogout}>ログアウト</Button>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 

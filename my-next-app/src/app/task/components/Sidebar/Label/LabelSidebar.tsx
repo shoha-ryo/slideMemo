@@ -3,38 +3,28 @@ import { LabelType } from "../../../store/taskStore/types/TasksType";
 import { DraggableLabel } from "./Label";
 import { Plus, X } from "lucide-react";
 import { CreateLabelModal } from "./CreateLabelModal";
+import { SidebarType } from "../SaidToolMenu";
 
 type Props = {
-  isOpen: boolean;
-  onClose: () => void;
+  activeSidebar: SidebarType;
+  onToggle: (type: SidebarType) => void;
   labels: Record<string, LabelType>;
 };
 
-export const LabelSidebar = ({ isOpen, onClose, labels }: Props) => {
+export const LabelSidebar = ({ activeSidebar, onToggle, labels }: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // モーダル管理用のステート
 
   return (
     <>
-      <aside
-        className={`
-          relative
-					border-r border-border/10 shadow-2xl
-					bg-sidebar text-sidebar-accent-foreground
-          transition-all duration-300 ease-in-out overflow-hidden shrink-0
-        `}
-        style={{
-          width: isOpen ? "288px" : "0px",
-          opacity: isOpen ? 1 : 0,
-        }}
-      >
-        <div className="w-72 h-full flex flex-col">
+
+        <div className="w-72 h-full flex flex-col shrink-0 pr-2">
           {/* ヘッダー */}
           <div className="flex items-center justify-between p-5 border-b border-border/5">
             <h2 className="text-[11px] font-bold text-gray-500 uppercase tracking-[0.2em]">
               Label Master
             </h2>
             <button
-              onClick={onClose}
+              onClick={() => onToggle("label")}
               className="p-1 hover:bg-sidebar-primary-foreground/5 rounded-md hover:text-sidebar-foreground transition-colors"
             >
               <X size={18} />
@@ -43,7 +33,7 @@ export const LabelSidebar = ({ isOpen, onClose, labels }: Props) => {
 
           {/* ラベルリストエリア */}
           <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2.5">
               {Object.values(labels).map((label) => (
                 <DraggableLabel key={label.id} label={label} cardId="master" />
               ))}
@@ -52,7 +42,6 @@ export const LabelSidebar = ({ isOpen, onClose, labels }: Props) => {
                   まだラベルが作成されていません。
                 </p>
               )}
-							
             </div>
           </div>
 
@@ -72,17 +61,14 @@ export const LabelSidebar = ({ isOpen, onClose, labels }: Props) => {
                 size={16}
                 className="group-hover:rotate-90 transition-transform"
               />
-              <span
-								className="text-sm font-medium pr-4"
-							>ラベルを作成</span>
+              <span className="text-sm font-medium pr-4">ラベルを作成</span>
             </button>
           </div>
         </div>
-      </aside>
 
       {/* ラベル作成モーダル */}
-      <CreateLabelModal 
-        isOpen={isModalOpen} 
+      <CreateLabelModal
+        isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
     </>

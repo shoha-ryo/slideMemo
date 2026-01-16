@@ -7,7 +7,12 @@ import { auth } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
 // PrismaのAction類
-import { createProject, updateProjectTitle, deleteProject, getProjects } from "@/app/home/projectList/action/forPrisma/projectActions";
+import {
+  createProject,
+  updateProjectTitle,
+  deleteProject,
+  getProjects,
+} from "@/app/home/projectList/action/forPrisma/projectActions";
 
 // UI Components
 import { Plus } from "lucide-react";
@@ -29,13 +34,11 @@ export function ProjectGrid() {
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   // 2. DBの状態を常に監視。DBが変わればUIが自動で再描画される
-  const projects = useLiveQuery(
-    async () => {
+  const projects =
+    useLiveQuery(async () => {
       if (!userId) return [];
       return await db.projects.where("userId").equals(userId).toArray();
-    },
-    [userId]
-  ) || [];
+    }, [userId]) || [];
 
   // 3. 認証とサーバー同期
   useEffect(() => {
@@ -45,11 +48,13 @@ export function ProjectGrid() {
         // サーバーから最新を取得してIndexedDBを更新（バックグラウンド処理）
         const result = await getProjects(user.uid);
         if (result.success && result.data) {
-					const projectsToSave = result.data.map((p: any) => ({
-						...p,
-						createdAt: p.createdAt instanceof Date ? p.createdAt.getTime() : p.createdAt,
-						updatedAt: p.updatedAt instanceof Date ? p.updatedAt.getTime() : p.updatedAt,
-					}));
+          const projectsToSave = result.data.map((p: any) => ({
+            ...p,
+            createdAt:
+              p.createdAt instanceof Date ? p.createdAt.getTime() : p.createdAt,
+            updatedAt:
+              p.updatedAt instanceof Date ? p.updatedAt.getTime() : p.updatedAt,
+          }));
           await db.projects.bulkPut(projectsToSave);
         }
       } else {
@@ -64,7 +69,7 @@ export function ProjectGrid() {
     const title = newProjectName.trim();
     if (!title || !userId) return;
 
-		const newProjectId = `project-${crypto.randomUUID()}`
+    const newProjectId = `project-${crypto.randomUUID()}`;
     const newProject = {
       id: newProjectId, // クライアント側でIDを確定
       title,
@@ -90,9 +95,9 @@ export function ProjectGrid() {
     const { id } = projectToEdit;
 
     // DBを更新。即座に画面に反映される。
-    await db.projects.update(id, { 
-      title: newTitle, 
-      updatedAt: Date.now() 
+    await db.projects.update(id, {
+      title: newTitle,
+      updatedAt: Date.now(),
     });
     setProjectToEdit(null);
 
@@ -146,7 +151,6 @@ export function ProjectGrid() {
     setDraggedProject(null);
     setDragOverIndex(null);
   };
-
 
   return (
     <div className="p-6">
@@ -203,7 +207,7 @@ export function ProjectGrid() {
       )}
 
       {/* Projects Grid */}
-<div
+      <div
         className="grid gap-4"
         style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}
       >
@@ -219,12 +223,12 @@ export function ProjectGrid() {
             handleDragEnd={handleDragEnd}
             handleDrop={handleDrop}
             onDeleteClick={(p) => setProjectToDelete(p)}
-						onEditClick={(p) => setProjectToEdit(p)}
+            onEditClick={(p) => setProjectToEdit(p)}
           />
         ))}
       </div>
 
-			<EditProjectDialog
+      <EditProjectDialog
         open={!!projectToEdit}
         onOpenChange={(open) => !open && setProjectToEdit(null)}
         onConfirm={handleUpdateTitle}
@@ -236,6 +240,6 @@ export function ProjectGrid() {
         onConfirm={handleDeleteConfirm}
         projectTitle={projectToDelete?.title || ""}
       />
-		</div>
+    </div>
   );
 }

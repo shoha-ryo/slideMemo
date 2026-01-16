@@ -30,7 +30,8 @@ export function DeleteProjectDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>本当に削除しますか？</AlertDialogTitle>
           <AlertDialogDescription>
-            プロジェクト「<strong>{projectTitle}</strong>」を削除すると、紐付いているすべてのボード、タスク、データが完全に消去されます。この操作は取り消せません。
+            プロジェクト「<strong>{projectTitle}</strong>
+            」を削除すると、紐付いているすべてのボード、タスク、データが完全に消去されます。この操作は取り消せません。
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

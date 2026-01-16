@@ -14,7 +14,7 @@ function createNewBoard(title: string, projectId: string) {
     projectId: projectId,
     title: title.trim(),
     cardIds: [],
-		createdAt: Date.now(),
+    createdAt: Date.now(),
     updatedAt: Date.now(),
   };
   return newBoard;

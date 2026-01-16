@@ -144,11 +144,10 @@ export const applyMoveLogic = (
     })
     .filter((item) => item !== null);
 
-
   // 4. Zustandへの返却
   return {
     newState: {
-			...state,
+      ...state,
       cards: newCards,
       boards: newBoards,
       boardOrder: newBoardOrder,

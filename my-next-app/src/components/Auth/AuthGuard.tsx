@@ -21,7 +21,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     });
   }, [router]);
 
-  if (loading) return <AuthLoading></AuthLoading>
+  if (loading) return <AuthLoading></AuthLoading>;
 
   return <>{children}</>;
 }

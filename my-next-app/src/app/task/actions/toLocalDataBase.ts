@@ -3,7 +3,7 @@ import { emptyTasks } from "./emptyTasks";
 
 export const toLocalDataBase = async (
   diff: typeof emptyTasks, // 更新データ
-  projectId: string,       // プロジェクトの存在確認のため...もしかして不要かも？
+  projectId: string, // プロジェクトの存在確認のため...もしかして不要かも？
 ) => {
   try {
     // トランザクションで一括処理（途中でエラーが出たらロールバックされるので安全）
@@ -69,10 +69,10 @@ export const toLocalDataBase = async (
             ? diff.createTasks.boardOrder
             : diff.updateTasks.boardOrder;
         if (latestOrder.length > 0) {
-					await db.projects.update(projectId, {
-						boardOrder: latestOrder,
-						updatedAt: Date.now(),
-					});
+          await db.projects.update(projectId, {
+            boardOrder: latestOrder,
+            updatedAt: Date.now(),
+          });
         }
       },
     );
@@ -81,20 +81,19 @@ export const toLocalDataBase = async (
   }
 };
 
-export const updateLocalSyncMeta = async(newLastSyncAt: number, projectId: string) => {
-try {
+export const updateLocalSyncMeta = async (
+  newLastSyncAt: number,
+  projectId: string,
+) => {
+  try {
     // トランザクションで一括処理（途中でエラーが出たらロールバックされるので安全）
-    await db.transaction(
-      "rw",
-      [db.syncMeta],
-      async () => {
-        await db.syncMeta.put({
-          id: projectId,
-          lastSyncAt: newLastSyncAt,
-        });
-      },
-    );
+    await db.transaction("rw", [db.syncMeta], async () => {
+      await db.syncMeta.put({
+        id: projectId,
+        lastSyncAt: newLastSyncAt,
+      });
+    });
   } catch (error) {
     console.error("Failed to sync Dexie (SyncMeta):", error);
   }
-}
+};
