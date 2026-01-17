@@ -2,7 +2,6 @@
 import { AuthGuard } from "@/components/Auth/AuthGuard";
 import { ProjectGrid } from "./projectList/ProjectGrid";
 import DashBoardHeader from "../header/DashBoardHeader";
-import { AuthLoading } from "@/components/Auth/AuthLoading";
 
 export default function DashboardPage() {
   return (

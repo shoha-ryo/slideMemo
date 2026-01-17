@@ -3,7 +3,6 @@ import { useTaskStore } from "@/app/task/store/taskStore/taskStore";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { Palette } from "lucide-react";
-import { MouseEventHandler } from "react";
 import { DraggableLabel } from "./Label";
 import { LabelType } from "@/app/task/store/taskStore/types/TasksType";
 import { Pipette } from "lucide-react";
@@ -21,7 +20,7 @@ const presetColors = [
 
 interface CreateLabelModalProps {
   isOpen: boolean;
-  onClose: MouseEventHandler<HTMLButtonElement> | undefined;
+  onClose: () => void;
 }
 
 export const CreateLabelModal = ({
@@ -51,7 +50,9 @@ export const CreateLabelModal = ({
 
   // 外側クリック用のハンドラー
   const handleBackdropClick = (e: React.MouseEvent) => {
-    if (onClose) (onClose as any)(e);
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
   };
 
   if (!isOpen) return null;

@@ -1,5 +1,4 @@
 import type React from "react";
-import TaskHeader from "@/app/header/TaskHeader";
 
 export default function AuthLayout({
   children,

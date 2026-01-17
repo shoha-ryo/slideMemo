@@ -3,9 +3,14 @@
 import { pusherServer } from "@/lib/pusher-server";
 import { emptyTasks } from "./emptyTasks";
 import { prisma } from "@/lib/prisma";
-import { ActivityLog } from "@prisma/client"; // 必要に応じて型をインポート
 
 type ToDataBase = typeof emptyTasks;
+type ActivityLog = {
+  projectId: string;
+  entityId: string;
+  entityType: "CARD" | "BOARD" | "LABEL";
+  action: "CREATE" | "UPDATE" | "DELETE";
+};
 
 export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
   const { createTasks, updateTasks, deleteTasks } = diffTasks;
@@ -16,10 +21,10 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string) {
     await prisma.$transaction(
       async (tx) => {
         // ログを一括で保存するための配列
-        const activityLogsToCreate: any[] = [];
+        const activityLogsToCreate: ActivityLog[] = [];
 
-        // 更新系のPromiseをまとめて実行するための配列
-        const updatePromises: Promise<any>[] = [];
+        // 更新系のPromiseをまとめて実行するための配列 (prismaの型生成に合わせる)
+        const updatePromises: Promise<unknown>[] = [];
 
         // =================================================================
         // 1. Create (新規作成) - createMany は高速なのでそのまま維持

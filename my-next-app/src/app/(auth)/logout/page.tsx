@@ -1,15 +1,29 @@
-import { getAuth, signOut } from "firebase/auth";
+// src/app/(auth)/logout/page.tsx
+"use client"; // クライアントサイドでのみ実行することを明示
 
-const auth = getAuth();
+import { useEffect } from "react";
+import { signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { auth } from "@/lib/firebase"  // initializeApp しているファイルをインポート
 
-export const handleLogout = () => {
-  signOut(auth)
-    .then(() => {
-      // ログアウト成功後の処理（例：ログイン画面へリダイレクト）
-      console.log("ログアウトしました");
-    })
-    .catch((error) => {
-      // エラーハンドリング
-      console.error("ログアウトエラー:", error);
-    });
-};
+export default function LogoutPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+
+    signOut(auth)
+      .then(() => {
+        console.log("ログアウトしました");
+        router.push("/login"); // ログイン画面へ飛ばす
+      })
+      .catch((error) => {
+        console.error("ログアウトエラー:", error);
+      });
+  }, [router]);
+
+  return (
+    <div className="flex h-screen items-center justify-center">
+      <p>ログアウト中...</p>
+    </div>
+  );
+}

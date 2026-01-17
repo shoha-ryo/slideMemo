@@ -76,19 +76,16 @@ export default function BoardModal() {
   };
 
   // --- 保存処理 ---
-  const onSave = useCallback(async () => {
+  const onSave = async () => {
     if (!title.trim()) {
       setTitle("");
       return;
     }
     if (!activeBoard || !clickedActiveId) return;
 
-    updateBoard(clickedActiveId, {
-      title: title,
-    });
-
+    updateBoard(clickedActiveId, { title: title });
     hideModal();
-  }, [title, activeBoard, clickedActiveId, updateBoard, hideModal]);
+  };
 
   // --- グローバルキーイベント（Escで閉じる、Enterで保存） ---
   useEffect(() => {

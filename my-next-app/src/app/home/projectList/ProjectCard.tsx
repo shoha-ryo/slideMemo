@@ -93,7 +93,7 @@ export const ProjectCard = ({
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-destructive"
-                    onSelect={(e) => {
+                    onSelect={() => {
                       onDeleteClick(project);
                     }}
                   >

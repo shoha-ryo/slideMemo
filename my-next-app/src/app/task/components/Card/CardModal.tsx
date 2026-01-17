@@ -5,7 +5,7 @@ import { useModalStore } from "../../store/ModalStore";
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import { CardType } from "@/app/task/store/taskStore/types/TasksType";
 import { Button } from "@/components/ui/button";
-import { X, Trash2 } from "lucide-react";
+import { X } from "lucide-react";
 
 export default function CardModal() {
   // --- 状態とストアからのデータ取得 ---

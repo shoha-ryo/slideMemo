@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import Pusher from "pusher-js";
 import { toast, Toaster } from "sonner";
 import { getAuth } from "firebase/auth";
-import { useLiveQuery } from "dexie-react-hooks";
-import { db } from "../../../dexie/dexie";
+//todo import { useLiveQuery } from "dexie-react-hooks";
+//todo import { db } from "../../../dexie/dexie";
 import { motion, AnimatePresence } from "framer-motion";
 
 import {
@@ -33,14 +33,13 @@ import TrashDropArea, { TRASH_ID } from "./components/TrashArea/TrashDropArea"; 
 import { DraggableLabel } from "./components/Sidebar/Label/Label";
 import { LabelSidebar } from "./components/Sidebar/Label/LabelSidebar";
 import { SideToolBar } from "./components/Sidebar/SaidToolMenu";
-import { Button } from "@/components/ui/button";
 
 // 型設定
 import { SidebarType } from "./components/Sidebar/SaidToolMenu";
 
 // デバッグ
-import { DebugInfo } from "./components/devOnly/DebugInfo";
-import { DebugCollision } from "./components/devOnly/DebugCollision";
+// import { DebugInfo } from "./components/devOnly/DebugInfo";
+// import { DebugCollision } from "./components/devOnly/DebugCollision";
 
 // 操作
 import { handleGlobalKeyDown } from "./actions/handler";
@@ -59,7 +58,6 @@ import {
   updateLocalSyncMeta,
 } from "./actions/toLocalDataBase";
 import { ThemeSidebar } from "./components/Sidebar/Theme/ThemeSideBar";
-
 
 export default function AppContent({ projectId }: { projectId: string }) {
   const auth = getAuth();
@@ -117,12 +115,12 @@ export default function AppContent({ projectId }: { projectId: string }) {
     })),
   );
 
-  // まずはローカルから取得
-  const projects =
-    useLiveQuery(async () => {
-      if (!userId) return [];
-      return await db.projects.where("userId").equals(userId).toArray();
-    }, [userId]) || [];
+  // todo まずはローカルから取得
+  // const projects =
+  //   useLiveQuery(async () => {
+  //     if (!userId) return [];
+  //     return await db.projects.where("userId").equals(userId).toArray();
+  //   }, [userId]) || [];
 
   // 初期値取得
   useEffect(() => {
@@ -163,15 +161,13 @@ export default function AppContent({ projectId }: { projectId: string }) {
     };
   }, [projectId, userId, applyDiff]);
 
-
-
-	const { isShowModal, modalType, clickedActiveId } = useModalStore();
+  const { isShowModal, modalType, clickedActiveId } = useModalStore();
   const { x, y } = useMousePointer();
-	// サイドバー
-	const [activeSidebar, setActiveSidebar] = useState<SidebarType>(null);
-	const toggleSidebar = (type: SidebarType) => {
-		setActiveSidebar((prev) => (prev === type ? null : type));
-	};
+  // サイドバー
+  const [activeSidebar, setActiveSidebar] = useState<SidebarType>(null);
+  const toggleSidebar = (type: SidebarType) => {
+    setActiveSidebar((prev) => (prev === type ? null : type));
+  };
 
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
@@ -376,39 +372,46 @@ export default function AppContent({ projectId }: { projectId: string }) {
           <div className="flex h-full w-full overflow-auto">
             {/* ツールバー */}
             <SideToolBar
-							activeSidebar={activeSidebar}
-    					onToggle={toggleSidebar}
+              activeSidebar={activeSidebar}
+              onToggle={toggleSidebar}
             />
-						{/* 1. 外側の枠：activeSidebarが「あるかないか」で幅をアニメーションさせる */}
-						<motion.div
-							initial={false} // 初回レンダリング時はアニメーションさせない
-							animate={{ width: activeSidebar ? 280 : 0 }}
-							transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-							className="relative z-100 border-r border-border/10 bg-sidebar overflow-hidden shrink-0 h-full shadow-[10px_0_10px_0] shadow-accent-foreground/20"
-						>
-							<div className="w-[280px]">
-								{/* 2. 中身：activeSidebarの「値が変わる時」にフェードで切り替える */}
-								<AnimatePresence mode="wait">
-									<motion.div
-										key={activeSidebar} // IDが変わるたびにこれが走る
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										exit={{ opacity: 0 }}
-										transition={{ duration: 0.15 }} // 切り替えは素早く
-										className="h-full w-full"
-									>
-										{activeSidebar === 'label' && (
-											<LabelSidebar activeSidebar={activeSidebar} labels={labels} onToggle={toggleSidebar} />
-										)}
-										{activeSidebar === 'theme' && (
-											<ThemeSidebar activeSidebar={activeSidebar} onToggle={toggleSidebar} />
-										)}
-									</motion.div>
-								</AnimatePresence>
-							</div>
-						</motion.div>
+            {/* 1. 外側の枠：activeSidebarが「あるかないか」で幅をアニメーションさせる */}
+            <motion.div
+              initial={false} // 初回レンダリング時はアニメーションさせない
+              animate={{ width: activeSidebar ? 280 : 0 }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+              className="relative z-100 border-r border-border/10 bg-sidebar overflow-hidden shrink-0 h-full shadow-[10px_0_10px_0] shadow-accent-foreground/20"
+            >
+              <div className="w-[280px]">
+                {/* 2. 中身：activeSidebarの「値が変わる時」にフェードで切り替える */}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeSidebar} // IDが変わるたびにこれが走る
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }} // 切り替えは素早く
+                    className="h-full w-full"
+                  >
+                    {activeSidebar === "label" && (
+                      <LabelSidebar
+                        activeSidebar={activeSidebar}
+                        labels={labels}
+                        onToggle={toggleSidebar}
+                      />
+                    )}
+                    {activeSidebar === "theme" && (
+                      <ThemeSidebar
+                        activeSidebar={activeSidebar}
+                        onToggle={toggleSidebar}
+                      />
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </motion.div>
 
-						{/* ボードリスト */}
+            {/* ボードリスト */}
             <main className="flex-1 relative overflow-x-auto">
               <BoardList />
             </main>

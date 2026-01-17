@@ -23,13 +23,18 @@ import { ProjectCard } from "./ProjectCard";
 import { DeleteProjectDialog } from "./DeleteProjectDialog";
 import { EditProjectDialog } from "./EditProjectDialog";
 
+type ProjectTo = {
+  id: string;
+  title: string;
+} | null;
+
 export function ProjectGrid() {
   // 1. Firebaseのキャッシュから即座にUIDを取得（初期値）
   const [userId, setUserId] = useState(() => auth.currentUser?.uid || "");
   const [newProjectName, setNewProjectName] = useState("");
   const [isAddingProject, setIsAddingProject] = useState(false);
-  const [projectToDelete, setProjectToDelete] = useState<any | null>(null);
-  const [projectToEdit, setProjectToEdit] = useState<any | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<ProjectTo>(null);
+  const [projectToEdit, setProjectToEdit] = useState<ProjectTo>(null);
   const [draggedProject, setDraggedProject] = useState<string | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
@@ -48,7 +53,7 @@ export function ProjectGrid() {
         // サーバーから最新を取得してIndexedDBを更新（バックグラウンド処理）
         const result = await getProjects(user.uid);
         if (result.success && result.data) {
-          const projectsToSave = result.data.map((p: any) => ({
+          const projectsToSave = result.data.map((p) => ({
             ...p,
             createdAt:
               p.createdAt instanceof Date ? p.createdAt.getTime() : p.createdAt,
@@ -229,12 +234,14 @@ export function ProjectGrid() {
       </div>
 
       <EditProjectDialog
+        key={projectToEdit?.id}
         open={!!projectToEdit}
         onOpenChange={(open) => !open && setProjectToEdit(null)}
         onConfirm={handleUpdateTitle}
         initialTitle={projectToEdit?.title || ""}
       />
       <DeleteProjectDialog
+        key={projectToDelete?.id}
         open={!!projectToDelete}
         onOpenChange={(open) => !open && setProjectToDelete(null)}
         onConfirm={handleDeleteConfirm}

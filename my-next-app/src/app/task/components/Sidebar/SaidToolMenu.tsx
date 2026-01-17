@@ -1,21 +1,24 @@
 "use client";
 
-import { Tag, LayoutDashboard, Settings, User, Sparkles, SwatchBook } from "lucide-react";
+import { Tag, Settings, SwatchBook } from "lucide-react";
 
-export type SidebarType = 'label' | 'theme' | 'settings' | null;
+export type SidebarType = "label" | "theme" | "settings" | null;
 type Props = {
-	activeSidebar: SidebarType;
-	onToggle: (type: SidebarType) => void;
+  activeSidebar: SidebarType;
+  onToggle: (type: SidebarType) => void;
 };
 
-export const SideToolBar = ({ // >> AppContent
-	activeSidebar, onToggle
+export const SideToolBar = ({
+  // >> AppContent
+  activeSidebar,
+  onToggle,
 }: Props) => {
-
   return (
-    <nav className="
+    <nav
+      className="
 			w-16 h-full flex flex-col items-center py-4 shrink-0
-			bg-sidebar border-r border-sidebar-border">
+			bg-sidebar border-r border-sidebar-border"
+    >
       {/* メニュー項目 */}
       <div className="flex flex-col gap-4 flex-1">
         {/* ラベルマスター */}
@@ -25,14 +28,13 @@ export const SideToolBar = ({ // >> AppContent
           onClick={() => onToggle("label")}
           label="ラベル"
         />
-				{/* ラベル切り替えボタン */}
+        {/* ラベル切り替えボタン */}
         <ToolButton
           icon={<SwatchBook size={22} />}
           active={activeSidebar === "theme"}
           onClick={() => onToggle("theme")}
           label="テーマ"
         />
-
       </div>
 
       {/* ボトム項目 */}

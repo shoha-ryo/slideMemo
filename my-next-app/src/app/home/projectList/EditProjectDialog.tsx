@@ -26,11 +26,6 @@ export function EditProjectDialog({
 }: EditProjectDialogProps) {
   const [title, setTitle] = useState(initialTitle);
 
-  // ダイアログが開くたびに、選択されたプロジェクトのタイトルをセット
-  useEffect(() => {
-    setTitle(initialTitle);
-  }, [initialTitle, open]);
-
   // ダイアログが閉じられた時、強制的に body の pointer-events を復元する
   useEffect(() => {
     if (!open) {
