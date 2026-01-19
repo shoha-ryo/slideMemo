@@ -302,6 +302,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
 
   const customCollisionDetection: CollisionDetection = (args) => {
     const { active } = args;
+		const activeId = active.id.toString()
 
     // マウスの下にあるものをすべて取得
     const collisions = pointerWithin(args);
@@ -309,10 +310,18 @@ export default function AppContent({ projectId }: { projectId: string }) {
       return [];
     }
 
+		const isActiveLabel = activeId.startsWith("label-");
+
     // ヒットしたものを ID の種類で仕分ける
-    const cardCollisions = collisions.filter(
-      (c) => !c.id.toString().startsWith("board-") && c.id !== "trash",
-    );
+    const cardCollisions = collisions.filter((c) => {
+			const cId = c.id.toString();
+			// 基本の除外（ボードやゴミ箱はカードではない）
+			if (cId.startsWith("board-") || cId === "trash") return false;
+			// 【重要】ラベルをドラッグ中の場合、静止している他のラベルは「透明」として扱う
+			if (isActiveLabel && cId.startsWith("label-")) return false;
+			return true;
+		});
+
     const boardCollisions = collisions.filter((c) =>
       c.id.toString().startsWith("board-"),
     );
@@ -380,7 +389,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
               initial={false} // 初回レンダリング時はアニメーションさせない
               animate={{ width: activeSidebar ? 280 : 0 }}
               transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-              className="relative z-100 border-r border-border/10 bg-sidebar overflow-hidden shrink-0 h-full shadow-[10px_0_10px_0] shadow-accent-foreground/20"
+              className="relative z-10 border-r border-border/10 bg-sidebar overflow-hidden shrink-0 h-full shadow-[10px_0_10px_0] shadow-accent-foreground/20"
             >
               <div className="w-[280px]">
                 {/* 2. 中身：activeSidebarの「値が変わる時」にフェードで切り替える */}

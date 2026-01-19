@@ -48,8 +48,11 @@ export default function DraftTask({ source, onClose }: DraftTaskProps) {
     <>
       {/* 1. 画面全体の操作をブロックする透明なオーバーレイ */}
       <div
-        className="fixed inset-0 z-40 cursor-default bg-background-overlay/10"
-        onClick={(e) => {
+        className="fixed inset-0 z-50 cursor-default bg-background-overlay/10"
+        onMouseDown={(e) => {
+					e.stopPropagation()
+				}}
+				onClick={(e) => {
           e.stopPropagation();
           handleCancel();
         }} // 外側クリックで閉じる挙動をここで担保
@@ -62,6 +65,9 @@ export default function DraftTask({ source, onClose }: DraftTaskProps) {
 					border-2 rounded-lg	border-accent-border shadow-xl
 					${addBoardStyle}
 					`}
+				onMouseDown={(e) => {
+					e.stopPropagation()
+				}}
         onClick={(e) => e.stopPropagation()} // フォーム内クリックで閉じないようにする
       >
         <Input

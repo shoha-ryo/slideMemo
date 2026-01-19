@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { getAuth, signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { ThemeToggle } from "../settings/system/ThemeToggle";
 import { Search, Bell, Settings, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,12 +18,14 @@ import { FlowLogo } from "../../../public/FLOW";
 import { useTaskStore } from "../task/store/taskStore/taskStore";
 import { useShallow } from "zustand/shallow";
 import Link from "next/link";
+import { SyncStatusBadge } from "../task/components/SyncStatus/InitialSyncStatus";
 
 export default function TaskHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const { projectTitle } = useTaskStore(
+  const { projectTitle, syncStatus } = useTaskStore(
     useShallow((state) => ({
       projectTitle: state.projectTitle,
+			syncStatus: state.syncStatus,
     })),
   );
 
@@ -52,7 +53,6 @@ export default function TaskHeader() {
               <span>FLOW</span>
             </div>
           </Link>
-          <ThemeToggle />
         </div>
 
         <div className="text-xl font-bold text-foreground/80">
@@ -61,6 +61,7 @@ export default function TaskHeader() {
 
         {/* Right Section - Search, Actions, User */}
         <div className="flex items-center gap-3">
+					<SyncStatusBadge status={syncStatus}></SyncStatusBadge>
           {/* Search */}
           <div className="relative">
             {isSearchOpen ? (

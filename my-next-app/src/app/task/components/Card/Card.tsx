@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useDraggable, useDroppable, useDndContext } from "@dnd-kit/core";
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import { useModalStore } from "../../store/ModalStore";
@@ -10,6 +10,7 @@ import { useShallow } from "zustand/shallow";
 import DraftTask from "./DraftTask";
 import { handleKeyDown } from "../../actions/handler";
 import { DraggableLabel } from "../Sidebar/Label/Label";
+import { ToolTip } from "@/components/ui/ToolTip";
 
 // Draggable/Droppable コンポーネント
 const Card = ({ cardId }: { cardId: string }) => {
@@ -29,33 +30,35 @@ const Card = ({ cardId }: { cardId: string }) => {
     id: cardId,
   });
 
-  const { cards, dropPosition, labels } = useTaskStore(
+  const { cards, dropPosition, labels, activeId } = useTaskStore(
     useShallow((state) => ({
       cards: state.cards,
       labels: state.labels,
       dropPosition: state.dropPosition,
+			activeId: state.activeId
     })),
   );
   const card = cards[cardId];
 
   const { active } = useDndContext();
   const isActive = active?.id === cardId;
+	const buttonRef = useRef(null)
 
   const draggableStyle = isDragging
-    ? "ring-20 ring-accent/50 bg-card" // 移動元
+    ? "ring-4 ring-accent/50 bg-card" // 移動元
     : isActive
       ? "opacity-20 cursor-grabbing" // 掴んでいる時
       : "cursor-grab"; // 掴んでいない時
   const droppableStyle =
     isOver && !isActive
-      ? dropPosition === "top"
+      ? dropPosition === "top" && activeId?.includes("card-")
         ? "ring-2 ring-accent-border border-t-10 border-t-accent-border bg-accent/30" // 上部
-        : dropPosition === "bottom"
+        : dropPosition === "bottom" && activeId?.includes("card-")
           ? "ring-2 ring-accent-border border-b-10 border-b-accent-border bg-accent/30" // 下部
           : "ring-4 ring-accent-border bg-accent/30" // 真ん中
       : "bg-card border"; // ホバーしていない、または自分が動いている時
   const hoveredStyle = isHovered
-    ? "-translate-y-1 ring-2 ring-accent-border shadow-lg shadow-accent-shadow z-100 relative"
+    ? "-translate-y-1 ring-2 ring-accent-border shadow-[0_0_15px] shadow-accent-shadow z-100 relative"
     : "transition-all duration-200";
 
   const setNodeRef = (node: HTMLElement | null) => {
@@ -147,16 +150,19 @@ const Card = ({ cardId }: { cardId: string }) => {
 									via-card via-20% to-card to-100%"
             >
               {/* カード追加ボタン */}
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsDrafting(true);
-                }} // モーダル表示をブロックする。
-                variant="ghost"
-                className="mt-2 mr-2 h-8 w-8 rounded-full border"
-              >
-                ＋
-              </Button>
+							<ToolTip content={"カードを追加"}>
+								<Button
+									ref={buttonRef}
+									onClick={(e) => {
+										e.stopPropagation();
+										setIsDrafting(true);
+									}} // モーダル表示をブロックする。
+									variant="ghost"
+									className="group mt-2 mr-2 h-8 w-8 rounded-full border"
+								>
+									＋
+								</Button>
+							</ToolTip>
             </div>
           )}
         </div>

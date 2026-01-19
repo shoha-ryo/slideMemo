@@ -79,7 +79,7 @@ export default function Board({ board }: { board: BoardType }) {
       tabIndex={0}
     >
       <div className="font-black text-center">{board.title}</div>
-      <div className="overflow-auto pt-2">
+      <div className="overflow-auto p-2 -m-2">
         <SortableContext
           items={board.cardIds}
           strategy={verticalListSortingStrategy}

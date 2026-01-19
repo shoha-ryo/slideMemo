@@ -1,6 +1,8 @@
+
 "use client";
 
 import { Tag, Settings, SwatchBook } from "lucide-react";
+import { ToolTip } from "@/components/ui/ToolTip";
 
 export type SidebarType = "label" | "theme" | "settings" | null;
 type Props = {
@@ -57,22 +59,20 @@ const ToolButton = ({
   onClick?: () => void;
   label: string;
 }) => (
-  <button
-    onClick={onClick}
-    title={label}
-    className={`
-      p-3 rounded-xl transition-all duration-200 group relative
-      ${
-        active
-          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-          : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-      }
-    `}
-  >
-    {icon}
-    {/* シンプルなツールチップ（お好みで） */}
-    <span className="absolute left-14 scale-0 group-hover:scale-100 transition-all origin-left bg-popover text-popover-foreground text-xs px-2 py-1 rounded border border-border whitespace-nowrap z-50">
-      {label}
-    </span>
-  </button>
+  <ToolTip content={label}>
+		<button
+			onClick={onClick}
+			aria-label={label}
+			className={`
+				group p-3 rounded-xl transition-all duration-200 relative
+				${
+					active
+						? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+						: "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+				}
+			`}
+		>
+			{icon}
+		</button>
+	</ToolTip>
 );

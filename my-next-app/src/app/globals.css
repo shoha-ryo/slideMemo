@@ -28,50 +28,40 @@
      bg-xxx / text-xxx として呼び出し
      ========================================= */
   --color-background: var(--background); /* ページ全体の背景 */
-  --color-background-overlay: var(--background-overlay); /* ページ全体の背景 */
   --color-foreground: var(--foreground); /* 標準的なテキスト色 */
+  --color-background-overlay: var(--background-overlay); /* オーバーレイ用 */
 
   /* =========================================
      コンテンツ要素 (Card / Popover)
      ========================================= */
   --color-card: var(--card); /* カードの背景 */
   --color-card-foreground: var(--card-foreground); /* カード内のテキスト */
+
   --color-board: var(--board); /* ボードの背景 */
   --color-board-foreground: var(--board-foreground); /* ボード内のテキスト */
-  --color-popover: var(--popover); /* メニューやツールチップの背景 */
-  --color-popover-foreground: var(
-    --popover-foreground
-  ); /* メニュー内のテキスト */
+
+	--color-popover: var(--popover); /* メニューやツールチップの背景 */
+  --color-popover-foreground: var(--popover-foreground); /* メニュー内のテキスト */
 
   /* =========================================
      アクション・状態 (Main Actions)
      ========================================= */
   --color-primary: var(--primary); /* 主要なアクションボタンの背景 */
-  --color-primary-foreground: var(
-    --primary-foreground
-  ); /* プライマリボタン上のテキスト */
+  --color-primary-foreground: var(--primary-foreground); /* プライマリボタン上のテキスト */
 
   --color-secondary: var(--secondary); /* 補助的なアクションの背景 */
   --color-secondary-foreground: var(--secondary-foreground);
 
   --color-muted: var(--muted); /* 非活性な領域、または控えめな背景 */
-  --color-muted-foreground: var(
-    --muted-foreground
-  ); /* 補足、注釈、プレースホルダ等の薄いテキスト */
+  --color-muted-foreground: var(--muted-foreground); /* 補足、注釈、プレースホルダ等の薄いテキスト */
 
   --color-accent: var(--accent); /* ホバー時や選択状態の強調背景 */
-  --color-accent-border: var(
-    --accent-border
-  ); /* ホバー時や選択状態の強調背景 */
-  --color-accent-shadow: var(
-    --accent-shadow
-  ); /* ホバー時や選択状態の強調背景 */
+  --color-accent-border: var(--accent-border); /* ホバー時や選択状態の強調背景 */
+  --color-accent-shadow: var(--accent-shadow); /* ホバー時や選択状態の強調背景 */
   --color-accent-foreground: var(--accent-foreground);
 
   --color-destructive: var(--destructive); /* 削除や警告などの背景 */
-  --color-destructive-foreground: var(
-    --primary-foreground
-  ); /* 削除ボタン上のテキスト（共通化） */
+  --color-destructive-foreground: var(--primary-foreground); /* 削除ボタン上のテキスト（共通化） */
 
   /* =========================================
      境界・入力・フォーカス (UI Elements)
@@ -92,16 +82,6 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-
-  /* =========================================
-     チャート・ラベル (Data Display)
-     データの塗り分け、ラベルのカラーバリエーション
-     ========================================= */
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
 }
 
 /* OKLCHは「Lightness明度・Chroma彩度・Hue色相」を設定できる */
@@ -133,17 +113,11 @@
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
 
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(1 0 0);
+  --sidebar-primary: oklch(0.975 0 0);
   --sidebar-primary-foreground: oklch(0.205 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent: oklch(0.95 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
@@ -176,17 +150,11 @@
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
 
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-
   --sidebar: oklch(0.2 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.2 0 0);
+  --sidebar-primary: oklch(0.25 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent: oklch(0.3 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);

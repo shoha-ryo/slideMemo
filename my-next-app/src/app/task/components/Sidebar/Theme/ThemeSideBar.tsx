@@ -5,11 +5,11 @@ import { Check, X } from "lucide-react";
 
 // サンプル
 export const themes = [
-  { id: "light", name: "Light", primary: "#3b82f6", bg: "#ffffff" },
-  { id: "dark", name: "Dark", primary: "#3b82f6", bg: "#09090b" },
-  { id: "rose", name: "Rose", primary: "#e11d48", bg: "#fff1f2" },
-  { id: "ocean", name: "Ocean", primary: "#0ea5e9", bg: "#f0f9ff" },
-  { id: "zinc", name: "Zinc", primary: "#18181b", bg: "#f4f4f5" },
+  { id: "light", name: "ライト", primary: "#3b82f6", bg: "#ffffff" },
+  { id: "dark", name: "ダーク", primary: "#3b82f6", bg: "#09090b" },
+  { id: "rose", name: "ローズ", primary: "#e11d48", bg: "#fff1f2" },
+  { id: "ocean", name: "オーシャンブルー", primary: "#0ea5e9", bg: "#f0f9ff" },
+  { id: "zinc", name: "ジンク", primary: "#18181b", bg: "#f4f4f5" },
 ];
 
 type Props = {
@@ -62,7 +62,7 @@ export const ThemeSidebar = ({ onToggle }: Props) => {
 									${
                     currentTheme === t.id
                       ? "border-primary bg-primary/5 ring-1 ring-primary"
-                      : "border-border/50 hover:border-border bg-card/50 hover:bg-card"
+                      : "border-border/50 hover:border-border bg-sidebar-primary hover:bg-sidebar-accent"
                   }
 								`}
             >
@@ -77,7 +77,7 @@ export const ThemeSidebar = ({ onToggle }: Props) => {
                 />
               </div>
 
-              {/* ラベル */}
+              {/* テーマ名 */}
               <div className="flex-1 text-left">
                 <p className="text-sm font-medium">{t.name}</p>
                 <p className="text-[10px] text-muted-foreground uppercase">
