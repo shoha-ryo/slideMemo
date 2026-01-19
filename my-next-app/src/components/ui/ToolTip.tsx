@@ -47,7 +47,7 @@ export const ToolTip = ({ content, children }: PortalTooltipProps) => {
         createPortal(
           <div
             className="
-              fixed z-[9999] -translate-y-1/2
+              fixed z-999 -translate-y-1/2
               px-2 py-1 
               bg-popover text-popover-foreground text-xs 
               rounded border shadow-md 
