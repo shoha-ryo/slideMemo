@@ -22,6 +22,7 @@ import { Card } from "@/components/ui/card";
 import { ProjectCard } from "./ProjectCard";
 import { DeleteProjectDialog } from "./DeleteProjectDialog";
 import { EditProjectDialog } from "./EditProjectDialog";
+import { useTaskStore } from "@/app/task/store/taskStore/taskStore";
 
 type ProjectTo = {
   id: string;
@@ -29,41 +30,43 @@ type ProjectTo = {
 } | null;
 
 export function ProjectGrid() {
-  // 1. Firebaseのキャッシュから即座にUIDを取得（初期値）
   const [userId, setUserId] = useState(() => auth.currentUser?.uid || "");
   const [newProjectName, setNewProjectName] = useState("");
   const [isAddingProject, setIsAddingProject] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<ProjectTo>(null);
   const [projectToEdit, setProjectToEdit] = useState<ProjectTo>(null);
-  const [draggedProject, setDraggedProject] = useState<string | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
-  // 2. DBの状態を常に監視。DBが変わればUIが自動で再描画される
+  // 2. 最新順（createdAtの降順）にソートして監視
   const projects =
     useLiveQuery(async () => {
       if (!userId) return [];
-      return await db.projects.where("userId").equals(userId).toArray();
+      // createdAt でソートし、reverse() で最新を上にする
+      return await db.projects
+        .where("userId")
+        .equals(userId)
+        .sortBy("createdAt")
+        .then(items => items.reverse()); 
     }, [userId]) || [];
 
-  // 3. 認証とサーバー同期
+  // 3. 認証とサーバー同期 (修正なし)
   useEffect(() => {
+    useTaskStore.setState({syncStatus: "syncing"})
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUserId(user.uid);
-        // サーバーから最新を取得してIndexedDBを更新（バックグラウンド処理）
         const result = await getProjects(user.uid);
         if (result.success && result.data) {
           const projectsToSave = result.data.map((p) => ({
             ...p,
-            createdAt:
-              p.createdAt instanceof Date ? p.createdAt.getTime() : p.createdAt,
-            updatedAt:
-              p.updatedAt instanceof Date ? p.updatedAt.getTime() : p.updatedAt,
+            createdAt: p.createdAt instanceof Date ? p.createdAt.getTime() : p.createdAt,
+            updatedAt: p.updatedAt instanceof Date ? p.updatedAt.getTime() : p.updatedAt,
           }));
           await db.projects.bulkPut(projectsToSave);
         }
+        useTaskStore.setState({syncStatus: "synced"})
       } else {
         setUserId("");
+        useTaskStore.setState({syncStatus: "failed"})
       }
     });
     return () => unsubscribe();
@@ -119,42 +122,6 @@ export function ProjectGrid() {
     setProjectToDelete(null);
 
     await deleteProject(id);
-  };
-
-  const handleDragStart = (e: React.DragEvent, projectId: string) => {
-    setDraggedProject(projectId);
-    e.dataTransfer.effectAllowed = "move";
-  };
-
-  const handleDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    setDragOverIndex(index);
-  };
-
-  const handleDragEnd = () => {
-    setDraggedProject(null);
-    setDragOverIndex(null);
-  };
-
-  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
-    e.preventDefault();
-
-    if (draggedProject === null) return;
-
-    const draggedIndex = projects.findIndex((p) => p.id === draggedProject);
-    if (draggedIndex === -1 || draggedIndex === targetIndex) {
-      setDraggedProject(null);
-      setDragOverIndex(null);
-      return;
-    }
-
-    const newProjects = [...projects];
-    const [removed] = newProjects.splice(draggedIndex, 1);
-    newProjects.splice(targetIndex, 0, removed);
-
-    // setProjects(newProjects);
-    setDraggedProject(null);
-    setDragOverIndex(null);
   };
 
   return (
@@ -221,12 +188,7 @@ export function ProjectGrid() {
             key={project.id}
             project={project}
             index={index}
-            draggedProject={draggedProject}
-            dragOverIndex={dragOverIndex}
-            handleDragStart={handleDragStart}
-            handleDragOver={handleDragOver}
-            handleDragEnd={handleDragEnd}
-            handleDrop={handleDrop}
+
             onDeleteClick={(p) => setProjectToDelete(p)}
             onEditClick={(p) => setProjectToEdit(p)}
           />

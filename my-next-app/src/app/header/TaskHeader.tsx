@@ -48,10 +48,10 @@ export default function TaskHeader() {
           {projectTitle}
         </div>
 
-        {/* Right Section - Search, Actions, User */}
+        {/* 右側 */}
         <div className="flex items-center gap-3">
 					<SyncStatusBadge status={syncStatus}></SyncStatusBadge>
-          {/* Search */}
+          {/* 検索 */}
           <div className="relative">
             {isSearchOpen ? (
               <div className="flex items-center gap-2">
@@ -76,7 +76,7 @@ export default function TaskHeader() {
             )}
           </div>
 
-          {/* Notifications */}
+          {/* 通知 */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="relative h-9 w-9">
@@ -116,7 +116,7 @@ export default function TaskHeader() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Settings */}
+          {/* 設定 */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-9 w-9">
@@ -132,9 +132,10 @@ export default function TaskHeader() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <UserMenu></UserMenu>
+					{/* ユーザーメニュー */}
+          <UserMenu/>
 
-          {/* Mobile Menu */}
+          {/* メニュー */}
           <Button variant="ghost" size="icon" className="h-9 w-9 md:hidden">
             <Menu className="h-4 w-4" />
             <span className="sr-only">メニュー</span>

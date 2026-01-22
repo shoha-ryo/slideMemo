@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, Folder, GripVertical } from "lucide-react";
+import { MoreVertical, Folder } from "lucide-react"; // GripVerticalを削除
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -15,48 +15,25 @@ import Link from "next/link";
 interface ProjectCardProps {
   project: { id: string; title: string };
   index: number;
-  draggedProject: string | null;
-  dragOverIndex: number | null;
-  handleDragStart: (e: React.DragEvent, id: string) => void;
-  handleDragOver: (e: React.DragEvent, index: number) => void;
-  handleDragEnd: () => void;
-  handleDrop: (e: React.DragEvent, index: number) => void;
-  onDeleteClick: (project: { id: string; title: string }) => void; // 修正：ダイアログを開くための関数
-  onEditClick: (project: { id: string; title: string }) => void; // 修正：ダイアログを開くための関数
+  onDeleteClick: (project: { id: string; title: string }) => void;
+  onEditClick: (project: { id: string; title: string }) => void;
 }
 
 export const ProjectCard = ({
   project,
-  index,
-  draggedProject,
-  dragOverIndex,
-  handleDragStart,
-  handleDragOver,
-  handleDragEnd,
-  handleDrop,
   onEditClick,
   onDeleteClick,
 }: ProjectCardProps) => {
   return (
     <div className="relative group">
-      {/* カード全体のリンク（z-0） */}
-      <Link href={`/task/${project.id}`} className="block group">
+      {/* カード全体のリンク */}
+      <Link href={`/task/${project.id}`} className="block">
         <Card
-          draggable
-          onDragStart={(e) => handleDragStart(e, project.id)}
-          onDragOver={(e) => handleDragOver(e, index)}
-          onDragEnd={handleDragEnd}
-          onDrop={(e) => handleDrop(e, index)}
-          className={`relative z-10 cursor-move p-4 transition-all hover:shadow-lg ${
-            draggedProject === project.id ? "opacity-50" : ""
-          } ${dragOverIndex === index ? "ring-2 ring-primary" : ""}`}
+          className="relative z-10 p-4 transition-all hover:shadow-lg hover:border-primary/30 cursor-pointer"
         >
           <div className="flex items-start justify-between gap-2">
-            {/* 左側：ドラッグハンドルと情報 */}
+            {/* 左側：プロジェクト情報 */}
             <div className="flex flex-1 items-start gap-3">
-              <div className="mt-1 text-muted-foreground/50 group-hover:text-muted-foreground">
-                <GripVertical className="h-5 w-5" />
-              </div>
               <div className="flex-1">
                 <div className="mb-2 rounded-md bg-muted w-fit p-2">
                   <Folder className="h-4 w-4 text-muted-foreground" />
@@ -67,7 +44,7 @@ export const ProjectCard = ({
               </div>
             </div>
 
-            {/* 右側：メニュー（リンクを邪魔しないよう z-20） */}
+            {/* 右側：メニュー（バブリングを防止してリンク発火を防ぐ） */}
             <div
               className="relative z-20"
               onClick={(e) => {

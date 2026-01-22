@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { RefreshCcw, CheckCircle2, Loader2 } from "lucide-react";
+import { RefreshCcw, CheckCircle2, Loader2, AlertCircle} from "lucide-react";
+import { TaskStore } from "../../store/taskStore/types/TasksType";
 
-type SyncStatus = "initializing" | "syncing" | "synced";
+type SyncStatus = TaskStore["syncStatus"]
 
 type Props = {
   status: SyncStatus;
@@ -25,7 +26,7 @@ export const SyncStatusBadge = ({ status }: Props) => {
     initializing: {
       icon: <Loader2 size={14} className="animate-spin" />,
       text: "初期化中...",
-      className: "text-muted-foreground bg-muted/50 border-transparent",
+      className: "text-foreground bg-background",
     },
     syncing: {
       icon: <RefreshCcw size={14} className="animate-spin" />,
@@ -44,6 +45,11 @@ export const SyncStatusBadge = ({ status }: Props) => {
     synced: {
       icon: <CheckCircle2 size={14} />,
       text: "同期完了",
+      className: "text-foreground bg-background",
+    },
+		failed: {
+      icon: <AlertCircle size={14} />,
+      text: "サーバー同期失敗",
       className: "text-foreground bg-background",
     },
   };

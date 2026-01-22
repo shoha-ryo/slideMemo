@@ -45,7 +45,7 @@ export interface TaskStore extends AppState, Payload {
   isTaskCreating: boolean;
   setIsTaskCreating: (isTaskCreating: boolean) => void;
 
-  syncStatus: "initializing" | "syncing" | "synced";
+  syncStatus: "initializing" | "syncing" | "synced" | "failed";
   initializeProject: (userId: string, projectId: string) => void;
   applyDiff: (diffTasks: typeof emptyTasks, userId: string) => void;
 }
