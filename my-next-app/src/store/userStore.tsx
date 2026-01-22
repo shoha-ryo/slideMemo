@@ -1,11 +1,18 @@
-import { create } from "zustand";
+// store/userStore.ts
+import { create } from 'zustand';
 
-interface UserStore {
-  userId: string | null;
-  setUserId: (userId: string) => void;
+interface UserState {
+  user: any | null;
+  isSynced: boolean; // ★DBとの同期が終わったかどうか
+  setUser: (user: any) => void;
+  setSynced: (isSynced: boolean) => void;
+  clearUser: () => void;
 }
 
-export const useUserStore = create<UserStore>()((set) => ({
-  userId: null,
-  setUserId: (userId) => set({ userId }),
+export const useUserStore = create<UserState>((set) => ({
+  user: null,
+  isSynced: false,
+  setUser: (user) => set({ user }),
+  setSynced: (isSynced) => set({ isSynced }),
+  clearUser: () => set({ user: null, isSynced: false }),
 }));

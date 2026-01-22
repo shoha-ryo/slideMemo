@@ -78,7 +78,7 @@ export default function Board({ board }: { board: BoardType }) {
       onKeyDown={(e) => handleKeyDown(e, showModal)}
       tabIndex={0}
     >
-      <div className="font-black text-center">{board.title}</div>
+      <div className="font-black text-center mb-4">{board.title}</div>
       <div className="overflow-auto p-2 -m-2">
         <SortableContext
           items={board.cardIds}

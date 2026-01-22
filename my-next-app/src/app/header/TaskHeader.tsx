@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { getAuth, signOut } from "firebase/auth";
-import { useRouter } from "next/navigation";
 import { Search, Bell, Settings, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,12 +11,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { FlowLogo } from "../../../public/FLOW";
 import { useTaskStore } from "../task/store/taskStore/taskStore";
 import { useShallow } from "zustand/shallow";
 import Link from "next/link";
 import { SyncStatusBadge } from "../task/components/SyncStatus/InitialSyncStatus";
+import { UserMenu } from "./components/UserMenu";
 
 export default function TaskHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -29,18 +27,9 @@ export default function TaskHeader() {
     })),
   );
 
-  const auth = getAuth();
-  const router = useRouter();
+  
 
-  const onLogout = async () => {
-    try {
-      await signOut(auth);
-      // 成功したらログインページへ移動
-      router.push("/login");
-    } catch (error) {
-      alert("ログアウトに失敗しました");
-    }
-  };
+
 
   return (
     <header className="border-b border-border bg-background">
@@ -143,30 +132,7 @@ export default function TaskHeader() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* User Profile */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-9 gap-2 px-2">
-                <Avatar className="h-7 w-7">
-                  {/* <AvatarImage src="/placeholder.svg?height=28&width=28" /> */}
-                  <AvatarFallback className="bg-muted text-xs">
-                    YS
-                  </AvatarFallback>
-                </Avatar>
-                <span className="hidden text-sm font-medium lg:inline-block">
-                  山田さん
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>プロフィール</DropdownMenuItem>
-              <DropdownMenuItem>アカウント設定</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Button onClick={onLogout}>ログアウト</Button>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <UserMenu></UserMenu>
 
           {/* Mobile Menu */}
           <Button variant="ghost" size="icon" className="h-9 w-9 md:hidden">

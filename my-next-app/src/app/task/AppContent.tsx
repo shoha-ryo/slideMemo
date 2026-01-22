@@ -62,10 +62,9 @@ import { ThemeSidebar } from "./components/Sidebar/Theme/ThemeSideBar";
 export default function AppContent({ projectId }: { projectId: string }) {
   const auth = getAuth();
 
-  const { userId, setUserId } = useUserStore(
+  const { userId } = useUserStore(
     useShallow((state) => ({
-      userId: state.userId,
-      setUserId: state.setUserId,
+      userId: state.user?.id,
     })),
   );
 
@@ -127,7 +126,6 @@ export default function AppContent({ projectId }: { projectId: string }) {
     const user = auth.currentUser;
     if (user) {
       initializeProject(user.uid, projectId); // ストアのサーバー→ローカルまで一元管理
-      setUserId(user.uid);
       setProjectId(projectId);
     }
 
