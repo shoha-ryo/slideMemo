@@ -45,7 +45,7 @@ const Card = ({ cardId }: { cardId: string }) => {
 	const buttonRef = useRef(null)
 
   const draggableStyle = isDragging
-    ? "ring-4 ring-accent/50 bg-card" // 移動元
+    ? "ring-4 ring-accent/50 bg-card opacity-50" // 移動元
     : isActive
       ? "opacity-20 cursor-grabbing" // 掴んでいる時
       : "cursor-grab"; // 掴んでいない時
@@ -185,7 +185,7 @@ const Card = ({ cardId }: { cardId: string }) => {
 										setIsDrafting(true);
 									}} // モーダル表示をブロックする。
 									variant="ghost"
-									className="group mt-2 mr-2 h-8 w-8 rounded-full border"
+									className="group mr-2 h-8 w-8 rounded-full border"
 								>
 									＋
 								</Button>
