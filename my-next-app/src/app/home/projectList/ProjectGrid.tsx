@@ -146,19 +146,23 @@ export function ProjectGrid() {
         <Card className="mb-6 p-4">
           <div className="flex flex-col gap-3">
             <Input
-              placeholder="プロジェクト名を入力..."
-              value={newProjectName}
-              onChange={(e) => setNewProjectName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleAddProject();
-                } else if (e.key === "Escape") {
-                  setIsAddingProject(false);
-                  setNewProjectName("");
-                }
-              }}
-              autoFocus
-            />
+							placeholder="プロジェクト名を入力..."
+							value={newProjectName}
+							onChange={(e) => setNewProjectName(e.target.value)}
+							onKeyDown={(e) => {
+
+								console.log(e.nativeEvent.isComposing)
+								if (e.nativeEvent.isComposing) return;
+
+								if (e.key === "Enter") {
+									handleAddProject();
+								} else if (e.key === "Escape") {
+									setIsAddingProject(false);
+									setNewProjectName("");
+								}
+							}}
+							autoFocus
+						/>
             <div className="flex gap-2">
               <Button size="sm" onClick={handleAddProject}>
                 作成
