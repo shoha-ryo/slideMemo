@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { CustomToaster } from "@/components/ui/CustomToaster"
 import "./globals.css";
 import { ThemeProvider } from "./settings/system/ThemeProvider";
 
@@ -38,6 +39,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+					<CustomToaster/>
         </ThemeProvider>
       </body>
     </html>

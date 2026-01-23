@@ -5,6 +5,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 /* 親要素のどこかに「.dark」があればダークモードを適用してくれる */
 @custom-variant dark (&:is(.dark *));
 
@@ -166,5 +167,35 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+
+/* 出現：下からスライドイン */
+.custom-toast-animation[data-state='open'] {
+  animation: slideIn 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* 消失：右へスライドアウト */
+.custom-toast-animation[data-state='closed'] {
+  animation: hide 200ms ease-in forwards;
+}
+@keyframes slideIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes hide {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
   }
 }

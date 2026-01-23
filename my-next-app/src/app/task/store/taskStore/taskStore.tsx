@@ -13,6 +13,7 @@ import {
 } from "../../actions/toLocalDataBase";
 import { getInitialData } from "../../actions/getInitialData";
 import { produce } from "immer";
+import { useUserStore } from "@/store/userStore";
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
   activeId: null,
@@ -31,6 +32,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   isTaskCreating: false,
   setIsTaskCreating: (isTaskCreating) => set({ isTaskCreating }),
 
+	userId: useUserStore.getState().user?.id,
   projectId: null,
   projectTitle: null,
   setProjectId: (projectId) => set({ projectId }),
@@ -101,8 +103,8 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       } else {
         lastSyncAt = 0; // もし30日以上ローカルDBにアクセスしていなければすべてのデータを再取得する（未実装）
       }
-      lastSyncAt = 0;
-      console.log("初期データ全取得モード中...");
+      // lastSyncAt = 0;
+      // console.log("初期データ全取得モード中...");
 
       console.log("user", userId, "project", projectId, lastSyncAt);
       // todo

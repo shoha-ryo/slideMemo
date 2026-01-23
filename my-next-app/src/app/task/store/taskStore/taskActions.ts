@@ -35,90 +35,90 @@ export const taskActions = (
   moveTask: (payload: Payload) => {
     const state = get();
     const { newState, diffTasks } = applyMoveLogic(payload, state);
-    if (!state.projectId) return;
-    updateCheckForToDB(diffTasks, state.projectId);
+    if (!state.projectId || !state.userId) return;
+    updateCheckForToDB(diffTasks, state.projectId, state.userId);
     set(newState);
   },
 
   addTask: (title: string, source: Source) => {
     const state = get();
     const { newState, diffTasks } = addCardLogic(title, source, state);
-    if (!state.projectId) return;
+    if (!state.projectId || !state.userId) return;
     set(newState);
-    updateCheckForToDB(diffTasks, state.projectId);
+    updateCheckForToDB(diffTasks, state.projectId, state.userId);
   },
 
   deleteTask: (cardId: string) => {
     const state = get();
     const { newState, diffTasks } = deleteCardLogic(cardId, state);
-    if (!state.projectId) return;
+    if (!state.projectId || !state.userId) return;
     set(newState);
-    updateCheckForToDB(diffTasks, state.projectId);
+    updateCheckForToDB(diffTasks, state.projectId, state.userId);
   },
 
   updateTask: (cardId: string, updates: Partial<CardType>) => {
     const state = get();
     const { newState, diffTasks } = updateCardLogic(cardId, updates, state);
-    if (!state.projectId) return;
+    if (!state.projectId || !state.userId) return;
     set(newState);
-    updateCheckForToDB(diffTasks, state.projectId);
+    updateCheckForToDB(diffTasks, state.projectId, state.userId);
   },
 
   moveBoard: (payload: Payload) => {
     const state = get();
     const { newState, diffTasks } = moveBoardLogic(payload, state);
-    if (!state.projectId) return;
+    if (!state.projectId || !state.userId) return;
     set(newState);
-    updateCheckForToDB(diffTasks, state.projectId);
+    updateCheckForToDB(diffTasks, state.projectId, state.userId);
   },
 
   addBoard: (title: string) => {
     const state = get();
     const { newState, diffTasks } = addBoardLogic(title, state);
-    if (!state.projectId) return;
+    if (!state.projectId || !state.userId) return;
     set(newState);
-    updateCheckForToDB(diffTasks, state.projectId);
+    updateCheckForToDB(diffTasks, state.projectId, state.userId);
   },
 
   deleteBoard: (cardId: string) => {
     const state = get();
     const { newState, diffTasks } = deleteBoardLogic(cardId, state);
-    if (!state.projectId) return;
+    if (!state.projectId || !state.userId) return;
     set(newState);
-    updateCheckForToDB(diffTasks, state.projectId);
+    updateCheckForToDB(diffTasks, state.projectId, state.userId);
   },
 
   updateBoard: (boardId: string, updates: Partial<BoardType>) => {
     const state = get();
     const { newState, diffTasks } = updateBoardLogic(boardId, updates, state);
-    if (!state.projectId) return;
+    if (!state.projectId || !state.userId) return;
     set(newState);
-    updateCheckForToDB(diffTasks, state.projectId);
+    updateCheckForToDB(diffTasks, state.projectId, state.userId);
   },
 
   moveLabel: (payload: Payload) => {
     const state = get();
     const { newState, diffTasks } = moveLabelLogic(payload, state);
     console.log(newState, diffTasks);
-    if (!state.projectId) return;
+    if (!state.projectId || !state.userId) return;
     set(newState);
-    updateCheckForToDB(diffTasks, state.projectId);
+    updateCheckForToDB(diffTasks, state.projectId, state.userId);
   },
 
   createLabel: (name: string, color: string) => {
     const state = get();
     const { newState, diffTasks } = createLabelLogic(name, color, state);
-    if (!state.projectId) return;
+    if (!state.projectId || !state.userId) return;
     set(newState);
-    updateCheckForToDB(diffTasks, state.projectId);
+    updateCheckForToDB(diffTasks, state.projectId, state.userId);
   },
 
   deleteLabel: (activeId: string) => {
     const state = get();
     const { newState, diffTasks } = deleteLabelFromCardLogic(activeId, state);
-    if (!state.projectId) return;
+    if (!state.projectId || !state.userId) return;
     set(newState);
-    updateCheckForToDB(diffTasks, state.projectId);
+    updateCheckForToDB(diffTasks, state.projectId, state.userId);
   },
 
   editMasterLabel: (
@@ -134,16 +134,16 @@ export const taskActions = (
       updates,
       state,
     );
-    if (!state.projectId) return;
+    if (!state.projectId || !state.userId) return;
     set(newState);
-    updateCheckForToDB(diffTasks, state.projectId);
+    updateCheckForToDB(diffTasks, state.projectId, state.userId);
   },
 
   deleteMasterLabel: (labelId: string) => {
     const state = get();
     const { newState, diffTasks } = deleteMasterLabelLogic(labelId, state);
-    if (!state.projectId) return;
+    if (!state.projectId || !state.userId) return;
     set(newState);
-    updateCheckForToDB(diffTasks, state.projectId);
+    updateCheckForToDB(diffTasks, state.projectId, state.userId);
   },
 });

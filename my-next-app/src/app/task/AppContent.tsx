@@ -3,8 +3,9 @@
 
 import { useEffect, useState } from "react";
 import Pusher from "pusher-js";
-import { toast, Toaster } from "sonner";
+import { showToast } from "@/components/ui/CustomToaster"
 import { getAuth } from "firebase/auth";
+import { toast, Toaster } from "sonner";
 //todo import { useLiveQuery } from "dexie-react-hooks";
 //todo import { db } from "../../../dexie/dexie";
 import { motion, AnimatePresence } from "framer-motion";
@@ -36,6 +37,7 @@ import { SideToolBar } from "./components/Sidebar/SaidToolMenu";
 
 // 型設定
 import { SidebarType } from "./components/Sidebar/SaidToolMenu";
+import { ToastType } from "@/components/ui/CustomToaster";
 
 // デバッグ
 // import { DebugInfo } from "./components/devOnly/DebugInfo";
@@ -121,6 +123,8 @@ export default function AppContent({ projectId }: { projectId: string }) {
   //     return await db.projects.where("userId").equals(userId).toArray();
   //   }, [userId]) || [];
 
+	
+
   // 初期値取得
   useEffect(() => {
     const user = auth.currentUser;
@@ -145,13 +149,18 @@ export default function AppContent({ projectId }: { projectId: string }) {
     // "task-updated" という叫び声が聞こえたら実行
     channel.bind(
       "task-updated",
-      (payload: { diffTasks: typeof emptyTasks; lastSyncAt: number }) => {
-        toast.info("他のユーザーがタスクを更新しました！", {});
-        const { diffTasks, lastSyncAt } = payload;
-        if (!userId || !projectTitle) return;
-        applyDiff(diffTasks, userId);
-        toLocalDataBase(diffTasks, projectId);
-        updateLocalSyncMeta(lastSyncAt, projectId);
+      (payload: { diffTasks: typeof emptyTasks; lastSyncAt: number; userId: string }) => {
+				if (payload.userId === userId) {
+					showToast("success", "正常に同期されました");
+				} else {
+					console.log("送信：", payload.userId, "自分：", userId, )
+					showToast("info", "他のユーザーが更新しました");
+					const { diffTasks, lastSyncAt } = payload;
+					if (!userId || !projectTitle) return;
+					applyDiff(diffTasks, userId);
+					toLocalDataBase(diffTasks, projectId);
+					updateLocalSyncMeta(lastSyncAt, projectId);
+				}
       },
     );
     return () => {
@@ -442,7 +451,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
           {/* <DebugInfo /> */}
           {/* <DebugCollision/> */}
         </DndContext>
-        <Toaster richColors />
+				<Toaster></Toaster>
       </div>
     </div>
   );

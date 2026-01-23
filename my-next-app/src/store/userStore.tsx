@@ -1,10 +1,16 @@
 // store/userStore.ts
 import { create } from 'zustand';
 
+interface User {
+	id: string
+	email: string,
+	name: string,
+	image: string,
+}
 interface UserState {
-  user: any | null;
+  user: User | null;
   isSynced: boolean; // ★DBとの同期が終わったかどうか
-  setUser: (user: any) => void;
+  setUser: (user: User) => void;
   setSynced: (isSynced: boolean) => void;
   clearUser: () => void;
 }
