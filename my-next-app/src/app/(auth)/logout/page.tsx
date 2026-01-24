@@ -4,13 +4,12 @@
 import { useEffect } from "react";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase"  // initializeApp しているファイルをインポート
+import { auth } from "@/lib/firebase"; // initializeApp しているファイルをインポート
 
 export default function LogoutPage() {
   const router = useRouter();
 
   useEffect(() => {
-
     signOut(auth)
       .then(() => {
         console.log("ログアウトしました");

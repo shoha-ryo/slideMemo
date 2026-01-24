@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as ToastPrimitive from "@radix-ui/react-toast";
 import { X, CheckCircle2, AlertCircle, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -17,7 +17,11 @@ interface ToastItem {
 let toastCount = 0;
 let setExternalToasts: React.Dispatch<React.SetStateAction<ToastItem[]>>;
 
-export const showToast = (type: ToastType, title: string, description?: string) => {
+export const showToast = (
+  type: ToastType,
+  title: string,
+  description?: string,
+) => {
   const id = String(toastCount++);
   if (setExternalToasts) {
     setExternalToasts((prev) => [...prev, { id, title, description, type }]);
@@ -26,7 +30,14 @@ export const showToast = (type: ToastType, title: string, description?: string) 
 
 export function CustomToaster() {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
-  setExternalToasts = setToasts;
+
+  // レンダリング完了後に実行する
+  useEffect(() => {
+    setExternalToasts = setToasts; // 外部変数を更新するのはレンダリング完了後にすること！
+    return () => {
+      setExternalToasts = () => {}; // 不要になったらクリーンアップ
+    };
+  }, []);
 
   return (
     <ToastPrimitive.Provider swipeDirection="right">
@@ -41,25 +52,27 @@ export function CustomToaster() {
           <ToastPrimitive.Root
             key={id}
             duration={5000}
-						onOpenChange={(open) => {
-							if (!open) {
-								setTimeout(() => {
-									setToasts((prev) => prev.filter((t) => t.id !== id));
-								}, 500); // アニメーションを待ってから配列を掃除
-							}
-						}}
+            onOpenChange={(open) => {
+              if (!open) {
+                setTimeout(() => {
+                  setToasts((prev) => prev.filter((t) => t.id !== id));
+                }, 500); // アニメーションを待ってから配列を掃除
+              }
+            }}
             className={cn(
               "relative flex items-center gap-4 p-3 min-w-[250px] outline-none overflow-visible",
               "transition-all duration-300 ease-out",
-              "custom-toast-animation"
+              "custom-toast-animation",
             )}
-            style={{ 
-              isolation: "isolate",
-              "--current-gradient": gradientMap[type] 
-            } as React.CSSProperties}
+            style={
+              {
+                isolation: "isolate",
+                "--current-gradient": gradientMap[type],
+              } as React.CSSProperties
+            }
           >
             {/* 層1：背後のグラデーション */}
-            <div 
+            <div
               className="absolute inset-0 z-[-2] rounded-sm opacity-80 blur-[5px]"
               style={{ background: "var(--current-gradient)" }}
             />
@@ -67,8 +80,12 @@ export function CustomToaster() {
             <div className="absolute inset-0 z-[-1] rounded-md bg-background shadow-xl" />
 
             <div className="shrink-0">
-              {type === "success" && <CheckCircle2 className="w-5" color="#10b981" />}
-              {type === "error" && <AlertCircle className="w-5" color="#ef4444" />}
+              {type === "success" && (
+                <CheckCircle2 className="w-5" color="#10b981" />
+              )}
+              {type === "error" && (
+                <AlertCircle className="w-5" color="#ef4444" />
+              )}
               {type === "info" && <Info className="w-5" color="#3b82f6" />}
             </div>
 
@@ -89,13 +106,9 @@ export function CustomToaster() {
           </ToastPrimitive.Root>
         );
       })}
-      
-			{/* 通知の並び順や配置を制御する */}
-      <ToastPrimitive.Viewport 
-        className="fixed bottom-0 right-0 z-[100] m-6 flex flex-col gap-4 w-full max-w-[350px] outline-none overflow-visible" 
-      />
+
+      {/* 通知の並び順や配置を制御する */}
+      <ToastPrimitive.Viewport className="fixed bottom-0 right-0 z-[100] m-6 flex flex-col gap-4 w-full max-w-[350px] outline-none overflow-visible" />
     </ToastPrimitive.Provider>
   );
 }
-
-

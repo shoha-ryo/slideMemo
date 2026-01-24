@@ -45,12 +45,12 @@ export function ProjectGrid() {
         .where("userId")
         .equals(userId)
         .sortBy("createdAt")
-        .then(items => items.reverse()); 
+        .then((items) => items.reverse());
     }, [userId]) || [];
 
   // 3. 認証とサーバー同期 (修正なし)
   useEffect(() => {
-    useTaskStore.setState({syncStatus: "syncing"})
+    useTaskStore.setState({ syncStatus: "syncing" });
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUserId(user.uid);
@@ -58,15 +58,17 @@ export function ProjectGrid() {
         if (result.success && result.data) {
           const projectsToSave = result.data.map((p) => ({
             ...p,
-            createdAt: p.createdAt instanceof Date ? p.createdAt.getTime() : p.createdAt,
-            updatedAt: p.updatedAt instanceof Date ? p.updatedAt.getTime() : p.updatedAt,
+            createdAt:
+              p.createdAt instanceof Date ? p.createdAt.getTime() : p.createdAt,
+            updatedAt:
+              p.updatedAt instanceof Date ? p.updatedAt.getTime() : p.updatedAt,
           }));
           await db.projects.bulkPut(projectsToSave);
         }
-        useTaskStore.setState({syncStatus: "synced"})
+        useTaskStore.setState({ syncStatus: "synced" });
       } else {
         setUserId("");
-        useTaskStore.setState({syncStatus: "failed"})
+        useTaskStore.setState({ syncStatus: "failed" });
       }
     });
     return () => unsubscribe();
@@ -146,23 +148,22 @@ export function ProjectGrid() {
         <Card className="mb-6 p-4">
           <div className="flex flex-col gap-3">
             <Input
-							placeholder="プロジェクト名を入力..."
-							value={newProjectName}
-							onChange={(e) => setNewProjectName(e.target.value)}
-							onKeyDown={(e) => {
+              placeholder="プロジェクト名を入力..."
+              value={newProjectName}
+              onChange={(e) => setNewProjectName(e.target.value)}
+              onKeyDown={(e) => {
+                console.log(e.nativeEvent.isComposing);
+                if (e.nativeEvent.isComposing) return;
 
-								console.log(e.nativeEvent.isComposing)
-								if (e.nativeEvent.isComposing) return;
-
-								if (e.key === "Enter") {
-									handleAddProject();
-								} else if (e.key === "Escape") {
-									setIsAddingProject(false);
-									setNewProjectName("");
-								}
-							}}
-							autoFocus
-						/>
+                if (e.key === "Enter") {
+                  handleAddProject();
+                } else if (e.key === "Escape") {
+                  setIsAddingProject(false);
+                  setNewProjectName("");
+                }
+              }}
+              autoFocus
+            />
             <div className="flex gap-2">
               <Button size="sm" onClick={handleAddProject}>
                 作成
@@ -192,7 +193,6 @@ export function ProjectGrid() {
             key={project.id}
             project={project}
             index={index}
-
             onDeleteClick={(p) => setProjectToDelete(p)}
             onEditClick={(p) => setProjectToEdit(p)}
           />

@@ -9,7 +9,7 @@
     "lint": "eslint",
     "format": "prettier . --write",
     "test": "vitest",
-    "all": "eslint && prettier . --write && vitest",
+    "all": "prettier . --write && eslint && vitest",
     "prepare": "husky",
     "lint:precommit": "eslint 'src/**/*.{ts,tsx}' --max-warnings 0",
     "fmt:precommit": "prettier -l './**/*.{js,jsx,ts,tsx,json,css,scss}'"

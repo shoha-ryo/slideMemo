@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Tag, Settings, SwatchBook } from "lucide-react";
@@ -60,19 +59,19 @@ const ToolButton = ({
   label: string;
 }) => (
   <ToolTip content={label}>
-		<button
-			onClick={onClick}
-			aria-label={label}
-			className={`
+    <button
+      onClick={onClick}
+      aria-label={label}
+      className={`
 				group p-3 rounded-xl transition-all duration-200 relative
 				${
-					active
-						? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-						: "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-				}
+          active
+            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+            : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        }
 			`}
-		>
-			{icon}
-		</button>
-	</ToolTip>
+    >
+      {icon}
+    </button>
+  </ToolTip>
 );

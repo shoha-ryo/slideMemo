@@ -35,14 +35,14 @@ const Card = ({ cardId }: { cardId: string }) => {
       cards: state.cards,
       labels: state.labels,
       dropPosition: state.dropPosition,
-			activeId: state.activeId
+      activeId: state.activeId,
     })),
   );
   const card = cards[cardId];
 
   const { active } = useDndContext();
   const isActive = active?.id === cardId;
-	const buttonRef = useRef(null)
+  const buttonRef = useRef(null);
 
   const draggableStyle = isDragging
     ? "ring-4 ring-accent/50 bg-card opacity-50" // 移動元
@@ -58,31 +58,33 @@ const Card = ({ cardId }: { cardId: string }) => {
           : "ring-4 ring-accent-border bg-accent/30" // 真ん中
       : "bg-card border"; // ホバーしていない、または自分が動いている時
 
-	// 1. 各状態の影を個別に定義
-	const isTarget = isOver && !isActive && activeId?.includes("card-");
-	// A: ドラッグ挿入位置のインジケーター (内側の線)
-	let indicatorShadow = "inset 0 0 0 0 transparent";
-	if (isTarget && activeId?.startsWith("card-")) {
-		if (dropPosition === "top")
-			indicatorShadow = "inset 0 15px 0 -2px var(--accent-border)";
-		else if (dropPosition === "bottom" )
-			indicatorShadow = "inset 0 -15px 0 -2px var(--accent-border)";
-		else if (dropPosition === "center")
-			indicatorShadow = "inset 0 0 0 4px var(--accent-border)";
-	}
-	// B: 枠線 (ホバー時またはターゲット時に表示)
-	const ringShadow = (isHovered || isTarget)
-		? "inset 0 0 0 2px var(--accent-border)"
-		: "inset 0 0 0 0 transparent";
-	// C: ホバー時の浮遊感 (外側の影)
-	const hoverGlow = (isHovered && !isDragging)
-		? "0 0 15px var(--accent-shadow)"
-		: "0 0 0 transparent";
-	// 2. すべてを合体 (カンマ区切り)
-	const finalBoxShadow = `${indicatorShadow}, ${ringShadow}, ${hoverGlow}`;
-	// 3. クラスからは影関連を削除
-	const hoveredStyle = isHovered ? "z-100 relative" : "";
-	const translateY = isHovered && !isDragging ? "-4px" : "0px";
+  // 1. 各状態の影を個別に定義
+  const isTarget = isOver && !isActive && activeId?.includes("card-");
+  // A: ドラッグ挿入位置のインジケーター (内側の線)
+  let indicatorShadow = "inset 0 0 0 0 transparent";
+  if (isTarget && activeId?.startsWith("card-")) {
+    if (dropPosition === "top")
+      indicatorShadow = "inset 0 15px 0 -2px var(--accent-border)";
+    else if (dropPosition === "bottom")
+      indicatorShadow = "inset 0 -15px 0 -2px var(--accent-border)";
+    else if (dropPosition === "center")
+      indicatorShadow = "inset 0 0 0 4px var(--accent-border)";
+  }
+  // B: 枠線 (ホバー時またはターゲット時に表示)
+  const ringShadow =
+    isHovered || isTarget
+      ? "inset 0 0 0 2px var(--accent-border)"
+      : "inset 0 0 0 0 transparent";
+  // C: ホバー時の浮遊感 (外側の影)
+  const hoverGlow =
+    isHovered && !isDragging
+      ? "0 0 15px var(--accent-shadow)"
+      : "0 0 0 transparent";
+  // 2. すべてを合体 (カンマ区切り)
+  const finalBoxShadow = `${indicatorShadow}, ${ringShadow}, ${hoverGlow}`;
+  // 3. クラスからは影関連を削除
+  const hoveredStyle = isHovered ? "z-100 relative" : "";
+  const translateY = isHovered && !isDragging ? "-4px" : "0px";
 
   const setNodeRef = (node: HTMLElement | null) => {
     setDroppableRef(node);
@@ -110,11 +112,12 @@ const Card = ({ cardId }: { cardId: string }) => {
     <div
       ref={setNodeRef}
       data-card-id={cardId}
-			style={{
-				boxShadow: finalBoxShadow,
-				transform: `translateY(${translateY})`,
-				transition: "box-shadow 0.3s ease-in-out, transform 0.2s, background-color 0.2s"
-			}}
+      style={{
+        boxShadow: finalBoxShadow,
+        transform: `translateY(${translateY})`,
+        transition:
+          "box-shadow 0.3s ease-in-out, transform 0.2s, background-color 0.2s",
+      }}
       className={`card relative
 				p-2.5 pl-2.5 mb-1.25 ml-1 mr-1
 				border rounded-lg
@@ -177,19 +180,19 @@ const Card = ({ cardId }: { cardId: string }) => {
 									via-card via-20% to-card to-100%"
             >
               {/* カード追加ボタン */}
-							<ToolTip content={"カードを追加"}>
-								<Button
-									ref={buttonRef}
-									onClick={(e) => {
-										e.stopPropagation();
-										setIsDrafting(true);
-									}} // モーダル表示をブロックする。
-									variant="ghost"
-									className="group mr-2 h-8 w-8 rounded-full border"
-								>
-									＋
-								</Button>
-							</ToolTip>
+              <ToolTip content={"カードを追加"}>
+                <Button
+                  ref={buttonRef}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsDrafting(true);
+                  }} // モーダル表示をブロックする。
+                  variant="ghost"
+                  className="group mr-2 h-8 w-8 rounded-full border"
+                >
+                  ＋
+                </Button>
+              </ToolTip>
             </div>
           )}
         </div>

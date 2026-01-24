@@ -1,7 +1,7 @@
 // components/ui/PortalTooltip.tsx
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { createPortal } from "react-dom";
 
 type PortalTooltipProps = {
@@ -61,7 +61,7 @@ export const ToolTip = ({ content, children }: PortalTooltipProps) => {
           >
             {content}
           </div>,
-          document.body
+          document.body,
         )}
     </>
   );

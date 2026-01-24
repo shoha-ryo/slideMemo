@@ -3,9 +3,8 @@
 
 import { useEffect, useState } from "react";
 import Pusher from "pusher-js";
-import { showToast } from "@/components/ui/CustomToaster"
+import { showToast } from "@/components/ui/CustomToaster";
 import { getAuth } from "firebase/auth";
-import { toast, Toaster } from "sonner";
 //todo import { useLiveQuery } from "dexie-react-hooks";
 //todo import { db } from "../../../dexie/dexie";
 import { motion, AnimatePresence } from "framer-motion";
@@ -37,7 +36,6 @@ import { SideToolBar } from "./components/Sidebar/SaidToolMenu";
 
 // 型設定
 import { SidebarType } from "./components/Sidebar/SaidToolMenu";
-import { ToastType } from "@/components/ui/CustomToaster";
 
 // デバッグ
 // import { DebugInfo } from "./components/devOnly/DebugInfo";
@@ -123,8 +121,6 @@ export default function AppContent({ projectId }: { projectId: string }) {
   //     return await db.projects.where("userId").equals(userId).toArray();
   //   }, [userId]) || [];
 
-	
-
   // 初期値取得
   useEffect(() => {
     const user = auth.currentUser;
@@ -149,18 +145,22 @@ export default function AppContent({ projectId }: { projectId: string }) {
     // "task-updated" という叫び声が聞こえたら実行
     channel.bind(
       "task-updated",
-      (payload: { diffTasks: typeof emptyTasks; lastSyncAt: number; userId: string }) => {
-				if (payload.userId === userId) {
-					showToast("success", "正常に同期されました");
-				} else {
-					console.log("送信：", payload.userId, "自分：", userId, )
-					showToast("info", "他のユーザーが更新しました");
-					const { diffTasks, lastSyncAt } = payload;
-					if (!userId || !projectTitle) return;
-					applyDiff(diffTasks, userId);
-					toLocalDataBase(diffTasks, projectId);
-					updateLocalSyncMeta(lastSyncAt, projectId);
-				}
+      (payload: {
+        diffTasks: typeof emptyTasks;
+        lastSyncAt: number;
+        userId: string;
+      }) => {
+        if (payload.userId === userId) {
+          showToast("success", "正常に同期されました");
+        } else {
+          console.log("送信：", payload.userId, "自分：", userId);
+          showToast("info", "他のユーザーが更新しました");
+          const { diffTasks, lastSyncAt } = payload;
+          if (!userId || !projectTitle) return;
+          applyDiff(diffTasks, userId);
+          toLocalDataBase(diffTasks, projectId);
+          updateLocalSyncMeta(lastSyncAt, projectId);
+        }
       },
     );
     return () => {
@@ -309,7 +309,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
 
   const customCollisionDetection: CollisionDetection = (args) => {
     const { active } = args;
-		const activeId = active.id.toString()
+    const activeId = active.id.toString();
 
     // マウスの下にあるものをすべて取得
     const collisions = pointerWithin(args);
@@ -317,17 +317,17 @@ export default function AppContent({ projectId }: { projectId: string }) {
       return [];
     }
 
-		const isActiveLabel = activeId.startsWith("label-");
+    const isActiveLabel = activeId.startsWith("label-");
 
     // ヒットしたものを ID の種類で仕分ける
     const cardCollisions = collisions.filter((c) => {
-			const cId = c.id.toString();
-			// 基本の除外（ボードやゴミ箱はカードではない）
-			if (cId.startsWith("board-") || cId === "trash") return false;
-			// 【重要】ラベルをドラッグ中の場合、静止している他のラベルは「透明」として扱う
-			if (isActiveLabel && cId.startsWith("label-")) return false;
-			return true;
-		});
+      const cId = c.id.toString();
+      // 基本の除外（ボードやゴミ箱はカードではない）
+      if (cId.startsWith("board-") || cId === "trash") return false;
+      // 【重要】ラベルをドラッグ中の場合、静止している他のラベルは「透明」として扱う
+      if (isActiveLabel && cId.startsWith("label-")) return false;
+      return true;
+    });
 
     const boardCollisions = collisions.filter((c) =>
       c.id.toString().startsWith("board-"),
@@ -451,7 +451,6 @@ export default function AppContent({ projectId }: { projectId: string }) {
           {/* <DebugInfo /> */}
           {/* <DebugCollision/> */}
         </DndContext>
-				<Toaster></Toaster>
       </div>
     </div>
   );

@@ -28,9 +28,7 @@ export const ProjectCard = ({
     <div className="relative group">
       {/* カード全体のリンク */}
       <Link href={`/task/${project.id}`} className="block">
-        <Card
-          className="relative z-10 p-4 transition-all hover:shadow-lg hover:border-primary/30 cursor-pointer"
-        >
+        <Card className="relative z-10 p-4 transition-all hover:shadow-lg hover:border-primary/30 cursor-pointer">
           <div className="flex items-start justify-between gap-2">
             {/* 左側：プロジェクト情報 */}
             <div className="flex flex-1 items-start gap-3">

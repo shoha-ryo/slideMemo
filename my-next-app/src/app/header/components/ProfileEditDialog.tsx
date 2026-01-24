@@ -27,15 +27,15 @@ export function ProfileEditDialog({ open, onOpenChange }: Props) {
   const [name, setName] = useState(user?.name || "");
   const [isPending, setIsPending] = useState(false);
 
-	// ダイアログが閉じられた時、強制的に body の pointer-events を復元する
-	useEffect(() => {
-		if (!open) {
-			const timer = setTimeout(() => {
-				document.body.style.pointerEvents = "auto";
-			}, 100); // ダイアログが消えるアニメーションを待ってから実行
-			return () => clearTimeout(timer);
-		}
-	}, [open]);
+  // ダイアログが閉じられた時、強制的に body の pointer-events を復元する
+  useEffect(() => {
+    if (!open) {
+      const timer = setTimeout(() => {
+        document.body.style.pointerEvents = "auto";
+      }, 100); // ダイアログが消えるアニメーションを待ってから実行
+      return () => clearTimeout(timer);
+    }
+  }, [open]);
 
   const handleSave = async () => {
     if (!user || !name.trim()) return;
@@ -66,7 +66,7 @@ export function ProfileEditDialog({ open, onOpenChange }: Props) {
             表示名などのアカウント情報を変更できます。
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="name">名前</Label>

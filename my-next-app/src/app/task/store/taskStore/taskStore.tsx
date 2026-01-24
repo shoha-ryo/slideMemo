@@ -32,7 +32,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   isTaskCreating: false,
   setIsTaskCreating: (isTaskCreating) => set({ isTaskCreating }),
 
-	userId: useUserStore.getState().user?.id,
+  userId: useUserStore.getState().user?.id,
   projectId: null,
   projectTitle: null,
   setProjectId: (projectId) => set({ projectId }),

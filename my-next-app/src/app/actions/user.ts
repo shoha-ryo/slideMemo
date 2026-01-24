@@ -1,9 +1,9 @@
 // src/app/actions/user.ts
-"use server"
+"use server";
 
 import { prisma } from "@/lib/prisma";
 
-export async function syncUserAction(data: { id: string, email: string }) {
+export async function syncUserAction(data: { id: string; email: string }) {
   try {
     // ユーザーが存在するか確認。いなければ作成（Upsert）。
     // 名前（name）はDB側で管理するため、更新(update)時には含めない。
@@ -22,7 +22,6 @@ export async function syncUserAction(data: { id: string, email: string }) {
     return { success: false, error: "Failed to sync user" };
   }
 }
-
 
 export async function updateUserNameAction(userId: string, newName: string) {
   try {

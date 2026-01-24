@@ -12,7 +12,11 @@ type ActivityLog = {
   action: "CREATE" | "UPDATE" | "DELETE";
 };
 
-export async function toDataBase(diffTasks: ToDataBase, projectId: string, userId: string) {
+export async function toDataBase(
+  diffTasks: ToDataBase,
+  projectId: string,
+  userId: string,
+) {
   const { createTasks, updateTasks, deleteTasks } = diffTasks;
   let lastSyncAt: number = 0;
 
@@ -303,7 +307,7 @@ export async function toDataBase(diffTasks: ToDataBase, projectId: string, userI
     pusherServer.trigger(`project-${projectId}`, "task-updated", {
       diffTasks: diffTasks,
       lastSyncAt: lastSyncAt,
-			userId: userId
+      userId: userId,
     });
 
     return { success: true };

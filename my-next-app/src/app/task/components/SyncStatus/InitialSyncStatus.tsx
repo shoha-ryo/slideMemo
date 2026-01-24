@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { RefreshCcw, CheckCircle2, Loader2, AlertCircle} from "lucide-react";
+import { RefreshCcw, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
 import { TaskStore } from "../../store/taskStore/types/TasksType";
 
-type SyncStatus = TaskStore["syncStatus"]
+type SyncStatus = TaskStore["syncStatus"];
 
 type Props = {
   status: SyncStatus;
@@ -17,8 +17,6 @@ export const SyncStatusBadge = ({ status }: Props) => {
         setIsExiting(true); // 1.5秒後に消えるアニメーションを開始
       }, 1500);
       return () => clearTimeout(timer);
-    } else {
-      setIsExiting(false);
     }
   }, [status]);
 
@@ -34,9 +32,24 @@ export const SyncStatusBadge = ({ status }: Props) => {
         <span className="flex items-center">
           サーバー同期中
           <span className="flex ml-0.5">
-            <span className="animate-bounce-subtle" style={{ animationDelay: '0ms' }}>.</span>
-            <span className="animate-bounce-subtle" style={{ animationDelay: '200ms' }}>.</span>
-            <span className="animate-bounce-subtle" style={{ animationDelay: '400ms' }}>.</span>
+            <span
+              className="animate-bounce-subtle"
+              style={{ animationDelay: "0ms" }}
+            >
+              .
+            </span>
+            <span
+              className="animate-bounce-subtle"
+              style={{ animationDelay: "200ms" }}
+            >
+              .
+            </span>
+            <span
+              className="animate-bounce-subtle"
+              style={{ animationDelay: "400ms" }}
+            >
+              .
+            </span>
           </span>
         </span>
       ),
@@ -47,7 +60,7 @@ export const SyncStatusBadge = ({ status }: Props) => {
       text: "同期完了",
       className: "text-foreground bg-background",
     },
-		failed: {
+    failed: {
       icon: <AlertCircle size={14} />,
       text: "サーバー同期失敗",
       className: "text-foreground bg-background",
@@ -79,8 +92,14 @@ export const SyncStatusBadge = ({ status }: Props) => {
       `}</style>
 
       {/* isExiting が true の時だけアニメーションを適用 */}
-      <div className={isExiting ? "animate-finish-exit" : "opacity-100 translate-y-0"}>
-        <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs w-40 font-medium transition-colors ${className}`}>
+      <div
+        className={
+          isExiting ? "animate-finish-exit" : "opacity-100 translate-y-0"
+        }
+      >
+        <div
+          className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs w-40 font-medium transition-colors ${className}`}
+        >
           {icon}
           <div className="whitespace-nowrap">{text}</div>
         </div>

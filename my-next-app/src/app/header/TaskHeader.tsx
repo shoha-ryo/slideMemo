@@ -23,13 +23,9 @@ export default function TaskHeader() {
   const { projectTitle, syncStatus } = useTaskStore(
     useShallow((state) => ({
       projectTitle: state.projectTitle,
-			syncStatus: state.syncStatus,
+      syncStatus: state.syncStatus,
     })),
   );
-
-  
-
-
 
   return (
     <header className="border-b border-border bg-background">
@@ -50,7 +46,10 @@ export default function TaskHeader() {
 
         {/* 右側 */}
         <div className="flex items-center gap-3">
-					<SyncStatusBadge status={syncStatus}></SyncStatusBadge>
+          <SyncStatusBadge
+            status={syncStatus}
+            key={syncStatus}
+          ></SyncStatusBadge>
           {/* 検索 */}
           <div className="relative">
             {isSearchOpen ? (
@@ -132,8 +131,8 @@ export default function TaskHeader() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-					{/* ユーザーメニュー */}
-          <UserMenu/>
+          {/* ユーザーメニュー */}
+          <UserMenu />
 
           {/* メニュー */}
           <Button variant="ghost" size="icon" className="h-9 w-9 md:hidden">

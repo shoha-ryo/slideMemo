@@ -9,7 +9,7 @@ export interface TaskStore extends AppState, Payload {
   setOverId: (overId: Pick<Payload, "overId">["overId"]) => void;
   setPayload: (payload: Payload) => void;
 
-	userId: string | undefined
+  userId: string | undefined;
   projectId: string | null;
   projectTitle: string | null;
   setProjectId: (projectId: string) => void;

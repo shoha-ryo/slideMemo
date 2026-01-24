@@ -5,7 +5,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* 親要素のどこかに「.dark」があればダークモードを適用してくれる */
 @custom-variant dark (&:is(.dark *));
 
@@ -41,28 +40,40 @@
   --color-board: var(--board); /* ボードの背景 */
   --color-board-foreground: var(--board-foreground); /* ボード内のテキスト */
 
-	--color-popover: var(--popover); /* メニューやツールチップの背景 */
-  --color-popover-foreground: var(--popover-foreground); /* メニュー内のテキスト */
+  --color-popover: var(--popover); /* メニューやツールチップの背景 */
+  --color-popover-foreground: var(
+    --popover-foreground
+  ); /* メニュー内のテキスト */
 
   /* =========================================
      アクション・状態 (Main Actions)
      ========================================= */
   --color-primary: var(--primary); /* 主要なアクションボタンの背景 */
-  --color-primary-foreground: var(--primary-foreground); /* プライマリボタン上のテキスト */
+  --color-primary-foreground: var(
+    --primary-foreground
+  ); /* プライマリボタン上のテキスト */
 
   --color-secondary: var(--secondary); /* 補助的なアクションの背景 */
   --color-secondary-foreground: var(--secondary-foreground);
 
   --color-muted: var(--muted); /* 非活性な領域、または控えめな背景 */
-  --color-muted-foreground: var(--muted-foreground); /* 補足、注釈、プレースホルダ等の薄いテキスト */
+  --color-muted-foreground: var(
+    --muted-foreground
+  ); /* 補足、注釈、プレースホルダ等の薄いテキスト */
 
   --color-accent: var(--accent); /* ホバー時や選択状態の強調背景 */
-  --color-accent-border: var(--accent-border); /* ホバー時や選択状態の強調背景 */
-  --color-accent-shadow: var(--accent-shadow); /* ホバー時や選択状態の強調背景 */
+  --color-accent-border: var(
+    --accent-border
+  ); /* ホバー時や選択状態の強調背景 */
+  --color-accent-shadow: var(
+    --accent-shadow
+  ); /* ホバー時や選択状態の強調背景 */
   --color-accent-foreground: var(--accent-foreground);
 
   --color-destructive: var(--destructive); /* 削除や警告などの背景 */
-  --color-destructive-foreground: var(--primary-foreground); /* 削除ボタン上のテキスト（共通化） */
+  --color-destructive-foreground: var(
+    --primary-foreground
+  ); /* 削除ボタン上のテキスト（共通化） */
 
   /* =========================================
      境界・入力・フォーカス (UI Elements)
@@ -170,13 +181,12 @@
   }
 }
 
-
 /* 出現：下からスライドイン */
-.custom-toast-animation[data-state='open'] {
+.custom-toast-animation[data-state="open"] {
   animation: slideIn 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 /* 消失：右へスライドアウト */
-.custom-toast-animation[data-state='closed'] {
+.custom-toast-animation[data-state="closed"] {
   animation: hide 200ms ease-in forwards;
 }
 @keyframes slideIn {
