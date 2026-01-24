@@ -1,6 +1,6 @@
 // Firebase 初期化用モジュール (例: src/lib/firebase.js)
 import { initializeApp, getApps } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
 
 // 環境変数から設定値を読み込む
 const firebaseConfig = {
@@ -22,3 +22,5 @@ if (!firebaseConfig.apiKey) {
 const app =
   getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
+export const githubProvider = new GithubAuthProvider();

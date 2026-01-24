@@ -1,7 +1,18 @@
 "use client";
 
+import {
+  AuthProvider,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
+import { auth, googleProvider, githubProvider } from "@/lib/firebase";
+
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+
+import { showToast } from "@/components/ui/CustomToaster";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
@@ -27,17 +38,10 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { FlowLogo } from "../../../../public/FLOW";
+import { FirebaseError } from "firebase/app";
 
 const registerSchema = z
   .object({
-    username: z
-      .string()
-      .min(2, "ユーザー名は2文字以上で入力してください")
-      .max(20, "ユーザー名は20文字以内で入力してください")
-      .regex(
-        /^[a-zA-Z0-9_-]+$/,
-        "ユーザー名は英数字、ハイフン、アンダースコアのみ使用できます",
-      ),
     email: z.string().email("有効なメールアドレスを入力してください"),
     password: z
       .string()
@@ -77,6 +81,7 @@ function calculatePasswordStrength(password: string): {
 }
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -88,7 +93,6 @@ export default function RegisterPage() {
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      username: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -116,14 +120,39 @@ export default function RegisterPage() {
 
   async function onSubmit(values: RegisterFormData) {
     setIsLoading(true);
-    // TODO: Implement actual registration logic
-    console.log("[v0] Registration attempt:", values);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    setIsLoading(false);
+    try {
+      await createUserWithEmailAndPassword(auth, values.email, values.password);
+      router.push("/home");
+    } catch (error) {
+      if (
+        error instanceof FirebaseError &&
+        error.code === "auth/email-already-in-use"
+      ) {
+        showToast("error", "このメールアドレスは既に登録されています");
+      } else {
+        showToast(
+          "error",
+          "登録に失敗しました。時間をおいて再度お試しください",
+        );
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }
+
+  // ソーシャルログイン用の関数
+  const handleSocialLogin = async (provider: AuthProvider) => {
+    setIsLoading(true);
+    try {
+      await signInWithPopup(auth, provider);
+      router.push("/home");
+    } catch (error) {
+      console.error("ソーシャルログインエラー:", error);
+      showToast("error", "登録に失敗しました。時間をおいて再度お試しください");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
@@ -141,20 +170,6 @@ export default function RegisterPage() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>ユーザー名</FormLabel>
-                    <FormControl>
-                      <Input placeholder="" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="email"
@@ -364,6 +379,7 @@ export default function RegisterPage() {
               variant="outline"
               className="w-full bg-transparent"
               disabled={isLoading}
+              onClick={() => handleSocialLogin(googleProvider)}
             >
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                 <path
@@ -390,6 +406,7 @@ export default function RegisterPage() {
               variant="outline"
               className="w-full bg-transparent"
               disabled={isLoading}
+              onClick={() => handleSocialLogin(githubProvider)}
             >
               <svg
                 className="mr-2 h-4 w-4"

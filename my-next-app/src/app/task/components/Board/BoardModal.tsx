@@ -95,20 +95,20 @@ export default function BoardModal() {
       }
 
       // 2. カーソルがどこにもない状態での Enter 保存
-      const activeEl = document.activeElement;
-      const isInputFocused =
-        activeEl?.tagName === "INPUT" || activeEl?.tagName === "TEXTAREA";
-      if (e.key === "Enter" && !e.shiftKey && !isInputFocused) {
-        e.preventDefault();
-        onSave();
-      }
+      // const activeEl = document.activeElement;
+      // const isInputFocused =
+      //   activeEl?.tagName === "INPUT" || activeEl?.tagName === "TEXTAREA";
+      // if (e.key === "Enter" && !e.shiftKey && !isInputFocused) {
+      //   e.preventDefault();
+      //   onSave();
+      // }
     };
 
     window.addEventListener("keydown", handleGlobalKeyDown);
     return () => {
       window.removeEventListener("keydown", handleGlobalKeyDown);
     };
-  }, [hideModal, onSave]); // 関数の参照が変わった時に再登録
+  }, [hideModal]); // 関数の参照が変わった時に再登録
 
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if ((e.target as HTMLElement).id === "modal-background") {
