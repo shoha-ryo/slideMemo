@@ -1,17 +1,6 @@
 "use client";
 
-// import { useState } from "react";
-// import { useRouter } from "next/navigation";
-// import { createUserWithEmailAndPassword } from "firebase/auth";
-// import { auth } from "@/lib/firebase";
-// import { syncUser } from "../actions/syncUser";
-
-// export default function SignUpPage() {
-
-// "use client"
-
-// import { useRouter } from "next/router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -96,12 +85,6 @@ export default function RegisterPage() {
     label: "",
     color: "",
   });
-
-  // const [email, setEmail] = useState("");
-  // const [error, setError] = useState<string | null>(null);
-  // const [loading, setLoading] = useState(false);
-  // const router = useRouter();
-
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -112,47 +95,16 @@ export default function RegisterPage() {
       agreeToTerms: false,
     },
   });
-
-  //   const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault(); // 再読み込みを停止させる（状態リセットや非同期処理の中断を防ぐため）
-  //   setError(null); // エラーメッセージをリセット（前回のエラーを表示させない）
-  //   setLoading(true);
-
-  //   try {
-  //     const userCredential = await createUserWithEmailAndPassword(
-  //       auth,
-  //       email,
-  //       password,
-  //     );
-  //     const user = userCredential.user;
-
-  //     await syncUser({
-  //       uid: user.uid,
-  //       email: user.email ?? "",
-  //       displayName: user.displayName ?? "名無しユーザー",
-  //     });
-  //     router.push("/dashboard");
-  //   } catch (err) {
-  //     if (err instanceof Error) {
-  //       setError(err.message);
-  //     } else {
-  //       setError("予期せぬエラーが発生しました");
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const password = form.watch("password");
+  const { isValid } = form.formState;
 
-  // Update password strength when password changes
-  useState(() => {
+  useEffect(() => {
     if (password) {
       setPasswordStrength(calculatePasswordStrength(password));
     } else {
       setPasswordStrength({ score: 0, label: "", color: "" });
     }
-  });
+  }, [password]);
 
   // Password requirements
   const requirements = [
@@ -264,7 +216,7 @@ export default function RegisterPage() {
                         <div className="flex items-center gap-2">
                           <Progress
                             value={passwordStrength.score}
-                            className="h-1.5"
+                            className={`h-1.5 ${passwordStrength.color}`}
                           />
                           <span className="text-xs text-muted-foreground">
                             {passwordStrength.label}
@@ -387,7 +339,11 @@ export default function RegisterPage() {
                 )}
               />
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isLoading || !isValid}
+              >
                 {isLoading ? "登録中..." : "アカウントを作成"}
               </Button>
             </form>
