@@ -30,7 +30,7 @@ import Board from "./components/Board/Board";
 import BoardList from "./components/Board/BoardList";
 import BoardModal from "./components/Board/BoardModal";
 import TrashDropArea, { TRASH_ID } from "./components/TrashArea/TrashDropArea"; // ★ 追加
-import { DraggableLabel } from "./components/Sidebar/Label/Label";
+import { DraggableLabel } from "./components/Label/Label";
 import { LabelSidebar } from "./components/Sidebar/Label/LabelSidebar";
 import { SideToolBar } from "./components/Sidebar/SaidToolMenu";
 
@@ -38,7 +38,7 @@ import { SideToolBar } from "./components/Sidebar/SaidToolMenu";
 import { SidebarType } from "./components/Sidebar/SaidToolMenu";
 
 // デバッグ
-// import { DebugInfo } from "./components/devOnly/DebugInfo";
+import { DebugInfo } from "./components/devOnly/DebugInfo";
 // import { DebugCollision } from "./components/devOnly/DebugCollision";
 
 // 操作
@@ -448,7 +448,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
           </div>
 
           {/* デバッグ情報 */}
-          {/* <DebugInfo /> */}
+          <DebugInfo />
           {/* <DebugCollision/> */}
         </DndContext>
       </div>

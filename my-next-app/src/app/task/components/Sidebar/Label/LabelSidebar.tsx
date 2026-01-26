@@ -1,6 +1,6 @@
 import { useState } from "react"; // useStateを追加
 import { LabelType } from "../../../store/taskStore/types/TasksType";
-import { DraggableLabel } from "./Label";
+import { DraggableLabel } from "../../Label/Label";
 import { Plus, X } from "lucide-react";
 import { CreateLabelModal } from "./CreateLabelModal";
 import { SidebarType } from "../SaidToolMenu";
@@ -32,7 +32,7 @@ export const LabelSidebar = ({ onToggle, labels }: Props) => {
 
         {/* ラベルリストエリア */}
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-1.5 scale-125 m-5">
             {Object.values(labels).map((label) => (
               <DraggableLabel key={label.id} label={label} cardId="master" />
             ))}

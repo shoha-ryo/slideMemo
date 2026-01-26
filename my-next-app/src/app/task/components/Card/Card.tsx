@@ -2,6 +2,8 @@
 
 import { useState, useRef } from "react";
 import { useDraggable, useDroppable, useDndContext } from "@dnd-kit/core";
+import { MagneticLabel } from "../Label/MagneticLabel";
+
 import { useTaskStore } from "../../store/taskStore/taskStore";
 import { useModalStore } from "../../store/ModalStore";
 import FormattedText from "./FormattedText";
@@ -9,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useShallow } from "zustand/shallow";
 import DraftTask from "./DraftTask";
 import { handleKeyDown } from "../../actions/handler";
-import { DraggableLabel } from "../Sidebar/Label/Label";
+import { DraggableLabel } from "../Label/Label";
 import { ToolTip } from "@/components/ui/ToolTip";
 
 // Draggable/Droppable コンポーネント
@@ -153,18 +155,20 @@ const Card = ({ cardId }: { cardId: string }) => {
               ) : null}
 
               {/* ラベル */}
-              <div className="flex flex-wrap -space-x-2">
-                {card.labelIds.map((labelId) => (
-                  <div
-                    className="scale-75 origin-left max-w-full"
-                    key={`${labelId}_${cardId}`}
-                  >
-                    <DraggableLabel
-                      label={labels[labelId]}
-                      cardId={cardId}
-                    ></DraggableLabel>
-                  </div>
-                ))}
+              <div className="flex flex-wrap space-x-2">
+									{card.labelIds.map((labelId) => (
+										<MagneticLabel key={labelId}>
+										<div
+										className="origin-left mt-2 max-w-full hover:scale-120"
+										key={`${labelId}_${cardId}`}
+										>
+											<DraggableLabel
+												label={labels[labelId]}
+												cardId={cardId}
+												></DraggableLabel>
+										</div>
+										</MagneticLabel>
+									))}
               </div>
             </div>
             {/* ホバー時のボタンチラつき防止 */}

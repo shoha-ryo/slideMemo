@@ -3,7 +3,7 @@ import { useTaskStore } from "@/app/task/store/taskStore/taskStore";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { Palette } from "lucide-react";
-import { DraggableLabel } from "./Label";
+import { DraggableLabel } from "../../Label/Label";
 import { LabelType } from "@/app/task/store/taskStore/types/TasksType";
 import { Pipette } from "lucide-react";
 
@@ -87,7 +87,7 @@ export const CreateLabelModal = ({
           <span className="mb-4 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
             Preview
           </span>
-          <div className="pointer-events-none max-w-full px-12 scale-125 transition-transform">
+          <div className="pointer-events-none max-w-full px-12 scale-160 transition-transform">
             <DraggableLabel label={previewLabel} cardId="preview" />
           </div>
         </div>

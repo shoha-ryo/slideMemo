@@ -1,7 +1,7 @@
 // src/app/task/components/Label/DraggableLabel.tsx
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
-import { LabelType } from "../../../store/taskStore/types/TasksType";
+import { LabelType } from "../../store/taskStore/types/TasksType";
 
 type Props = {
   label: LabelType;
@@ -41,13 +41,13 @@ export const DraggableLabel = ({ label, cardId }: Props) => {
       {...attributes}
       {...listeners}
       className={`
-				px-2.5 py-1
+				px-1.5 py-0.5
         border rounded-4xl
-        text-xs font-bold
+        text-[9px] font-bold
         cursor-grab select-none
         whitespace-nowrap truncate
 				transition-transform duration-200
-        hover:ring-2
+        hover:ring-2 hover:shadow-color
 			`}
     >
       {label.name}
