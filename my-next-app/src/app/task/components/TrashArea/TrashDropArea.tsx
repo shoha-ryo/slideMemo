@@ -1,18 +1,15 @@
-import React from "react";
+import { useDndContext } from "@dnd-kit/core";
 import { useDroppable } from "@dnd-kit/core";
 import { Trash2 } from "lucide-react";
 
 export const TRASH_ID = "trash-drop-area";
 
-type Props = {
-  isVisible: boolean; // ドラッグ中かどうか
-};
-
-export default function TrashDropArea({ isVisible }: Props) {
+export default function TrashDropArea() {
   // ドロップ可能エリアとして登録
   const { setNodeRef, isOver } = useDroppable({
     id: TRASH_ID,
   });
+	const {active} = useDndContext()
 
   return (
     <div
@@ -32,8 +29,8 @@ export default function TrashDropArea({ isVisible }: Props) {
         fontWeight: "bold",
         zIndex: 100, // DragOverlayよりは下、ボードよりは上にする
         transition: "transform 0.3s ease-in-out", // スライドアニメーション
-        transform: isVisible ? "translateY(0)" : "translateY(100%)", // 表示・非表示の切り替え
-        pointerEvents: isVisible ? "auto" : "none", // 非表示時はクリック等を無効化
+        transform:  active ? "translateY(0)" : "translateY(100%)", // 表示・非表示の切り替え
+        pointerEvents: active ? "auto" : "none", // 非表示時はクリック等を無効化
       }}
     >
       <Trash2 size={35}></Trash2>

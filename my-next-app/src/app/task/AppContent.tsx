@@ -383,7 +383,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
           sensors={sensors}
         >
           {/* ゴミ箱エリア */}
-          <TrashDropArea isVisible={!!activeId} />
+          <TrashDropArea/>
 
           <div className="flex h-full w-full overflow-auto">
             {/* ツールバー */}
@@ -448,7 +448,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
           </div>
 
           {/* デバッグ情報 */}
-          <DebugInfo />
+          {/* <DebugInfo /> */}
           {/* <DebugCollision/> */}
         </DndContext>
       </div>
