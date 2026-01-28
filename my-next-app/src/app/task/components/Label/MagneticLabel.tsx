@@ -26,11 +26,10 @@ export const MagneticLabel: React.FC<MagneticLabelProps> = ({
 	const springY = useSpring(mouseY, springConfig);
 
 	// useTransformを使用して、移動量に「上限」または「カーブ」を設ける
-	// 例：マウスが50px動いても、ラベルは30px程度で減速して追従するように設定
 	const x = useTransform(springX, (latest) => {
-		return latest * 0.5; // 横軸は移動早め
+		return latest * 0.1; // 横軸移動
 	});
-	const y = useTransform(springY, (latest) => latest * 0.1); // 縦軸は移動遅め
+	const y = useTransform(springY, (latest) => latest * 0.1); // 縦軸移動
 
 	const handleMouseMove = useCallback((e: React.MouseEvent) => {
 		if (!ref.current) return;

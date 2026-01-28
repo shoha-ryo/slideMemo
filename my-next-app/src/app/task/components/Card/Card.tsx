@@ -121,7 +121,7 @@ const Card = ({ cardId }: { cardId: string }) => {
           "box-shadow 0.3s ease-in-out, transform 0.2s, background-color 0.2s",
       }}
       className={`card relative
-				p-2.5 pl-2.5 mb-1.25 ml-1 mr-1
+				p-1.5 pl-2.5 mb-1.25 ml-1 mr-1
 				border rounded-lg
 				${hoveredStyle}
 				${draggableStyle}
@@ -158,15 +158,17 @@ const Card = ({ cardId }: { cardId: string }) => {
               <div className="flex flex-wrap space-x-2">
 									{card.labelIds.map((labelId) => (
 										<MagneticLabel key={labelId}>
-										<div
-										className="origin-left mt-2 max-w-full hover:scale-120"
-										key={`${labelId}_${cardId}`}
-										>
-											<DraggableLabel
-												label={labels[labelId]}
-												cardId={cardId}
-												></DraggableLabel>
-										</div>
+											<div
+											className="
+												relative origin-left mt-2 max-w-full hover:scale-120"
+											key={`${labelId}_${cardId}`}
+											>
+												<DraggableLabel
+													label={labels[labelId]}
+													cardId={cardId}
+													size={{top: 5, bottom: 5, left: 2, right: 2}}
+													></DraggableLabel>
+											</div>
 										</MagneticLabel>
 									))}
               </div>
