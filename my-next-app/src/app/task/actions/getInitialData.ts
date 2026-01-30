@@ -28,17 +28,22 @@ export async function getInitialData(
   // 1. 基本的なプロジェクト情報の取得
   // lastSyncAtが0の場合は、ログではなく実データを全部持ってくる
   const project = await prisma.project.findFirst({
-    where: { id: projectId, userId: userId },
+    where: {
+      id: projectId,
+      members: {
+        some: {
+          userId: userId,
+          status: "ACTIVE", // 招待中の人はまだデータを落とせないようにガード
+        },
+      },
+    },
     include: {
-      // 0 の場合は実データを一括取得、そうでなければ空（後でログから取る）
       boards: lastSyncAt === 0,
       cards:
         lastSyncAt === 0
-          ? {
-              include: { labels: true },
-            }
+          ? { include: { labels: true } }
           : false,
-      labels: true, //lastSyncAt === 0, ラベルの変更も後でログに保存しよう
+      labels: true,
       activityLog: {
         where: { createdAt: { gt: new Date(lastSyncAt) } },
         orderBy: { createdAt: "asc" },
@@ -46,7 +51,9 @@ export async function getInitialData(
     },
   });
 
-  if (!project) throw new Error("Project not found");
+  if (!project) {
+    throw new Error("Project not found or Access denied");
+  }
 
   // フォーマッター関数
   const formatCard = (c: CardWithLabels) => {
@@ -162,19 +169,18 @@ export async function getInitialData(
     new Set([...ids.label.create, ...ids.label.update]),
   );
   // projectからまとめて取得
-  const refreshedData = await prisma.project.findUnique({
-    where: { id: projectId },
+  const refreshedData = await prisma.project.findFirst({
+    where: {
+      id: projectId,
+      members: { some: { userId: userId, status: "ACTIVE" } }
+    },
     select: {
-      boards: {
-        where: { id: { in: targetBoardIds } },
-      },
+      boards: { where: { id: { in: targetBoardIds } } },
       cards: {
         where: { id: { in: targetCardIds } },
         include: { labels: true },
       },
-      labels: {
-        where: { id: { in: targetLabelIds } },
-      },
+      labels: { where: { id: { in: targetLabelIds } } },
     },
   });
 

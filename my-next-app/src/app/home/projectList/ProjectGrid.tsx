@@ -37,42 +37,76 @@ export function ProjectGrid() {
   const [projectToEdit, setProjectToEdit] = useState<ProjectTo>(null);
 
   // 2. 最新順（createdAtの降順）にソートして監視
-  const projects =
-    useLiveQuery(async () => {
-      if (!userId) return [];
-      // createdAt でソートし、reverse() で最新を上にする
-      return await db.projects
-        .where("userId")
-        .equals(userId)
-        .sortBy("createdAt")
-        .then((items) => items.reverse());
-    }, [userId]) || [];
+  const projects = useLiveQuery(async () => {
+		if (!userId) return [];
 
-  // 3. 認証とサーバー同期 (修正なし)
-  useEffect(() => {
-    useTaskStore.setState({ syncStatus: "syncing" });
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUserId(user.uid);
-        const result = await getProjects(user.uid);
-        if (result.success && result.data) {
-          const projectsToSave = result.data.map((p) => ({
-            ...p,
-            createdAt:
-              p.createdAt instanceof Date ? p.createdAt.getTime() : p.createdAt,
-            updatedAt:
-              p.updatedAt instanceof Date ? p.updatedAt.getTime() : p.updatedAt,
-          }));
-          await db.projects.bulkPut(projectsToSave);
-        }
-        useTaskStore.setState({ syncStatus: "synced" });
-      } else {
-        setUserId("");
-        useTaskStore.setState({ syncStatus: "failed" });
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+		// 1. 自分がメンバー登録されているレコードをすべて取得
+		const myMemberships = await db.projectMembers
+			.where("userId")
+			.equals(userId)
+			.toArray();
+		if (myMemberships.length === 0) return [];
+		// 2. 取得した projectId の配列を作る
+		const projectIds = myMemberships.map((m) => m.projectId);
+		// 3. projects テーブルから、該当するプロジェクト本体をまとめて取得
+		const projectEntities = await db.projects.bulkGet(projectIds);
+		// 4. プロジェクト情報に自分のメンバー情報を付与して整形
+		const combinedProjects = myMemberships
+			.map((membership) => {
+				const project = projectEntities.find((p) => p?.id === membership.projectId);
+				if (!project) return null;
+				return {
+					...project,
+					myRole: membership.role,
+					myStatus: membership.status,
+				};
+			})
+			.filter((p): p is NonNullable<typeof p> => p !== null) // 削除済み等のゴミデータ除外
+			.sort((a, b) => b.createdAt - a.createdAt); // 最新順にソート
+		return combinedProjects;
+	}, [userId]) || [];
+
+  // 3. firebase認証＆prisma取得→Dexie保存
+	useEffect(() => {
+		useTaskStore.setState({ syncStatus: "syncing" });
+		const unsubscribe = onAuthStateChanged(auth, async (user) => {
+			if (user) {
+				setUserId(user.uid);
+				const result = await getProjects(user.uid);
+				if (result.success && result.data) {
+					// 1. プロジェクト本体だけを抽出してお掃除 (myRoleなどを除外)
+					const projectsToSave = result.data.map(({ myRole, myStatus, ...p }) => ({
+						...p,
+						createdAt: p.createdAt instanceof Date ? p.createdAt.getTime() : p.createdAt,
+						updatedAt: p.updatedAt instanceof Date ? p.updatedAt.getTime() : p.updatedAt,
+					}));
+					// 2. メンバーシップ情報を抽出
+					const membersToSave = result.data.map((p) => ({
+						id: `${p.id}_${user.uid}`, // 複合キー的なID
+						projectId: p.id,
+						userId: user.uid,
+						role: p.myRole,
+						status: p.myStatus,
+					}));
+					try {
+						// トランザクションで両方のテーブルに保存
+						await db.transaction("rw", [db.projects, db.projectMembers], async () => {
+							await db.projects.bulkPut(projectsToSave);
+							await db.projectMembers.bulkPut(membersToSave);
+						});
+						useTaskStore.setState({ syncStatus: "synced" });
+					} catch (err) {
+						console.error("Dexie Save Error:", err);
+						useTaskStore.setState({ syncStatus: "failed" });
+					}
+				}
+			} else {
+				setUserId("");
+				useTaskStore.setState({ syncStatus: "failed" });
+			}
+		});
+		return () => unsubscribe();
+	}, []);
 
   // 4. 追加：まずDBに書き込む。UIは自動で付いてくる
   const handleAddProject = async () => {
@@ -123,7 +157,7 @@ export function ProjectGrid() {
     await db.projects.delete(id);
     setProjectToDelete(null);
 
-    await deleteProject(id);
+    await deleteProject(id, userId);
   };
 
   return (
@@ -143,7 +177,7 @@ export function ProjectGrid() {
         </Button>
       </div>
 
-      {/* Add Project Form */}
+      {/* プロジェクト追加 */}
       {isAddingProject && (
         <Card className="mb-6 p-4">
           <div className="flex flex-col gap-3">
@@ -183,7 +217,7 @@ export function ProjectGrid() {
         </Card>
       )}
 
-      {/* Projects Grid */}
+      {/* プロジェクト一覧 */}
       <div
         className="grid gap-4"
         style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}

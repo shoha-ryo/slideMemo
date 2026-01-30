@@ -10,17 +10,19 @@ generator client {
 
 
 model User {
-  id        String    @id // firebaseのuidで管理
-  email     String    @unique
-  name      String?
-  projects  Project[] // 1人のユーザーは複数のプロジェクトを持つ
+  id          String    @id // firebaseのuidで管理
+  email       String    @unique
+  name        String?
+  projects    Project[] // todo:後で削除 1人のユーザーは複数のプロジェクトを持つ
+	memberships ProjectMember[]
 }
 
 model Project {
   id          String      @id @default(cuid())
 	title       String
-	userId      String   // プロジェクトの作成者
-	user        User     @relation(fields: [userId], references: [id])
+	userId      String   // todo:プロジェクトの作成者
+	user        User     @relation(fields: [userId], references: [id]) // todo: Userとのリレーション
+	members     ProjectMember[]  // 所属しているメンバー一覧
 	activityLog ActivityLog[]
   boardOrder  String[] // ボードの並び順（IDの配列）
 	boards      Board[]
@@ -28,6 +30,29 @@ model Project {
 	labels      Label[]
 	createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt @default(now())
+}
+
+model ProjectMember {
+  id         String       @id @default(uuid())
+  role       MemberRole   @default(VIEWER) //最初は使わない
+	status     MemberStatus @default(INVITED) // デフォは招待中から
+  project    Project      @relation(fields: [projectId], references: [id])
+  projectId  String
+  user       User         @relation(fields: [userId], references: [id])
+  userId     String
+
+  @@unique([projectId, userId]) // 重複参加を防止
+}
+enum MemberRole {
+  OWNER       // プロジェクト管理まで(削除など)
+  ADMIN       // メンバー管理まで(招待・権限変更)
+  EDITOR      // コンテンツ編集まで(CRUD)
+  VIEWER      // 閲覧のみ
+}
+enum MemberStatus { // ロールと分離させることで招待の段階でロールを設定できる。
+  INVITED     // 招待中
+  ACTIVE      // 参加中
+  DEACTIVATED // 無効化 (抜けたとしてもユーザーの履歴が必要な場合に使用)
 }
 
 model Board {
@@ -105,3 +130,4 @@ model Label {
   createdAt DateTime @default(now())
 	updatedAt DateTime @updatedAt @default(now())
 }
+

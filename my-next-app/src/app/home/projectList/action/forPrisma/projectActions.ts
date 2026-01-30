@@ -13,11 +13,20 @@ export async function createProject(
       data: {
         id: projectId,
         title: title,
-        userId: userId,
-        boardOrder: [], // 初期状態は空
+        userId: userId, // 作成者ID
+        boardOrder: [],
+        members: {
+          create: {
+            userId: userId,
+            role: "OWNER",
+            status: "ACTIVE", // 作成者は即アクティブ
+          },
+        },
       },
+      include: {
+        members: true, // メンバー情報も含めて返す
+      }
     });
-
     // ダッシュボードのデータを最新にする（キャッシュ更新）
     revalidatePath("/home");
     return { success: true, project: newProject };
@@ -29,11 +38,25 @@ export async function createProject(
 
 export async function getProjects(userId: string) {
   try {
-    const projects = await prisma.project.findMany({
+    // userIdがProjectMemberに含まれているプロジェクトをすべて取得
+    const memberships = await prisma.projectMember.findMany({
       where: { userId: userId },
-      orderBy: { id: "asc" }, // 取得順を安定させる
+      include: {
+        project: true, // リレーション先のプロジェクト本体を取得
+      },
+      orderBy: {
+        project: { id: "asc" },
+      },
     });
-    return { success: true, data: projects };
+
+    // フロントエンドで扱いやすいように「プロジェクト情報 + 自分の権限」の形に整形
+    const data = memberships.map((m) => ({
+      ...m.project,
+      myRole: m.role,
+      myStatus: m.status,
+    }));
+
+    return { success: true, data };
   } catch (error) {
     console.error("Fetch projects error:", error);
     return { success: false, error: "取得に失敗しました" };
@@ -46,19 +69,23 @@ export async function updateProjectTitle(
   newTitle: string,
 ) {
   try {
-    const updatedProject = await prisma.project.update({
+    // 権限チェック：そのプロジェクトのメンバーであり、かつEDITOR以上のロールを持っているか
+    const member = await prisma.projectMember.findUnique({
       where: {
-        id: projectId,
-        userId: userId, // 権限チェック（本人のプロジェクトのみ更新可能）
-      },
-      data: {
-        title: newTitle,
+        projectId_userId: { projectId, userId },
       },
     });
 
-    // 画面のデータを最新にする
-    revalidatePath("/home");
+    if (!member || (member.role !== "OWNER" && member.role !== "ADMIN")) {
+      return { success: false, error: "更新権限がありません" };
+    }
 
+    const updatedProject = await prisma.project.update({
+      where: { id: projectId },
+      data: { title: newTitle },
+    });
+
+    revalidatePath("/home");
     return { success: true, project: updatedProject };
   } catch (error) {
     console.error("Project update error:", error);
@@ -66,19 +93,25 @@ export async function updateProjectTitle(
   }
 }
 
-export async function deleteProject(projectId: string) {
+export async function deleteProject(projectId: string, userId: string) {
   try {
-    // 1. プロジェクトを削除
-    // カード・ボードのCascadeは有効
-    await prisma.project.delete({
+    // 権限チェック：OWNERのみ削除可能
+    const member = await prisma.projectMember.findUnique({
       where: {
-        id: projectId,
+        projectId_userId: { projectId, userId },
       },
     });
 
-    // 2. キャッシュを更新して画面を最新状態にする
-    revalidatePath("/home");
+    if (!member || member.role !== "OWNER") {
+      return { success: false, error: "プロジェクトを削除する権限がありません" };
+    }
 
+    // プロジェクトを削除（ProjectMemberもCascadeで削除されるようにスキーマを設定している前提）
+    await prisma.project.delete({
+      where: { id: projectId },
+    });
+
+    revalidatePath("/home");
     return { success: true };
   } catch (error) {
     console.error("Project deletion error:", error);

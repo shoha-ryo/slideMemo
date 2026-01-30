@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Bell, Settings, Menu } from "lucide-react";
+import { Search, Bell, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,6 +17,7 @@ import { useShallow } from "zustand/shallow";
 import Link from "next/link";
 import { SyncStatusBadge } from "../task/components/SyncStatus/InitialSyncStatus";
 import { UserMenu } from "./components/UserMenu";
+import { SettingMenu } from "./components/SettingMenu";
 
 export default function TaskHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -116,20 +117,7 @@ export default function TaskHeader() {
           </DropdownMenu>
 
           {/* 設定 */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9">
-                <Settings className="h-4 w-4" />
-                <span className="sr-only">設定</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>プロジェクト設定</DropdownMenuItem>
-              <DropdownMenuItem>チーム管理</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>環境設定</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+					<SettingMenu/>
 
           {/* ユーザーメニュー */}
           <UserMenu />

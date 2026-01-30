@@ -125,7 +125,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
   useEffect(() => {
     const user = auth.currentUser;
     if (user) {
-      initializeProject(user.uid, projectId); // ストアのサーバー→ローカルまで一元管理
+      initializeProject(user.uid, projectId); // ローカル読み出し→サーバーから取得→ローカル保存まで一元管理
       setProjectId(projectId);
     }
 
@@ -439,10 +439,12 @@ export default function AppContent({ projectId }: { projectId: string }) {
                 <Board board={boards[activeId]}></Board>
               ) : null}
               {activeOriginalLabelId && labels[activeOriginalLabelId] ? (
-                <DraggableLabel
-                  label={labels[activeOriginalLabelId]}
-                  cardId="overlay"
-                ></DraggableLabel>
+                <div className="scale-125 max-w-50">
+									<DraggableLabel
+									label={labels[activeOriginalLabelId]}
+									cardId="overlay"
+									></DraggableLabel>
+								</div>
               ) : null}
             </DragOverlay>
           </div>
