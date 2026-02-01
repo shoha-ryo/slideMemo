@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { User, Settings, Trash2, UserPlus, Loader2 } from "lucide-react";
+import { User, Settings, Trash2, UserPlus, Loader2, X } from "lucide-react";
 import { MemberRole, MemberStatus } from "@prisma/client";
 import { getProjectMembers } from "../actions/memberActions";
 import { db } from "../../../../dexie/dexie";
 import { useTaskStore } from "@/app/task/store/taskStore/taskStore";
+import { InviteLinkGenerator } from "./InviteLinkGenerator";
+
 
 export const getMyRoleInProject = async (projectId: string) => {
   // 複合インデックス [projectId+userId] を使用して高速検索
@@ -29,6 +31,7 @@ export const MemberManagement = () => {
   // 初期値を空配列にすることで .map のエラーを回避
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
+	const [showInviteGenerator, setShowInviteGenerator] = useState(false);
 	const [currentUserRole, setCurrentUserRole] = useState<MemberRole>()
 	const {projectId, userId} = useTaskStore.getState()
 
@@ -62,17 +65,39 @@ export const MemberManagement = () => {
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-      {/* ...ヘッダー部分はそのまま... */}
+      {/* ヘッダー */}
       <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
         <h3 className="font-bold text-slate-700 flex items-center gap-2">
           <User className="w-4 h-4" /> メンバー管理
         </h3>
         {canManage && (
-          <button className="flex items-center gap-1 text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700">
-            <UserPlus className="w-4 h-4" /> 招待
+          <button 
+            onClick={() => setShowInviteGenerator(!showInviteGenerator)}
+            className={`flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg transition ${
+              showInviteGenerator 
+                ? "bg-slate-200 text-slate-600 hover:bg-slate-300" 
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
+          >
+            {showInviteGenerator ? <X className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
+            {showInviteGenerator ? "閉じる" : "招待"}
           </button>
         )}
       </div>
+			{/* 招待URL生成エリア (条件付きレンダリング) */}
+			<div 
+				className={`grid transition-all duration-300 ease-in-out ${
+					showInviteGenerator && projectId
+						? "grid-rows-[1fr] opacity-100 border-b border-slate-100 bg-blue-50/30" 
+						: "grid-rows-[0fr] opacity-0"
+				}`}
+			>
+				<div className="overflow-hidden">
+					<div className="p-4">
+						{projectId && <InviteLinkGenerator />}
+					</div>
+				</div>
+			</div>
 
       <table className="w-full text-left border-collapse">
         {/* ...thead部分はそのまま... */}

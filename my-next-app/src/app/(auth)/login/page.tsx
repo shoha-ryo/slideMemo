@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { db } from "../../../../dexie/dexie";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -56,11 +57,22 @@ export default function LoginPage() {
 
   async function onSubmit(values: LoginFormData) {
     setIsLoading(true);
-    setError(null); // エラーメッセージをリセット（前回のエラーを表示させない）
+    setError(null);
 
     const { email, password } = values;
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+			// firebaseから取得
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      // ここでDexieに保存
+      await db.userMeta.put({
+        id: "current",
+        uid: user.uid,
+        email: user.email,
+        name: user.displayName,
+        photoURL: user.photoURL,
+        updatedAt: Date.now(),
+      });
       router.push("/home");
     } catch (err) {
       if (err instanceof Error) {

@@ -61,6 +61,15 @@ export interface SyncMeta {
   lastSyncAt: number; // 最後にサーバーと成功したUnixタイムスタンプ
 }
 
+export interface UserMeta {
+  id: "current"; // 常に "current" という文字列を入れる
+  uid: string;
+  email: string | null;
+  name?: string | null;
+  photoURL?: string | null;
+  updatedAt: number;
+}
+
 export class TaskFlowDB extends Dexie {
   projects!: Table<ProjectEntity>;
 	projectMembers!: Table<ProjectMemberEntity>
@@ -68,19 +77,21 @@ export class TaskFlowDB extends Dexie {
   cards!: Table<CardEntity>;
   labels!: Table<LabelEntity>;
   syncMeta!: Table<SyncMeta>;
+	userMeta!: Table<UserMeta>;
 
   constructor() {
     super("TaskFlowDB");
 
     // stores の定義（カンマ区切りで最初に書くのがプライマリキー）
     // 2つ目以降は「検索（Index）」対象にしたいキー
-    this.version(9).stores({
+    this.version(10).stores({
       projects: "id, userId",
 			projectMembers: "id, projectId, userId, [projectId+userId]",
       boards: "id, projectId",
       cards: "id, boardId, parentId, projectId", // 親子関係やボード移動の高速化
       labels: "id, projectId",
       syncMeta: "id", // プロジェクトIDをキーにして最終同期時刻を引けるようにする
+			userMeta: "id, uid, email",
     });
   }
 }

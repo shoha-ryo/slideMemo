@@ -153,13 +153,13 @@ export default function AppContent({ projectId }: { projectId: string }) {
         if (payload.userId === userId) {
           showToast("success", "正常に同期されました");
         } else {
-          console.log("送信：", payload.userId, "自分：", userId);
-          showToast("info", "他のユーザーが更新しました");
+          // console.log("送信：", payload.userId, "自分：", userId);
           const { diffTasks, lastSyncAt } = payload;
-          if (!userId || !projectTitle) return;
+          if (!userId) return;
           applyDiff(diffTasks, userId);
           toLocalDataBase(diffTasks, projectId);
           updateLocalSyncMeta(lastSyncAt, projectId);
+          showToast("info", "他のユーザーが更新しました");
         }
       },
     );

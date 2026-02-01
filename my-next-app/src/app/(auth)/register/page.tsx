@@ -6,6 +6,7 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth, googleProvider, githubProvider } from "@/lib/firebase";
+import { db } from "../../../../dexie/dexie";
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -121,8 +122,18 @@ export default function RegisterPage() {
   async function onSubmit(values: RegisterFormData) {
     setIsLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, values.email, values.password);
-      router.push("/home");
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const user = userCredential.user;
+						// ここでDexieに保存
+						await db.userMeta.put({
+							id: "current",
+							uid: user.uid,
+							email: user.email,
+							name: user.displayName,
+							photoURL: user.photoURL,
+							updatedAt: Date.now(),
+						});
+			router.push("/home");
     } catch (error) {
       if (
         error instanceof FirebaseError &&
