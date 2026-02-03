@@ -51,7 +51,7 @@ export default function Board({ board }: { board: BoardType }) {
   const droppableStyle =
     isOver &&
     !isActive &&
-    (activeId?.includes("-card") || activeId?.includes("-board"))
+    (activeId?.startsWith("card") || activeId?.startsWith("board"))
       ? "ring-2 ring-accent-border"
       : "";
   const hoveredStyle = isHovered ? "shadow-xl" : "";

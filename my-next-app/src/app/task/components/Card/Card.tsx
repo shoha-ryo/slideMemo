@@ -51,17 +51,18 @@ const Card = ({ cardId }: { cardId: string }) => {
     : isActive
       ? "opacity-20 cursor-grabbing" // 掴んでいる時
       : "cursor-grab"; // 掴んでいない時
-  const droppableStyle =
-    isOver && !isActive
-      ? dropPosition === "top" && activeId?.includes("card-")
-        ? "ring-2 ring-accent-border bg-accent/30" // 上部
-        : dropPosition === "bottom" && activeId?.includes("card-")
-          ? "ring-2 ring-accent-border bg-accent/30" // 下部
-          : "ring-4 ring-accent-border bg-accent/30" // 真ん中
-      : "bg-card border"; // ホバーしていない、または自分が動いている時
+
+	const isActiveLabel = activeId?.includes("label-");
+	const isActiveCard = activeId?.includes("card-");
+	const droppableStyle =
+		isOver && !isActive && (isActiveCard || isActiveLabel)
+			? (isActiveLabel || dropPosition === "center") // ラベル中、またはカードで中央の時
+				? "bg-accent/30"
+				: "bg-accent/30"   // カードで上部・下部の時
+			: "bg-card border";
 
   // 1. 各状態の影を個別に定義
-  const isTarget = isOver && !isActive && activeId?.includes("card-");
+  const isTarget = isOver && !isActive && activeId?.startsWith("card-");
   // A: ドラッグ挿入位置のインジケーター (内側の線)
   let indicatorShadow = "inset 0 0 0 0 transparent";
   if (isTarget && activeId?.startsWith("card-")) {
@@ -74,9 +75,11 @@ const Card = ({ cardId }: { cardId: string }) => {
   }
   // B: 枠線 (ホバー時またはターゲット時に表示)
   const ringShadow =
-    isHovered || isTarget
-      ? "inset 0 0 0 2px var(--accent-border)"
-      : "inset 0 0 0 0 transparent";
+  isHovered || (isOver && !isActive)
+    ? (isActiveLabel || (isTarget && dropPosition === "center"))
+      ? "inset 0 0 0 3px var(--accent-border)" // ラベルなら太く
+      : "inset 0 0 0 2px var(--accent-border)" // それ以外（ホバーなど）は2px
+    : "inset 0 0 0 0 transparent";
   // C: ホバー時の浮遊感 (外側の影)
   const hoverGlow =
     isHovered && !isDragging

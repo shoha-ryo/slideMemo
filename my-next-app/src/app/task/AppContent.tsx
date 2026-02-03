@@ -38,7 +38,7 @@ import { SideToolBar } from "./components/Sidebar/SaidToolMenu";
 import { SidebarType } from "./components/Sidebar/SaidToolMenu";
 
 // デバッグ
-// import { DebugInfo } from "./components/devOnly/DebugInfo";
+import { DebugInfo } from "./components/devOnly/DebugInfo";
 // import { DebugCollision } from "./components/devOnly/DebugCollision";
 
 // 操作
@@ -448,7 +448,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
           </div>
 
           {/* デバッグ情報 */}
-          {/* <DebugInfo /> */}
+          <DebugInfo />
           {/* <DebugCollision/> */}
         </DndContext>
       </div>
