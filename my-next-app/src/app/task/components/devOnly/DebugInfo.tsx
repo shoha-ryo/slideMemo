@@ -72,7 +72,7 @@ export const DebugInfo = () => {
 
 const containerStyle: React.CSSProperties = {
   position: "fixed",
-  top: "80px", // Headerの下あたりに初期配置
+  top: "800px", // Headerの下あたりに初期配置
   right: "20px",
   width: "520px",
   backgroundColor: "#1a1a1a",
