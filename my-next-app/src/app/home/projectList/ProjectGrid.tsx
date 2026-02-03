@@ -35,6 +35,7 @@ export function ProjectGrid() {
   const [isAddingProject, setIsAddingProject] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<ProjectTo>(null);
   const [projectToEdit, setProjectToEdit] = useState<ProjectTo>(null);
+	const syncStatus = useTaskStore((state) => state.syncStatus);
 
   // 2. 最新順（createdAtの降順）にソートして監視
   const projects =
@@ -175,6 +176,27 @@ export function ProjectGrid() {
     await deleteProject(id, userId);
   };
 
+	const SkeletonCard = () => (
+		<div className="h-24 w-full rounded-xl border border-muted bg-card p-4 shadow-sm">
+			<div className="animate-pulse space-y-4">
+				{/* タイトル部分の横棒 */}
+				<div className="h-4 w-3/4 rounded-full bg-muted-foreground/20" />
+				{/* 詳細部分の横棒 */}
+				<div className="space-y-2">
+					<div className="h-3 w-full rounded-full bg-muted/60" />
+					<div className="h-3 w-5/6 rounded-full bg-muted/60" />
+				</div>
+				{/* 下部のメタデータ用（オプション） */}
+				{/* <div className="flex justify-between pt-2">
+					<div className="h-2 w-16 rounded-full bg-muted/40" />
+					<div className="h-2 w-12 rounded-full bg-muted/40" />
+				</div> */}
+			</div>
+		</div>
+	);
+	// ロード中（synced以外）かつ データが0件の場合にスケルトンを表示
+	const isLoading = syncStatus !== "synced" && projects.length === 0;
+
   return (
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
@@ -237,15 +259,26 @@ export function ProjectGrid() {
         className="grid gap-4"
         style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}
       >
-        {projects.map((project, index) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            index={index}
-            onDeleteClick={(p) => setProjectToDelete(p)}
-            onEditClick={(p) => setProjectToEdit(p)}
-          />
-        ))}
+				{isLoading ? (
+          // ロード中はスケルトンを表示
+          Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+        ) : projects.length > 0 ? (
+          // データがある場合
+          projects.map((project, index) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              index={index}
+              onDeleteClick={(p) => setProjectToDelete(p)}
+              onEditClick={(p) => setProjectToEdit(p)}
+            />
+          ))
+        ) : (
+          // 同期完了後でも0件の場合
+          <div className="col-span-full py-20 text-center text-muted-foreground">
+            プロジェクトがありません。新しいプロジェクトを作成しましょう。
+          </div>
+        )}
       </div>
 
       <EditProjectDialog

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 export default function FlowLandingPageDark() {
   const router = useRouter();
-  router.push("/login");
+  router.push("/home");
 
   return (
     <></>
