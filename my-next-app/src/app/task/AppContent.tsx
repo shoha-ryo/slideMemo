@@ -38,7 +38,7 @@ import { SideToolBar } from "./components/Sidebar/SaidToolMenu";
 import { SidebarType } from "./components/Sidebar/SaidToolMenu";
 
 // デバッグ
-import { DebugInfo } from "./components/devOnly/DebugInfo";
+// import { DebugInfo } from "./components/devOnly/DebugInfo";
 // import { DebugCollision } from "./components/devOnly/DebugCollision";
 
 // 操作
@@ -76,7 +76,6 @@ export default function AppContent({ projectId }: { projectId: string }) {
     cards,
     boards,
     labels,
-    projectTitle,
     setActiveId,
     setHoverInfo,
     moveTask,
@@ -98,7 +97,6 @@ export default function AppContent({ projectId }: { projectId: string }) {
       cards: state.cards,
       boards: state.boards,
       labels: state.labels,
-      projectTitle: state.projectTitle,
       setActiveId: state.setActiveId,
       setHoverInfo: state.setPayload,
       moveTask: state.moveTask,
@@ -383,7 +381,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
           sensors={sensors}
         >
           {/* ゴミ箱エリア */}
-          <TrashDropArea/>
+          <TrashDropArea />
 
           <div className="flex h-full w-full overflow-auto">
             {/* ツールバー */}
@@ -440,11 +438,11 @@ export default function AppContent({ projectId }: { projectId: string }) {
               ) : null}
               {activeOriginalLabelId && labels[activeOriginalLabelId] ? (
                 <div className="scale-125 max-w-50">
-									<DraggableLabel
-									label={labels[activeOriginalLabelId]}
-									cardId="overlay"
-									></DraggableLabel>
-								</div>
+                  <DraggableLabel
+                    label={labels[activeOriginalLabelId]}
+                    cardId="overlay"
+                  ></DraggableLabel>
+                </div>
               ) : null}
             </DragOverlay>
           </div>

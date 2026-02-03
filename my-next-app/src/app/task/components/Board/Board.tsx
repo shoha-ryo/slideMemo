@@ -49,8 +49,11 @@ export default function Board({ board }: { board: BoardType }) {
       ? "opacity-20 cursor-grabbing" // 掴んでいる時
       : "cursor-grab"; // 掴んでいない時
   const droppableStyle =
-		isOver && !isActive && (activeId?.includes("-card") || activeId?.includes("-board"))
-		? "ring-2 ring-accent-border" : "";
+    isOver &&
+    !isActive &&
+    (activeId?.includes("-card") || activeId?.includes("-board"))
+      ? "ring-2 ring-accent-border"
+      : "";
   const hoveredStyle = isHovered ? "shadow-xl" : "";
 
   const handleBoardClick = () => {

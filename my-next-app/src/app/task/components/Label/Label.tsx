@@ -2,24 +2,23 @@
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import { LabelType } from "../../store/taskStore/types/TasksType";
-import { number } from "zod";
 
 type Props = {
   label: LabelType;
   cardId: string;
-	size?: {
-		top: number
-		bottom: number
-		left: number
-		right: number
-	}
+  size?: {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  };
 };
 
 export const DraggableLabel = ({
-	label,
-	cardId,
-	size={top: 0, bottom: 0, left: 0, right: 0} }: Props
-) => {
+  label,
+  cardId,
+  size = { top: 0, bottom: 0, left: 0, right: 0 },
+}: Props) => {
   const {
     attributes,
     listeners,
@@ -45,12 +44,12 @@ export const DraggableLabel = ({
     borderColor: `${color}`,
   };
 
-	const beforeSize = `
+  const beforeSize = `
 		before:-top-${size.top}
 		before:-bottom-${size.bottom}
 		before:-left-${size.left}
 		before:-right-${size.right}
-	`
+	`;
 
   return (
     <div

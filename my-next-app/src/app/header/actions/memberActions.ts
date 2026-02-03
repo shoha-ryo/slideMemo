@@ -8,10 +8,13 @@ export async function getProjectMembers(projectId: string, userId: string) {
   try {
     // 1. 閲覧権限チェック（実行者がそのプロジェクトのメンバーであること）
     const requester = await prisma.projectMember.findUnique({
-      where: { projectId_userId: { projectId, userId } }
+      where: { projectId_userId: { projectId, userId } },
     });
     if (!requester) {
-      return { success: false, error: "プロジェクトへのアクセス権がありません" };
+      return {
+        success: false,
+        error: "プロジェクトへのアクセス権がありません",
+      };
     }
     // 2. メンバーとユーザー情報を結合して取得
     const members = await prisma.projectMember.findMany({
@@ -23,15 +26,15 @@ export async function getProjectMembers(projectId: string, userId: string) {
             name: true,
             email: true,
             // パスワードなどの機密情報は含めない
-          }
-        }
+          },
+        },
       },
       orderBy: {
-        role: 'asc' // OWNER -> ADMIN -> EDITOR の順に並びやすくなる
-      }
+        role: "asc", // OWNER -> ADMIN -> EDITOR の順に並びやすくなる
+      },
     });
     // フロントエンドで扱いやすい形に整形
-    const formattedMembers = members.map(m => ({
+    const formattedMembers = members.map((m) => ({
       userId: m.userId,
       name: m.user.name,
       email: m.user.email,
@@ -47,10 +50,15 @@ export async function getProjectMembers(projectId: string, userId: string) {
 }
 
 // メンバーの権限を変更する
-export async function updateMemberRole(projectId: string, targetUserId: string, newRole: MemberRole, adminUserId: string) {
+export async function updateMemberRole(
+  projectId: string,
+  targetUserId: string,
+  newRole: MemberRole,
+  adminUserId: string,
+) {
   // 実行者がADMIN以上かチェック
   const admin = await prisma.projectMember.findUnique({
-    where: { projectId_userId: { projectId, userId: adminUserId } }
+    where: { projectId_userId: { projectId, userId: adminUserId } },
   });
 
   if (!admin || (admin.role !== "OWNER" && admin.role !== "ADMIN")) {
@@ -59,17 +67,21 @@ export async function updateMemberRole(projectId: string, targetUserId: string, 
 
   await prisma.projectMember.update({
     where: { projectId_userId: { projectId, userId: targetUserId } },
-    data: { role: newRole }
+    data: { role: newRole },
   });
 
   revalidatePath(`/project/${projectId}/settings`);
 }
 
 // メンバーを削除（追放）する
-export async function removeMember(projectId: string, targetUserId: string, adminUserId: string) {
+export async function removeMember(
+  projectId: string,
+  targetUserId: string,
+  adminUserId: string,
+) {
   // 実行者チェック（略）
   await prisma.projectMember.delete({
-    where: { projectId_userId: { projectId, userId: targetUserId } }
+    where: { projectId_userId: { projectId, userId: targetUserId } },
   });
   revalidatePath(`/project/${projectId}/settings`);
 }

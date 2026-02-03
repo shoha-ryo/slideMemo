@@ -31,7 +31,7 @@ export const SettingMenu = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuItem>プロジェクト設定</DropdownMenuItem>
-          
+
           {/* DialogTriggerをDropdownMenuItemとして扱うためのasChild */}
           <DialogTrigger asChild>
             <DropdownMenuItem className="cursor-pointer">
@@ -51,7 +51,7 @@ export const SettingMenu = () => {
           <DialogTitle>チーム管理</DialogTitle>
         </DialogHeader>
         <div className="py-4">
-          <MemberManagement/>
+          <MemberManagement />
         </div>
       </DialogContent>
     </Dialog>

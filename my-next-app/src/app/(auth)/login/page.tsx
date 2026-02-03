@@ -61,8 +61,12 @@ export default function LoginPage() {
 
     const { email, password } = values;
     try {
-			// firebaseから取得
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      // firebaseから取得
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
       const user = userCredential.user;
       // ここでDexieに保存
       await db.userMeta.put({

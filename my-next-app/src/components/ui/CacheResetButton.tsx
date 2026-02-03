@@ -9,7 +9,7 @@ export const CacheResetButton = () => {
 
   const handleReset = async () => {
     const confirmed = window.confirm(
-      "ローカルキャッシュを完全に削除しますか？\n(サーバー上のデータは削除されません)"
+      "ローカルキャッシュを完全に削除しますか？\n(サーバー上のデータは削除されません)",
     );
 
     if (!confirmed) return;
@@ -27,7 +27,7 @@ export const CacheResetButton = () => {
       ]);
 
       console.log("全データを削除しました");
-      
+
       // データの不整合を防ぐため、リロードして再同期を促す
       window.location.reload();
     } catch (error) {

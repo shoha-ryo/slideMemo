@@ -17,8 +17,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-		// dexieからstoreに反映
-		const hydrateCache = async () => {
+    console.log("ガード実行");
+
+    // dexieからstoreに反映
+    const hydrateCache = async () => {
       const cached = await db.userMeta.get("current");
       if (cached && !user) {
         setUser({
@@ -28,13 +30,13 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
           image: cached.photoURL ?? "",
         });
       }
-		}
-		hydrateCache();
+    };
+    hydrateCache();
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (!firebaseUser) {
         clearUser();
-				await db.userMeta.delete("current");
+        await db.userMeta.delete("current");
         setLoading(false);
         router.push("/login");
         return;
@@ -80,6 +82,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
     return () => unsubscribe();
   }, [setUser, setSynced, clearUser, router]);
+  // userを監視配列に入れると無限ループになる
 
   if (loading) return <AuthLoading />;
 

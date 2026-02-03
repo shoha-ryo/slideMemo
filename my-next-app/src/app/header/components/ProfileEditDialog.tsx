@@ -6,7 +6,7 @@ import { useUserStore } from "@/store/userStore";
 import { updateUserNameAction } from "@/app/actions/user";
 import {
   Dialog,
-	DialogOverlay,
+  DialogOverlay,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -60,41 +60,41 @@ export function ProfileEditDialog({ open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogOverlay>
-				<DialogContent className="sm:max-w-[425px]">
-					<DialogHeader>
-						<DialogTitle>プロフィールの編集</DialogTitle>
-						<DialogDescription>
-							表示名などのアカウント情報を変更できます。
-						</DialogDescription>
-					</DialogHeader>
+      <DialogOverlay>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>プロフィールの編集</DialogTitle>
+            <DialogDescription>
+              表示名などのアカウント情報を変更できます。
+            </DialogDescription>
+          </DialogHeader>
 
-					<div className="grid gap-4 py-4">
-						<div className="grid gap-2">
-							<Label htmlFor="name">名前</Label>
-							<Input
-								id="name"
-								value={name}
-								onChange={(e) => setName(e.target.value)}
-								placeholder="あなたの名前"
-							/>
-						</div>
-						<div className="grid gap-2">
-							<Label className="opacity-50">メールアドレス（変更不可）</Label>
-							<Input value={user?.email} disabled className="bg-muted" />
-						</div>
-					</div>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="name">名前</Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="あなたの名前"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label className="opacity-50">メールアドレス（変更不可）</Label>
+              <Input value={user?.email} disabled className="bg-muted" />
+            </div>
+          </div>
 
-					<DialogFooter>
-						<Button variant="outline" onClick={() => onOpenChange(false)}>
-							キャンセル
-						</Button>
-						<Button onClick={handleSave} disabled={isPending}>
-							{isPending ? "保存中..." : "変更を保存"}
-						</Button>
-					</DialogFooter>
-				</DialogContent>
-			</DialogOverlay>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              キャンセル
+            </Button>
+            <Button onClick={handleSave} disabled={isPending}>
+              {isPending ? "保存中..." : "変更を保存"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </DialogOverlay>
     </Dialog>
   );
 }

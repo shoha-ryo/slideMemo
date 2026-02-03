@@ -122,18 +122,22 @@ export default function RegisterPage() {
   async function onSubmit(values: RegisterFormData) {
     setIsLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password,
+      );
       const user = userCredential.user;
-						// ここでDexieに保存
-						await db.userMeta.put({
-							id: "current",
-							uid: user.uid,
-							email: user.email,
-							name: user.displayName,
-							photoURL: user.photoURL,
-							updatedAt: Date.now(),
-						});
-			router.push("/home");
+      // ここでDexieに保存
+      await db.userMeta.put({
+        id: "current",
+        uid: user.uid,
+        email: user.email,
+        name: user.displayName,
+        photoURL: user.photoURL,
+        updatedAt: Date.now(),
+      });
+      router.push("/home");
     } catch (error) {
       if (
         error instanceof FirebaseError &&

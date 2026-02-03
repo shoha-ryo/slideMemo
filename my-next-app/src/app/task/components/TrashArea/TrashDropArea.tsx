@@ -9,7 +9,7 @@ export default function TrashDropArea() {
   const { setNodeRef, isOver } = useDroppable({
     id: TRASH_ID,
   });
-	const {active} = useDndContext()
+  const { active } = useDndContext();
 
   return (
     <div
@@ -29,7 +29,7 @@ export default function TrashDropArea() {
         fontWeight: "bold",
         zIndex: 100, // DragOverlayよりは下、ボードよりは上にする
         transition: "transform 0.3s ease-in-out", // スライドアニメーション
-        transform:  active ? "translateY(0)" : "translateY(100%)", // 表示・非表示の切り替え
+        transform: active ? "translateY(0)" : "translateY(100%)", // 表示・非表示の切り替え
         pointerEvents: active ? "auto" : "none", // 非表示時はクリック等を無効化
       }}
     >

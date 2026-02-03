@@ -117,7 +117,7 @@ export default function TaskHeader() {
           </DropdownMenu>
 
           {/* 設定 */}
-					<SettingMenu/>
+          <SettingMenu />
 
           {/* ユーザーメニュー */}
           <UserMenu />

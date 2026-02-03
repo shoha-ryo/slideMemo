@@ -156,21 +156,21 @@ const Card = ({ cardId }: { cardId: string }) => {
 
               {/* ラベル */}
               <div className="flex flex-wrap space-x-2">
-									{card.labelIds.map((labelId) => (
-										<MagneticLabel key={labelId}>
-											<div
-											className="
+                {card.labelIds.map((labelId) => (
+                  <MagneticLabel key={labelId}>
+                    <div
+                      className="
 												relative origin-left mt-2 max-w-full hover:scale-120"
-											key={`${labelId}_${cardId}`}
-											>
-												<DraggableLabel
-													label={labels[labelId]}
-													cardId={cardId}
-													size={{top: 5, bottom: 5, left: 2, right: 2}}
-													></DraggableLabel>
-											</div>
-										</MagneticLabel>
-									))}
+                      key={`${labelId}_${cardId}`}
+                    >
+                      <DraggableLabel
+                        label={labels[labelId]}
+                        cardId={cardId}
+                        size={{ top: 5, bottom: 5, left: 2, right: 2 }}
+                      ></DraggableLabel>
+                    </div>
+                  </MagneticLabel>
+                ))}
               </div>
             </div>
             {/* ホバー時のボタンチラつき防止 */}

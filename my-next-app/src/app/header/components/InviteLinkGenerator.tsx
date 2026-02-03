@@ -19,22 +19,22 @@ export const InviteLinkGenerator = () => {
   const [role, setRole] = useState<MemberRole>("VIEWER");
   const [inviteUrl, setInviteUrl] = useState<string>("");
   const [copied, setCopied] = useState(false);
-	const { user } = useUserStore.getState()
-	const { projectId, projectTitle } = useTaskStore.getState()
+  const { user } = useUserStore.getState();
+  const { projectId, projectTitle } = useTaskStore.getState();
 
   const handleGenerate = async () => {
-		if (!user || !projectId || !projectTitle) return
-		const inviterName = user.name
-		const inviterEmail = user.email
+    if (!user || !projectId || !projectTitle) return;
+    const inviterName = user.name;
+    const inviterEmail = user.email;
 
     const url = await generateInviteUrl(
-			projectId,
-			projectTitle,
-			role,
-			inviterName,
-			inviterEmail,
-			"24h"
-		);
+      projectId,
+      projectTitle,
+      role,
+      inviterName,
+      inviterEmail,
+      "24h",
+    );
     setInviteUrl(url);
     setCopied(false);
   };
@@ -54,7 +54,10 @@ export const InviteLinkGenerator = () => {
 
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1">
-          <Select value={role} onValueChange={(value) => setRole(value as MemberRole)}>
+          <Select
+            value={role}
+            onValueChange={(value) => setRole(value as MemberRole)}
+          >
             <SelectTrigger className="w-full bg-white">
               <SelectValue placeholder="権限を選択" />
             </SelectTrigger>
@@ -65,7 +68,10 @@ export const InviteLinkGenerator = () => {
             </SelectContent>
           </Select>
         </div>
-        <Button onClick={handleGenerate} className="bg-blue-600 hover:bg-blue-700">
+        <Button
+          onClick={handleGenerate}
+          className="bg-blue-600 hover:bg-blue-700"
+        >
           リンクを生成
         </Button>
       </div>
@@ -83,8 +89,14 @@ export const InviteLinkGenerator = () => {
             onClick={copyToClipboard}
             className="h-8 px-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
           >
-            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-            <span className="ml-1 text-xs">{copied ? "コピー済" : "コピー"}</span>
+            {copied ? (
+              <Check className="w-4 h-4" />
+            ) : (
+              <Copy className="w-4 h-4" />
+            )}
+            <span className="ml-1 text-xs">
+              {copied ? "コピー済" : "コピー"}
+            </span>
           </Button>
         </div>
       )}

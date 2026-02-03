@@ -72,12 +72,12 @@ export interface UserMeta {
 
 export class TaskFlowDB extends Dexie {
   projects!: Table<ProjectEntity>;
-	projectMembers!: Table<ProjectMemberEntity>
+  projectMembers!: Table<ProjectMemberEntity>;
   boards!: Table<BoardEntity>;
   cards!: Table<CardEntity>;
   labels!: Table<LabelEntity>;
   syncMeta!: Table<SyncMeta>;
-	userMeta!: Table<UserMeta>;
+  userMeta!: Table<UserMeta>;
 
   constructor() {
     super("TaskFlowDB");
@@ -86,12 +86,12 @@ export class TaskFlowDB extends Dexie {
     // 2つ目以降は「検索（Index）」対象にしたいキー
     this.version(10).stores({
       projects: "id, userId",
-			projectMembers: "id, projectId, userId, [projectId+userId]",
+      projectMembers: "id, projectId, userId, [projectId+userId]",
       boards: "id, projectId",
       cards: "id, boardId, parentId, projectId", // 親子関係やボード移動の高速化
       labels: "id, projectId",
       syncMeta: "id", // プロジェクトIDをキーにして最終同期時刻を引けるようにする
-			userMeta: "id, uid, email",
+      userMeta: "id, uid, email",
     });
   }
 }

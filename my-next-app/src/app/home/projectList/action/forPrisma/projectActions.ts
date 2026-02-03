@@ -25,7 +25,7 @@ export async function createProject(
       },
       include: {
         members: true, // メンバー情報も含めて返す
-      }
+      },
     });
     // ダッシュボードのデータを最新にする（キャッシュ更新）
     revalidatePath("/home");
@@ -103,7 +103,10 @@ export async function deleteProject(projectId: string, userId: string) {
     });
 
     if (!member || member.role !== "OWNER") {
-      return { success: false, error: "プロジェクトを削除する権限がありません" };
+      return {
+        success: false,
+        error: "プロジェクトを削除する権限がありません",
+      };
     }
 
     // プロジェクトを削除（ProjectMemberもCascadeで削除されるようにスキーマを設定している前提）

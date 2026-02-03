@@ -1,5 +1,4 @@
-"use server"
-
+"use server";
 
 import { SignJWT, jwtVerify } from "jose";
 import { MemberRole } from "@prisma/client";
@@ -7,18 +6,18 @@ import { MemberRole } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 const SECRET_KEY = new TextEncoder().encode(
-  process.env.INVITE_TOKEN_SECRET || "default_secret_key_change_me"
+  process.env.INVITE_TOKEN_SECRET || "default_secret_key_change_me",
 );
 
 const ALGORITHM = "HS256";
 
 // ペイロードの型定義を拡張
-interface InvitePayload {
+export interface InvitePayload {
   projectId: string;
   projectTitle: string; // プロジェクト名も追加
   role: MemberRole;
   inviterName: string | null; // 招待者の名前
-  inviterEmail: string;        // 招待者のメアド
+  inviterEmail: string; // 招待者のメアド
 }
 
 /**
@@ -30,15 +29,15 @@ export async function generateInviteUrl(
   role: MemberRole,
   inviterName: string | null,
   inviterEmail: string,
-  expiresIn: string = "24h"
+  expiresIn: string = "24h",
 ) {
   // ペイロードに必要な情報をすべて詰め込む
-  const token = await new SignJWT({ 
-    projectId, 
-    projectTitle, 
-    role, 
-    inviterName, 
-    inviterEmail 
+  const token = await new SignJWT({
+    projectId,
+    projectTitle,
+    role,
+    inviterName,
+    inviterEmail,
   })
     .setProtectedHeader({ alg: ALGORITHM })
     .setIssuedAt()
@@ -71,38 +70,37 @@ export async function verifyInviteToken(token: string) {
   }
 }
 
-
 export async function acceptInvitation(token: string, userId: string) {
-	// 1. トークンの検証
+  // 1. トークンの検証
   const verification = await verifyInviteToken(token);
   if (!verification.success || !verification.data) {
-		return { success: false, error: verification.error };
+    return { success: false, error: verification.error };
   }
-	
+
   const { projectId, role } = verification.data;
-	
+
   try {
-		// 2. ProjectMember レコードの作成または更新
+    // 2. ProjectMember レコードの作成または更新
     // upsert を使うことで、既に招待(INVITED)レコードがあっても上書きできる
     const member = await prisma.projectMember.upsert({
-			where: {
-				projectId_userId: {
-					projectId: projectId,
+      where: {
+        projectId_userId: {
+          projectId: projectId,
           userId: userId,
         },
       },
       update: {
-				status: "ACTIVE", // 参加中に更新
-        role: role,      // 招待時のロールを適用
+        status: "ACTIVE", // 参加中に更新
+        role: role, // 招待時のロールを適用
       },
       create: {
-				projectId: projectId,
+        projectId: projectId,
         userId: userId,
         role: role,
         status: "ACTIVE",
       },
     });
-		
+
     // 3. キャッシュのクリア（プロジェクト一覧や設定画面を最新にする）
     // revalidatePath("/home");
     // revalidatePath(`/task/${projectId}`);

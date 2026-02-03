@@ -39,10 +39,7 @@ export async function getInitialData(
     },
     include: {
       boards: lastSyncAt === 0,
-      cards:
-        lastSyncAt === 0
-          ? { include: { labels: true } }
-          : false,
+      cards: lastSyncAt === 0 ? { include: { labels: true } } : false,
       labels: true,
       activityLog: {
         where: { createdAt: { gt: new Date(lastSyncAt) } },
@@ -172,7 +169,7 @@ export async function getInitialData(
   const refreshedData = await prisma.project.findFirst({
     where: {
       id: projectId,
-      members: { some: { userId: userId, status: "ACTIVE" } }
+      members: { some: { userId: userId, status: "ACTIVE" } },
     },
     select: {
       boards: { where: { id: { in: targetBoardIds } } },
