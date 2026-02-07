@@ -448,7 +448,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
           </div>
 
           {/* デバッグ情報 */}
-          <DebugInfo />
+          {/* <DebugInfo /> */}
           {/* <DebugCollision/> */}
         </DndContext>
       </div>

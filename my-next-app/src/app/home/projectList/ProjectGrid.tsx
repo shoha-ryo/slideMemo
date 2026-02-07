@@ -23,6 +23,7 @@ import { ProjectCard } from "./ProjectCard";
 import { DeleteProjectDialog } from "./DeleteProjectDialog";
 import { EditProjectDialog } from "./EditProjectDialog";
 import { useTaskStore } from "@/app/task/store/taskStore/taskStore";
+import { showToast } from "@/components/ui/CustomToaster";
 
 type ProjectTo = {
   id: string;
@@ -138,13 +139,22 @@ export function ProjectGrid() {
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
+		const newMembership = {
+			id: `${newProjectId}_${userId}`,
+			projectId: newProjectId,
+			userId: userId,
+			role: "OWNER" as const,
+			status: "ACTIVE" as const,
+		};
 
-    // UI更新は不要（Dexieが検知する）。DBに突っ込むだけ。
-    await db.projects.add(newProject);
+    // トランザクションで一気に保存
+		await db.transaction("rw", [db.projects, db.projectMembers], async () => {
+			await db.projects.add(newProject);
+			await db.projectMembers.add(newMembership);
+		});
 
     // 裏でサーバーに送信
     createProject(title, userId, newProjectId);
-
     setNewProjectName("");
     setIsAddingProject(false);
   };
@@ -162,7 +172,9 @@ export function ProjectGrid() {
     setProjectToEdit(null);
 
     // 裏でサーバー送信
+		//todo: トーストを表示
     await updateProjectTitle(id, userId, newTitle);
+		showToast("success", "正常に更新されました")
   };
 
   // 6. 削除
@@ -173,7 +185,9 @@ export function ProjectGrid() {
     await db.projects.delete(id);
     setProjectToDelete(null);
 
+		//todo: トーストを表示
     await deleteProject(id, userId);
+		showToast("success", "正常に削除されました")
   };
 
 	const SkeletonCard = () => (

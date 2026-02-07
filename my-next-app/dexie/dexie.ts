@@ -31,7 +31,7 @@ export interface BoardEntity {
 export interface ProjectEntity {
   id: string;
   title: string;
-  userId: string;
+  // userId: string;
   boardOrder: string[];
   createdAt: number;
   updatedAt: number;
@@ -84,7 +84,7 @@ export class TaskFlowDB extends Dexie {
 
     // stores の定義（カンマ区切りで最初に書くのがプライマリキー）
     // 2つ目以降は「検索（Index）」対象にしたいキー
-    this.version(10).stores({
+    this.version(11).stores({
       projects: "id, userId",
       projectMembers: "id, projectId, userId, [projectId+userId]",
       boards: "id, projectId",

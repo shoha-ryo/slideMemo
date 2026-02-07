@@ -13,7 +13,6 @@ export async function createProject(
       data: {
         id: projectId,
         title: title,
-        userId: userId, // 作成者ID
         boardOrder: [],
         members: {
           create: {
