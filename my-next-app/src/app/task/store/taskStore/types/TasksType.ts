@@ -12,6 +12,7 @@ export interface TaskStore extends AppState, Payload {
   userId: string | undefined;
   projectId: string | null;
   projectTitle: string | null;
+	initializeToken: string | null
   setProjectId: (projectId: string) => void;
   setProjectTitle: (projectTitle: string) => void;
 

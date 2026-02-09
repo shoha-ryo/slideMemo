@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Pusher from "pusher-js";
 import { showToast } from "@/components/ui/CustomToaster";
 import { getAuth } from "firebase/auth";
@@ -112,6 +112,8 @@ export default function AppContent({ projectId }: { projectId: string }) {
     })),
   );
 
+	const isCalled = useRef(false)
+
   // todo まずはローカルから取得
   // const projects =
   //   useLiveQuery(async () => {
@@ -121,16 +123,30 @@ export default function AppContent({ projectId }: { projectId: string }) {
 
   // 初期値取得
   useEffect(() => {
+		console.log("initializeProjectを呼び出します。対象ID:", projectId, "現在のURL:", window.location.pathname);
+		if (isCalled.current) return // strictModeによる2回初期化をさせない
+		isCalled.current = true
+
     const user = auth.currentUser;
     if (user) {
       initializeProject(user.uid, projectId); // ローカル読み出し→サーバーから取得→ローカル保存まで一元管理
       setProjectId(projectId);
     }
-
     // キーイベントの設定と解除
     window.addEventListener("keydown", handleGlobalKeyDown);
-    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
-  }, [auth]);
+    return () => {
+			console.log("プロジェクトをアンマウントします。対象ID:", projectId, "現在のURL:", window.location.pathname);
+			window.removeEventListener("keydown", handleGlobalKeyDown)
+			// useTaskStore.setState({ // 他プロジェクトを開いたときに別データが表示されないようにリセット
+			// 	cards: {},
+			// 	boards: {},
+			// 	boardOrder: [],
+			// 	labels: {},
+			// 	projectId: null,
+			// 	projectTitle: null,
+			// })
+		};
+  }, [auth, projectId]);
 
   // DB更新時の処理
   useEffect(() => {
@@ -441,7 +457,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
                   <DraggableLabel
                     label={labels[activeOriginalLabelId]}
                     cardId="overlay"
-                  ></DraggableLabel>
+                  />
                 </div>
               ) : null}
             </DragOverlay>

@@ -12,7 +12,7 @@ export default async function TaskPage({
 
   return (
     <AuthGuard>
-      <AppContent projectId={projectId} />
+      <AppContent key={projectId} projectId={projectId} />
     </AuthGuard>
   );
 }

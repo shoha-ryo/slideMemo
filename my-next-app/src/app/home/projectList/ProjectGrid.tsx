@@ -77,7 +77,11 @@ export function ProjectGrid() {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUserId(user.uid);
+				// リクエストが古いかどうか非同期の後でチェックする
+				const requestToken = crypto.randomUUID()
+				useTaskStore.setState({initializeToken: requestToken})
         const result = await getProjects(user.uid);
+				if (requestToken !== useTaskStore.getState().initializeToken) return // リクエストが古ければ実行しない
         if (result.success && result.data) {
           // 1. プロジェクト本体だけを抽出してお掃除 (myRoleなどを除外)
           const projectsToSave = result.data.map(

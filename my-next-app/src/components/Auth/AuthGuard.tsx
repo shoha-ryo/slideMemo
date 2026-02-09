@@ -5,19 +5,20 @@
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import { AuthLoading } from "./AuthLoading";
 import { useUserStore } from "@/store/userStore";
+import { useTaskStore } from "@/app/task/store/taskStore/taskStore";
 import { syncUserAction } from "@/app/actions/user"; // ★Server Actionをインポート
 import { db } from "../../../dexie/dexie";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const { setUser, setSynced, clearUser, user } = useUserStore();
-  const router = useRouter();
+	const {projectTitle} = useTaskStore.getState()
 
   useEffect(() => {
-    console.log("ガード実行");
+    console.log("ガード実行", projectTitle, new Date().getTime());
 
     // dexieからstoreに反映
     const hydrateCache = async () => {
@@ -38,7 +39,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         clearUser();
         await db.userMeta.delete("current");
         setLoading(false);
-        router.push("/login");
+        redirect("/login");
         return;
       }
 
@@ -81,7 +82,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, [setUser, setSynced, clearUser, router]);
+  }, [setUser, setSynced, clearUser]);
   // userを監視配列に入れると無限ループになる
 
   if (loading) return <AuthLoading />;
