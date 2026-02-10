@@ -27,10 +27,6 @@ export default function DashBoardHeader() {
               <span>FLOW</span>
             </div>
           </Link>
-
-          <div className="text-lg font-semibold text-foreground/80">
-            {projectTitle}
-          </div>
         </div>
 
         {/* 中央セクション */}
