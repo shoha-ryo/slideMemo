@@ -8,7 +8,6 @@ import {
 import { getObjectDiff } from "@/app/task/actions/getDiff";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
 import { ReturnTasks } from "@/app/task/store/taskStore/types/TasksType";
-import { useTaskStore } from "../../taskStore";
 
 // 新しいカードの情報を作成
 function createNewCard(
@@ -41,6 +40,7 @@ export function addCardLogic(
   title: string,
   source: Source,
   state: AppState,
+  projectId: string,
 ): ReturnTasks {
   if (!title.trim())
     return {
@@ -49,14 +49,13 @@ export function addCardLogic(
     };
 
   const { boards, cards } = state;
-  const { projectId } = useTaskStore.getState();
   if (!projectId)
     return {
       newState: state,
       diffTasks: emptyTasks,
     };
 
-  // ボードの場合の処理
+  // 親がボードの場合の処理
   if (source.type === "board") {
     const targetBoard: BoardType = source.data;
     const newCard = createNewCard(title, null, targetBoard.id, projectId);
@@ -95,7 +94,7 @@ export function addCardLogic(
     };
   }
 
-  // カードの場合の処理
+  // 親がカードの場合の処理
   if (source.type === "card") {
     const targetCard: CardType = source.data;
     const newCard = createNewCard(

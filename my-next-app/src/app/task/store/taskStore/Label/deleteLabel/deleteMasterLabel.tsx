@@ -29,8 +29,6 @@ export function deleteMasterLabelLogic(
   const updatedCards: { [key: string]: CardType } = {};
   const cardsToUpdateInDB: Partial<CardType>[] = [];
 
-  console.log(2);
-
   Object.values(cards).forEach((card) => {
     if (card.labelIds.includes(labelId)) {
       // ラベルが含まれている場合のみ新しい配列を作成
@@ -53,18 +51,6 @@ export function deleteMasterLabelLogic(
       // 変更がないカードはそのまま
       updatedCards[card.id] = card;
     }
-  });
-
-  console.log("差分データ", {
-    ...emptyTasks,
-    updateTasks: {
-      ...emptyTasks.updateTasks,
-      cards: cardsToUpdateInDB,
-    },
-    deleteTasks: {
-      ...emptyTasks.deleteTasks,
-      labelIds: [labelId], // マスターラベルの削除を通知
-    },
   });
 
   // 4. Stateと差分を返す

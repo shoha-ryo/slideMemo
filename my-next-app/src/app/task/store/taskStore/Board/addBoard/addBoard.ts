@@ -20,7 +20,10 @@ function createNewBoard(title: string, projectId: string) {
   return newBoard;
 }
 
-export function addBoardLogic(title: string, allState: TaskStore): ReturnTasks {
+export function addBoardLogic(
+  title: string,
+  allState: Pick<TaskStore, keyof AppState | "projectId">,
+): ReturnTasks {
   const state: AppState = allState;
   const { boardOrder, boards, projectId } = allState;
 

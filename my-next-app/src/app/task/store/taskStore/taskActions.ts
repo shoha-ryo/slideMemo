@@ -22,7 +22,7 @@ import { moveLabelLogic } from "./Label/moveLabel/moveLabel";
 import { createLabelLogic } from "./Label/createLabel/createLabel";
 import { deleteLabelFromCardLogic } from "./Label/deleteLabel/deleteLabelFromCard";
 import { editMasterLabelLogic } from "./Label/editLabel/editMasterLabel";
-import { deleteMasterLabelLogic } from "./Label/editLabel/deleteMasterLabel";
+import { deleteMasterLabelLogic } from "./Label/deleteLabel/deleteMasterLabel";
 
 import { updateCheckForToDB } from "../../actions/updateCheckForToDB";
 import { useUserStore } from "@/store/userStore";
@@ -35,6 +35,15 @@ export const taskActions = (
   get: () => TaskStore,
 ) => {
   // 共通の更新処理を定義
+  const executeGet = () => {
+    const state = get();
+    const projectId = get().projectId;
+    return {
+      state,
+      projectId,
+    };
+  };
+
   const executeUpdate = (
     diffTasks: typeof emptyTasks,
     newState: Partial<TaskStore>,
@@ -49,69 +58,92 @@ export const taskActions = (
 
   return {
     moveTask: (payload: Payload) => {
-      const state = get();
-      const { newState, diffTasks } = applyMoveLogic(payload, state);
+      const result = executeGet();
+      const { newState, diffTasks } = applyMoveLogic(payload, result.state);
       executeUpdate(diffTasks, newState);
     },
 
     addTask: (title: string, source: Source) => {
-      const state = get();
-      const { newState, diffTasks } = addCardLogic(title, source, state);
+      const result = executeGet();
+      if (!result.projectId) return;
+      const { newState, diffTasks } = addCardLogic(
+        title,
+        source,
+        result.state,
+        result.projectId,
+      );
       executeUpdate(diffTasks, newState);
     },
 
     deleteTask: (cardId: string) => {
-      const state = get();
-      const { newState, diffTasks } = deleteCardLogic(cardId, state);
+      const result = executeGet();
+      const { newState, diffTasks } = deleteCardLogic(cardId, result.state);
       executeUpdate(diffTasks, newState);
     },
 
     updateTask: (cardId: string, updates: Partial<CardType>) => {
-      const state = get();
-      const { newState, diffTasks } = updateCardLogic(cardId, updates, state);
+      const result = executeGet();
+      const { newState, diffTasks } = updateCardLogic(
+        cardId,
+        updates,
+        result.state,
+      );
       executeUpdate(diffTasks, newState);
     },
 
     moveBoard: (payload: Payload) => {
-      const state = get();
-      const { newState, diffTasks } = moveBoardLogic(payload, state);
+      const result = executeGet();
+      const { newState, diffTasks } = moveBoardLogic(payload, result.state);
       executeUpdate(diffTasks, newState);
     },
 
     addBoard: (title: string) => {
-      const state = get();
-      const { newState, diffTasks } = addBoardLogic(title, state);
+      const result = executeGet();
+      const { newState, diffTasks } = addBoardLogic(title, result.state);
       executeUpdate(diffTasks, newState);
     },
 
     deleteBoard: (cardId: string) => {
-      const state = get();
-      const { newState, diffTasks } = deleteBoardLogic(cardId, state);
+      const result = executeGet();
+      const { newState, diffTasks } = deleteBoardLogic(cardId, result.state);
       executeUpdate(diffTasks, newState);
     },
 
     updateBoard: (boardId: string, updates: Partial<BoardType>) => {
-      const state = get();
-      const { newState, diffTasks } = updateBoardLogic(boardId, updates, state);
+      const result = executeGet();
+      const { newState, diffTasks } = updateBoardLogic(
+        boardId,
+        updates,
+        result.state,
+      );
       executeUpdate(diffTasks, newState);
     },
 
     moveLabel: (payload: Payload) => {
-      const state = get();
-      const { newState, diffTasks } = moveLabelLogic(payload, state);
+      const result = executeGet();
+      const { newState, diffTasks } = moveLabelLogic(payload, result.state);
       console.log(newState, diffTasks);
       executeUpdate(diffTasks, newState);
     },
 
     createLabel: (name: string, color: string) => {
-      const state = get();
-      const { newState, diffTasks } = createLabelLogic(name, color, state);
+      const result = executeGet();
+      if (!result.projectId) return;
+      const { newState, diffTasks } = createLabelLogic(
+        name,
+        color,
+        result.state,
+        result.projectId,
+      );
       executeUpdate(diffTasks, newState);
     },
 
     deleteLabel: (activeId: string) => {
-      const state = get();
-      const { newState, diffTasks } = deleteLabelFromCardLogic(activeId, state);
+      const result = executeGet();
+      const { newState, diffTasks } = deleteLabelFromCardLogic(
+        activeId,
+        result.state,
+      );
       executeUpdate(diffTasks, newState);
     },
 
@@ -122,18 +154,21 @@ export const taskActions = (
         color: string | undefined;
       },
     ) => {
-      const state = get();
+      const result = executeGet();
       const { newState, diffTasks } = editMasterLabelLogic(
         labelId,
         updates,
-        state,
+        result.state,
       );
       executeUpdate(diffTasks, newState);
     },
 
     deleteMasterLabel: (labelId: string) => {
-      const state = get();
-      const { newState, diffTasks } = deleteMasterLabelLogic(labelId, state);
+      const result = executeGet();
+      const { newState, diffTasks } = deleteMasterLabelLogic(
+        labelId,
+        result.state,
+      );
       executeUpdate(diffTasks, newState);
     },
   };

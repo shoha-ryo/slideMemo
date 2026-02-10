@@ -5,7 +5,6 @@ import {
   ReturnTasks,
 } from "@/app/task/store/taskStore/types/TasksType";
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
-import { useTaskStore } from "../../taskStore";
 
 /**
  * 新しいラベルオブジェクトを生成
@@ -33,6 +32,7 @@ export function createLabelLogic(
   name: string,
   color: string, // カラーコード (例: #3b82f6)
   state: AppState,
+  projectId: string,
 ): ReturnTasks {
   // 名前が空なら何もしない
   if (!name.trim()) {
@@ -40,7 +40,6 @@ export function createLabelLogic(
   }
 
   const { labels } = state;
-  const { projectId } = useTaskStore.getState(); // フックではなくgetState()で取得
 
   if (!projectId) {
     return { newState: state, diffTasks: emptyTasks };

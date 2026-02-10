@@ -19,8 +19,7 @@ export function deleteLabelFromCardLogic(
   const { cards } = state;
 
   // 1. 合成IDからカードIDとラベルIDを抽出 ("label-uuid_card-uuid")
-  const cardId = activeId.split("_")[1];
-  const originalLabelId = activeId.split("_")[0];
+  const [originalLabelId, cardId] = activeId.split("_");
 
   // マスター(サイドバー)のものを消そうとしている場合は何もしない
   if (!cardId || cardId === "master") {
