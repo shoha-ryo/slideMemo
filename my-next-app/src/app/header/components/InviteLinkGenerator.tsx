@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, Link, ShieldCheck } from "lucide-react";
+import { Check, Copy, Link } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,

@@ -25,125 +25,116 @@ import { editMasterLabelLogic } from "./Label/editLabel/editMasterLabel";
 import { deleteMasterLabelLogic } from "./Label/editLabel/deleteMasterLabel";
 
 import { updateCheckForToDB } from "../../actions/updateCheckForToDB";
+import { useUserStore } from "@/store/userStore";
+import { emptyTasks } from "../../actions/emptyTasks";
 
 export const taskActions = (
   set: (
     state: Partial<TaskStore> | ((state: TaskStore) => Partial<TaskStore>),
   ) => void,
   get: () => TaskStore,
-) => ({
-  moveTask: (payload: Payload) => {
-    const state = get();
-    const { newState, diffTasks } = applyMoveLogic(payload, state);
-    if (!state.projectId || !state.userId) return;
-    updateCheckForToDB(diffTasks, state.projectId, state.userId);
-    set(newState);
-  },
-
-  addTask: (title: string, source: Source) => {
-    const state = get();
-    const { newState, diffTasks } = addCardLogic(title, source, state);
-    if (!state.projectId || !state.userId) return;
-    set(newState);
-    updateCheckForToDB(diffTasks, state.projectId, state.userId);
-  },
-
-  deleteTask: (cardId: string) => {
-    const state = get();
-    const { newState, diffTasks } = deleteCardLogic(cardId, state);
-    if (!state.projectId || !state.userId) return;
-    set(newState);
-    updateCheckForToDB(diffTasks, state.projectId, state.userId);
-  },
-
-  updateTask: (cardId: string, updates: Partial<CardType>) => {
-    const state = get();
-    const { newState, diffTasks } = updateCardLogic(cardId, updates, state);
-    if (!state.projectId || !state.userId) return;
-    set(newState);
-    updateCheckForToDB(diffTasks, state.projectId, state.userId);
-  },
-
-  moveBoard: (payload: Payload) => {
-    const state = get();
-    const { newState, diffTasks } = moveBoardLogic(payload, state);
-    if (!state.projectId || !state.userId) return;
-    set(newState);
-    updateCheckForToDB(diffTasks, state.projectId, state.userId);
-  },
-
-  addBoard: (title: string) => {
-    const state = get();
-    const { newState, diffTasks } = addBoardLogic(title, state);
-    if (!state.projectId || !state.userId) return;
-    set(newState);
-    updateCheckForToDB(diffTasks, state.projectId, state.userId);
-  },
-
-  deleteBoard: (cardId: string) => {
-    const state = get();
-    const { newState, diffTasks } = deleteBoardLogic(cardId, state);
-    if (!state.projectId || !state.userId) return;
-    set(newState);
-    updateCheckForToDB(diffTasks, state.projectId, state.userId);
-  },
-
-  updateBoard: (boardId: string, updates: Partial<BoardType>) => {
-    const state = get();
-    const { newState, diffTasks } = updateBoardLogic(boardId, updates, state);
-    if (!state.projectId || !state.userId) return;
-    set(newState);
-    updateCheckForToDB(diffTasks, state.projectId, state.userId);
-  },
-
-  moveLabel: (payload: Payload) => {
-    const state = get();
-    const { newState, diffTasks } = moveLabelLogic(payload, state);
-    console.log(newState, diffTasks);
-    if (!state.projectId || !state.userId) return;
-    set(newState);
-    updateCheckForToDB(diffTasks, state.projectId, state.userId);
-  },
-
-  createLabel: (name: string, color: string) => {
-    const state = get();
-    const { newState, diffTasks } = createLabelLogic(name, color, state);
-    if (!state.projectId || !state.userId) return;
-    set(newState);
-    updateCheckForToDB(diffTasks, state.projectId, state.userId);
-  },
-
-  deleteLabel: (activeId: string) => {
-    const state = get();
-    const { newState, diffTasks } = deleteLabelFromCardLogic(activeId, state);
-    if (!state.projectId || !state.userId) return;
-    set(newState);
-    updateCheckForToDB(diffTasks, state.projectId, state.userId);
-  },
-
-  editMasterLabel: (
-    labelId: string,
-    updates: {
-      name: string | undefined;
-      color: string | undefined;
-    },
+) => {
+  // 共通の更新処理を定義
+  const executeUpdate = (
+    diffTasks: typeof emptyTasks,
+    newState: Partial<TaskStore>,
   ) => {
     const state = get();
-    const { newState, diffTasks } = editMasterLabelLogic(
-      labelId,
-      updates,
-      state,
-    );
-    if (!state.projectId || !state.userId) return;
-    set(newState);
-    updateCheckForToDB(diffTasks, state.projectId, state.userId);
-  },
+    const userId = state.userId || useUserStore.getState().user?.id;
+    if (!state.projectId || !userId) return;
 
-  deleteMasterLabel: (labelId: string) => {
-    const state = get();
-    const { newState, diffTasks } = deleteMasterLabelLogic(labelId, state);
-    if (!state.projectId || !state.userId) return;
     set(newState);
-    updateCheckForToDB(diffTasks, state.projectId, state.userId);
-  },
-});
+    updateCheckForToDB(diffTasks, state.projectId, userId);
+  };
+
+  return {
+    moveTask: (payload: Payload) => {
+      const state = get();
+      const { newState, diffTasks } = applyMoveLogic(payload, state);
+      executeUpdate(diffTasks, newState);
+    },
+
+    addTask: (title: string, source: Source) => {
+      const state = get();
+      const { newState, diffTasks } = addCardLogic(title, source, state);
+      executeUpdate(diffTasks, newState);
+    },
+
+    deleteTask: (cardId: string) => {
+      const state = get();
+      const { newState, diffTasks } = deleteCardLogic(cardId, state);
+      executeUpdate(diffTasks, newState);
+    },
+
+    updateTask: (cardId: string, updates: Partial<CardType>) => {
+      const state = get();
+      const { newState, diffTasks } = updateCardLogic(cardId, updates, state);
+      executeUpdate(diffTasks, newState);
+    },
+
+    moveBoard: (payload: Payload) => {
+      const state = get();
+      const { newState, diffTasks } = moveBoardLogic(payload, state);
+      executeUpdate(diffTasks, newState);
+    },
+
+    addBoard: (title: string) => {
+      const state = get();
+      const { newState, diffTasks } = addBoardLogic(title, state);
+      executeUpdate(diffTasks, newState);
+    },
+
+    deleteBoard: (cardId: string) => {
+      const state = get();
+      const { newState, diffTasks } = deleteBoardLogic(cardId, state);
+      executeUpdate(diffTasks, newState);
+    },
+
+    updateBoard: (boardId: string, updates: Partial<BoardType>) => {
+      const state = get();
+      const { newState, diffTasks } = updateBoardLogic(boardId, updates, state);
+      executeUpdate(diffTasks, newState);
+    },
+
+    moveLabel: (payload: Payload) => {
+      const state = get();
+      const { newState, diffTasks } = moveLabelLogic(payload, state);
+      console.log(newState, diffTasks);
+      executeUpdate(diffTasks, newState);
+    },
+
+    createLabel: (name: string, color: string) => {
+      const state = get();
+      const { newState, diffTasks } = createLabelLogic(name, color, state);
+      executeUpdate(diffTasks, newState);
+    },
+
+    deleteLabel: (activeId: string) => {
+      const state = get();
+      const { newState, diffTasks } = deleteLabelFromCardLogic(activeId, state);
+      executeUpdate(diffTasks, newState);
+    },
+
+    editMasterLabel: (
+      labelId: string,
+      updates: {
+        name: string | undefined;
+        color: string | undefined;
+      },
+    ) => {
+      const state = get();
+      const { newState, diffTasks } = editMasterLabelLogic(
+        labelId,
+        updates,
+        state,
+      );
+      executeUpdate(diffTasks, newState);
+    },
+
+    deleteMasterLabel: (labelId: string) => {
+      const state = get();
+      const { newState, diffTasks } = deleteMasterLabelLogic(labelId, state);
+      executeUpdate(diffTasks, newState);
+    },
+  };
+};

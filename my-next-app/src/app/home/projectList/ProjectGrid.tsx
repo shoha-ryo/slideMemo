@@ -36,7 +36,7 @@ export function ProjectGrid() {
   const [isAddingProject, setIsAddingProject] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<ProjectTo>(null);
   const [projectToEdit, setProjectToEdit] = useState<ProjectTo>(null);
-	const syncStatus = useTaskStore((state) => state.syncStatus);
+  const syncStatus = useTaskStore((state) => state.syncStatus);
 
   // 2. 最新順（createdAtの降順）にソートして監視
   const projects =
@@ -77,11 +77,11 @@ export function ProjectGrid() {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUserId(user.uid);
-				// リクエストが古いかどうか非同期の後でチェックする
-				const requestToken = crypto.randomUUID()
-				useTaskStore.setState({initializeToken: requestToken})
+        // リクエストが古いかどうか非同期の後でチェックする
+        const requestToken = crypto.randomUUID();
+        useTaskStore.setState({ initializeToken: requestToken });
         const result = await getProjects(user.uid);
-				if (requestToken !== useTaskStore.getState().initializeToken) return // リクエストが古ければ実行しない
+        if (requestToken !== useTaskStore.getState().initializeToken) return; // リクエストが古ければ実行しない
         if (result.success && result.data) {
           // 1. プロジェクト本体だけを抽出してお掃除 (myRoleなどを除外)
           const projectsToSave = result.data.map(
@@ -143,19 +143,19 @@ export function ProjectGrid() {
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
-		const newMembership = {
-			id: `${newProjectId}_${userId}`,
-			projectId: newProjectId,
-			userId: userId,
-			role: "OWNER" as const,
-			status: "ACTIVE" as const,
-		};
+    const newMembership = {
+      id: `${newProjectId}_${userId}`,
+      projectId: newProjectId,
+      userId: userId,
+      role: "OWNER" as const,
+      status: "ACTIVE" as const,
+    };
 
     // トランザクションで一気に保存
-		await db.transaction("rw", [db.projects, db.projectMembers], async () => {
-			await db.projects.add(newProject);
-			await db.projectMembers.add(newMembership);
-		});
+    await db.transaction("rw", [db.projects, db.projectMembers], async () => {
+      await db.projects.add(newProject);
+      await db.projectMembers.add(newMembership);
+    });
 
     // 裏でサーバーに送信
     createProject(title, userId, newProjectId);
@@ -176,9 +176,9 @@ export function ProjectGrid() {
     setProjectToEdit(null);
 
     // 裏でサーバー送信
-		//todo: トーストを表示
+    //todo: トーストを表示
     await updateProjectTitle(id, userId, newTitle);
-		showToast("success", "正常に更新されました")
+    showToast("success", "正常に更新されました");
   };
 
   // 6. 削除
@@ -189,31 +189,31 @@ export function ProjectGrid() {
     await db.projects.delete(id);
     setProjectToDelete(null);
 
-		//todo: トーストを表示
+    //todo: トーストを表示
     await deleteProject(id, userId);
-		showToast("success", "正常に削除されました")
+    showToast("success", "正常に削除されました");
   };
 
-	const SkeletonCard = () => (
-		<div className="h-24 w-full rounded-xl border border-muted bg-card p-4 shadow-sm">
-			<div className="animate-pulse space-y-4">
-				{/* タイトル部分の横棒 */}
-				<div className="h-4 w-3/4 rounded-full bg-muted-foreground/20" />
-				{/* 詳細部分の横棒 */}
-				<div className="space-y-2">
-					<div className="h-3 w-full rounded-full bg-muted/60" />
-					<div className="h-3 w-5/6 rounded-full bg-muted/60" />
-				</div>
-				{/* 下部のメタデータ用（オプション） */}
-				{/* <div className="flex justify-between pt-2">
+  const SkeletonCard = () => (
+    <div className="h-24 w-full rounded-xl border border-muted bg-card p-4 shadow-sm">
+      <div className="animate-pulse space-y-4">
+        {/* タイトル部分の横棒 */}
+        <div className="h-4 w-3/4 rounded-full bg-muted-foreground/20" />
+        {/* 詳細部分の横棒 */}
+        <div className="space-y-2">
+          <div className="h-3 w-full rounded-full bg-muted/60" />
+          <div className="h-3 w-5/6 rounded-full bg-muted/60" />
+        </div>
+        {/* 下部のメタデータ用（オプション） */}
+        {/* <div className="flex justify-between pt-2">
 					<div className="h-2 w-16 rounded-full bg-muted/40" />
 					<div className="h-2 w-12 rounded-full bg-muted/40" />
 				</div> */}
-			</div>
-		</div>
-	);
-	// ロード中（synced以外）かつ データが0件の場合にスケルトンを表示
-	const isLoading = syncStatus !== "synced" && projects.length === 0;
+      </div>
+    </div>
+  );
+  // ロード中（synced以外）かつ データが0件の場合にスケルトンを表示
+  const isLoading = syncStatus !== "synced" && projects.length === 0;
 
   return (
     <div className="p-6">
@@ -277,7 +277,7 @@ export function ProjectGrid() {
         className="grid gap-4"
         style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}
       >
-				{isLoading ? (
+        {isLoading ? (
           // ロード中はスケルトンを表示
           Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
         ) : projects.length > 0 ? (

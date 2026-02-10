@@ -112,7 +112,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
     })),
   );
 
-	const isCalled = useRef(false)
+  const isCalled = useRef(false);
 
   // todo まずはローカルから取得
   // const projects =
@@ -123,9 +123,17 @@ export default function AppContent({ projectId }: { projectId: string }) {
 
   // 初期値取得
   useEffect(() => {
-		console.log("initializeProjectを呼び出します。対象ID:", projectId, "現在のURL:", window.location.pathname);
-		if (isCalled.current) return // strictModeによる2回初期化をさせない
-		isCalled.current = true
+    if (isCalled.current) return; // strictModeによる2回初期化をさせない
+    isCalled.current = true;
+    useTaskStore.setState({
+      // プロジェクトを開いたときに別データが表示されないようにリセット
+      cards: {},
+      boards: {},
+      boardOrder: [],
+      labels: {},
+      projectId: null,
+      projectTitle: null,
+    });
 
     const user = auth.currentUser;
     if (user) {
@@ -135,18 +143,9 @@ export default function AppContent({ projectId }: { projectId: string }) {
     // キーイベントの設定と解除
     window.addEventListener("keydown", handleGlobalKeyDown);
     return () => {
-			console.log("プロジェクトをアンマウントします。対象ID:", projectId, "現在のURL:", window.location.pathname);
-			window.removeEventListener("keydown", handleGlobalKeyDown)
-			// useTaskStore.setState({ // 他プロジェクトを開いたときに別データが表示されないようにリセット
-			// 	cards: {},
-			// 	boards: {},
-			// 	boardOrder: [],
-			// 	labels: {},
-			// 	projectId: null,
-			// 	projectTitle: null,
-			// })
-		};
-  }, [auth, projectId]);
+      window.removeEventListener("keydown", handleGlobalKeyDown);
+    };
+  }, [auth]);
 
   // DB更新時の処理
   useEffect(() => {
@@ -167,7 +166,6 @@ export default function AppContent({ projectId }: { projectId: string }) {
         if (payload.userId === userId) {
           showToast("success", "正常に同期されました");
         } else {
-          // console.log("送信：", payload.userId, "自分：", userId);
           const { diffTasks, lastSyncAt } = payload;
           if (!userId) return;
           applyDiff(diffTasks, userId);

@@ -1,13 +1,9 @@
 // app/page.tsx
 "use client";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import React from "react";
 import { redirect } from "next/navigation";
 
 export default function FlowLandingPageDark() {
-
-	redirect("/home");
+  redirect("/home");
 
   return (
     <></>

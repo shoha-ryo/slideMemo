@@ -8,18 +8,14 @@ import { auth } from "@/lib/firebase";
 import { redirect } from "next/navigation";
 import { AuthLoading } from "./AuthLoading";
 import { useUserStore } from "@/store/userStore";
-import { useTaskStore } from "@/app/task/store/taskStore/taskStore";
 import { syncUserAction } from "@/app/actions/user"; // ★Server Actionをインポート
 import { db } from "../../../dexie/dexie";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const { setUser, setSynced, clearUser, user } = useUserStore();
-	const {projectTitle} = useTaskStore.getState()
 
   useEffect(() => {
-    console.log("ガード実行", projectTitle, new Date().getTime());
-
     // dexieからstoreに反映
     const hydrateCache = async () => {
       const cached = await db.userMeta.get("current");
@@ -40,7 +36,6 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         await db.userMeta.delete("current");
         setLoading(false);
         redirect("/login");
-        return;
       }
 
       // 1. 最初は最小限の情報（IDとメール）だけセットしてUIロック解除

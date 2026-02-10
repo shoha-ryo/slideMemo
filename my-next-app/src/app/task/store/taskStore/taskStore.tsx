@@ -35,7 +35,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   userId: useUserStore.getState().user?.id,
   projectId: null,
   projectTitle: null,
-	initializeToken: null,
+  initializeToken: null,
   setProjectId: (projectId) => set({ projectId }),
   setProjectTitle: (projectTitle) => set({ projectTitle }),
 
@@ -68,10 +68,9 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 
   // 🚀 初期ロード処理
   initializeProject: async (userId: string, projectId: string) => {
-		
-		set({ syncStatus: "initializing" });
+    set({ syncStatus: "initializing" });
 
-		// 1. まずローカルDBから取得
+    // 1. まずローカルDBから取得
     const localCards = await db.cards.where({ projectId }).toArray();
     const localBoards = await db.boards.where({ projectId }).toArray();
     const localLabels = await db.labels.where({ projectId }).toArray();
@@ -95,7 +94,6 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     } else {
       set({ syncStatus: "syncing" });
     }
-		console.log("初期ロード開始：", get().projectTitle, new Date().getTime())
 
     try {
       // 最終同期時刻を取得する
@@ -109,8 +107,8 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       // let lastSyncAt = 0;
       // console.log("初期データ全取得モード中...");
 
-			const requestToken = crypto.randomUUID() // リクエストが古いかどうか非同期の後でチェックする
-			set({initializeToken: requestToken})
+      const requestToken = crypto.randomUUID(); // リクエストが古いかどうか非同期の後でチェックする
+      set({ initializeToken: requestToken });
       // 2. 外部DBから最新データを取得 (差分しか取らないのでtoLocalDataBase()でローカルに保存)
       const { diffTasks, newLastSyncAt, projectTitle } = await getInitialData(
         userId,
@@ -118,17 +116,9 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
         lastSyncAt,
       );
 
-			console.log("トークンチェック(trueならガードする)：", requestToken !== get().initializeToken,
-				"PJタイトル：", projectTitle,
-				"リクエストトークン：", requestToken,
-				"ストアのトークン：", get().initializeToken,
-				new Date().getTime()
-			)
-			if (requestToken !== get().initializeToken) 
-				{
-					console.log("古いリクエストなので破棄します:", projectTitle);
-					return // リクエストが古ければ実行しない
-				}
+      if (requestToken !== get().initializeToken) {
+        return; // リクエストが古ければ実行しない
+      }
 
       const newProjectTitle = projectTitle
         ? projectTitle
@@ -157,10 +147,6 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       set({ syncStatus: "synced" }); // エラーでも「完了」にしてローディングを解く
     }
   },
-
-
-
-
 
   // store更新？
   applyDiff: (diff) => {

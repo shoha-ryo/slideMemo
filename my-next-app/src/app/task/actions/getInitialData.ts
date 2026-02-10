@@ -23,8 +23,6 @@ export async function getInitialData(
   projectId: string,
   lastSyncAt: number,
 ): Promise<GetInitialData> {
-  console.log("初期データ取得開始");
-
   // 1. 基本的なプロジェクト情報の取得
   // lastSyncAtが0の場合は、ログではなく実データを全部持ってくる
   const project = await prisma.project.findFirst({
