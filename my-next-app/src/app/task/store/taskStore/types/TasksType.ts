@@ -1,6 +1,7 @@
 // type/task.ts
 
 import { emptyTasks } from "@/app/task/actions/emptyTasks";
+import { Project } from "@prisma/client";
 
 export interface TaskStore extends AppState, Payload {
   activeOriginalLabelId: string | null;
@@ -10,6 +11,7 @@ export interface TaskStore extends AppState, Payload {
   setPayload: (payload: Payload) => void;
 
   userId: string | undefined;
+  project: Project | null;
   projectId: string | null;
   projectTitle: string | null;
   initializeToken: string | null;

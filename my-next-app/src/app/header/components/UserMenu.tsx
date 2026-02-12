@@ -12,7 +12,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getAuth, signOut } from "firebase/auth";
 import { useUserStore } from "@/store/userStore";
-import { LogOut, User, Loader } from "lucide-react";
+import { LogOut, User, RotateCcw } from "lucide-react";
 import { ProfileEditDialog } from "./ProfileEditDialog";
 import { useCacheReset } from "@/components/ui/useCacheReset";
 
@@ -20,7 +20,7 @@ export const UserMenu = () => {
   const auth = getAuth();
   const { user, isSynced } = useUserStore();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-	const { resetCache, isResetting } = useCacheReset();
+  const { resetCache, isResetting } = useCacheReset();
 
   const onLogout = async () => {
     try {
@@ -81,17 +81,19 @@ export const UserMenu = () => {
 
           <DropdownMenuSeparator />
 
-					<DropdownMenuItem
-						className="focus:bg-destructive/10 cursor-pointer"
-						onSelect={(e) => {
-							e.preventDefault(); // メニューが閉じるのを防ぎたい場合
-							resetCache();
-						}}
-						disabled={isResetting}
-					>
-						<Loader className={`mr-2 h-4 w-4 ${isResetting ? "animate-spin" : ""}`} />
-						<span>{isResetting ? "リセット中..." : "一時保存データの削除"}</span>
-					</DropdownMenuItem>
+          <DropdownMenuItem
+            className="focus:bg-destructive/10 cursor-pointer"
+            onSelect={(e) => {
+              e.preventDefault(); // メニューが閉じるのを防ぎたい場合
+              resetCache();
+            }}
+            disabled={isResetting}
+          >
+            <RotateCcw
+              className={`mr-2 h-4 w-4 ${isResetting ? "animate-spin" : ""}`}
+            />
+            <span>{isResetting ? "リセット中..." : "最新データに更新"}</span>
+          </DropdownMenuItem>
 
           <DropdownMenuItem
             onClick={onLogout}

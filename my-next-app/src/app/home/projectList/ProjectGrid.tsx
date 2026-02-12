@@ -176,7 +176,6 @@ export function ProjectGrid() {
     setProjectToEdit(null);
 
     // 裏でサーバー送信
-    //todo: トーストを表示
     await updateProjectTitle(id, userId, newTitle);
     showToast("success", "正常に更新されました");
   };
@@ -241,7 +240,6 @@ export function ProjectGrid() {
               value={newProjectName}
               onChange={(e) => setNewProjectName(e.target.value)}
               onKeyDown={(e) => {
-                console.log(e.nativeEvent.isComposing);
                 if (e.nativeEvent.isComposing) return;
 
                 if (e.key === "Enter") {

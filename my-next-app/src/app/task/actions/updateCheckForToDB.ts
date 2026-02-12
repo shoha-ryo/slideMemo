@@ -1,3 +1,4 @@
+import { Project } from "@prisma/client";
 import { emptyTasks } from "./emptyTasks";
 import { toDataBase } from "./toDataBase";
 import { toLocalDataBase } from "./toLocalDataBase";
@@ -6,7 +7,7 @@ type DiffTasks = typeof emptyTasks;
 
 export const updateCheckForToDB = (
   diffTasks: DiffTasks,
-  projectId: string,
+  project: Project,
   userId: string,
 ) => {
   if (diffTasks === emptyTasks) {
@@ -14,6 +15,6 @@ export const updateCheckForToDB = (
     return;
   }
   // todo ローカル更新ロジック
-  toLocalDataBase(diffTasks, projectId);
-  toDataBase(diffTasks, projectId, userId);
+  toLocalDataBase(diffTasks, project);
+  toDataBase(diffTasks, project.id, userId);
 };

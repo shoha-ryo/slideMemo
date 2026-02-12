@@ -53,7 +53,6 @@ function InviteContent() {
   const { user } = useUserStore();
 
   const handleJoin = async () => {
-    console.log(user, token);
     if (!user || !token || !user.id) return;
 
     try {

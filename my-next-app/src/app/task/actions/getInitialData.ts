@@ -2,7 +2,7 @@
 "use server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { Board, Label } from "@prisma/client";
+import { Board, Label, Project } from "@prisma/client";
 import { emptyTasks } from "./emptyTasks";
 
 type CardWithLabels = Prisma.CardGetPayload<{
@@ -15,7 +15,7 @@ interface DiffTasks {
 
 interface GetInitialData extends DiffTasks {
   newLastSyncAt: number;
-  projectTitle: string;
+  project: Project;
 }
 
 export async function getInitialData(
@@ -103,7 +103,13 @@ export async function getInitialData(
         },
       },
       newLastSyncAt: project.updatedAt.getTime(),
-      projectTitle: project.title,
+      project: {
+        id: project.id,
+        title: project.title,
+        boardOrder: project.boardOrder,
+        createdAt: project.createdAt,
+        updatedAt: project.updatedAt,
+      },
     };
   }
 
@@ -213,6 +219,12 @@ export async function getInitialData(
       },
     },
     newLastSyncAt: project.updatedAt.getTime(),
-    projectTitle: project.title,
+    project: {
+      id: project.id,
+      title: project.title,
+      boardOrder: project.boardOrder,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+    },
   };
 }

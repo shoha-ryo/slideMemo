@@ -50,10 +50,10 @@ export const taskActions = (
   ) => {
     const state = get();
     const userId = state.userId || useUserStore.getState().user?.id;
-    if (!state.projectId || !userId) return;
+    if (!state.project || !userId) return;
 
     set(newState);
-    updateCheckForToDB(diffTasks, state.projectId, userId);
+    updateCheckForToDB(diffTasks, state.project, userId);
   };
 
   return {
@@ -122,7 +122,6 @@ export const taskActions = (
     moveLabel: (payload: Payload) => {
       const result = executeGet();
       const { newState, diffTasks } = moveLabelLogic(payload, result.state);
-      console.log(newState, diffTasks);
       executeUpdate(diffTasks, newState);
     },
 

@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase"; // initializeApp しているファイルをインポート
+import { showToast } from "@/components/ui/CustomToaster";
 
 export default function LogoutPage() {
   const router = useRouter();
@@ -12,10 +13,11 @@ export default function LogoutPage() {
   useEffect(() => {
     signOut(auth)
       .then(() => {
-        console.log("ログアウトしました");
+        showToast("info", "ログアウトしました");
         router.push("/login"); // ログイン画面へ飛ばす
       })
       .catch((error) => {
+        showToast("error", "ログアウトエラー");
         console.error("ログアウトエラー:", error);
       });
   }, [router]);

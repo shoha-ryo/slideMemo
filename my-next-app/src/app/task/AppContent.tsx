@@ -76,6 +76,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
     cards,
     boards,
     labels,
+    project,
     setActiveId,
     setHoverInfo,
     moveTask,
@@ -97,6 +98,7 @@ export default function AppContent({ projectId }: { projectId: string }) {
       cards: state.cards,
       boards: state.boards,
       labels: state.labels,
+      project: state.project,
       setActiveId: state.setActiveId,
       setHoverInfo: state.setPayload,
       moveTask: state.moveTask,
@@ -167,9 +169,16 @@ export default function AppContent({ projectId }: { projectId: string }) {
           showToast("success", "正常に同期されました");
         } else {
           const { diffTasks, lastSyncAt } = payload;
-          if (!userId) return;
+          if (!userId || !project) {
+            showToast(
+              "error",
+              "他ユーザーの更新がありましたが更新に失敗しました",
+              "ページをリロードして再読み込みをしてください。",
+            );
+            return;
+          }
           applyDiff(diffTasks, userId);
-          toLocalDataBase(diffTasks, projectId);
+          toLocalDataBase(diffTasks, project);
           updateLocalSyncMeta(lastSyncAt, projectId);
           showToast("info", "他のユーザーが更新しました");
         }

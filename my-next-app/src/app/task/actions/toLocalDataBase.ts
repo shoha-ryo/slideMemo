@@ -1,9 +1,10 @@
 import { db } from "../../../../dexie/dexie";
 import { emptyTasks } from "./emptyTasks";
+import { Project } from "@prisma/client";
 
 export const toLocalDataBase = async (
   diff: typeof emptyTasks, // 更新データ
-  projectId: string, // プロジェクトの存在確認のため...もしかして不要かも？
+  project: Project, // プロジェクトの存在確認のため...もしかして不要かも？
 ) => {
   try {
     // トランザクションで一括処理（途中でエラーが出たらロールバックされるので安全）
@@ -69,9 +70,12 @@ export const toLocalDataBase = async (
             ? diff.createTasks.boardOrder
             : diff.updateTasks.boardOrder;
         if (latestOrder.length > 0) {
-          await db.projects.update(projectId, {
-            boardOrder: latestOrder,
-            updatedAt: Date.now(),
+          await db.projects.put({
+            id: project.id,
+            title: project.title,
+            boardOrder: project.boardOrder,
+            createdAt: Number(project.createdAt),
+            updatedAt: Number(project.updatedAt),
           });
         }
       },

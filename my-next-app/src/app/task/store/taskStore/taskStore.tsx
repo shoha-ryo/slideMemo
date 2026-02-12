@@ -33,6 +33,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   setIsTaskCreating: (isTaskCreating) => set({ isTaskCreating }),
 
   userId: useUserStore.getState().user?.id,
+  project: null,
   projectId: null,
   projectTitle: null,
   initializeToken: null,
@@ -110,7 +111,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       const requestToken = crypto.randomUUID(); // リクエストが古いかどうか非同期の後でチェックする
       set({ initializeToken: requestToken });
       // 2. 外部DBから最新データを取得 (差分しか取らないのでtoLocalDataBase()でローカルに保存)
-      const { diffTasks, newLastSyncAt, projectTitle } = await getInitialData(
+      const { diffTasks, newLastSyncAt, project } = await getInitialData(
         userId,
         projectId,
         lastSyncAt,
@@ -120,12 +121,12 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
         return; // リクエストが古ければ実行しない
       }
 
-      const newProjectTitle = projectTitle
-        ? projectTitle
+      const newProjectTitle = project.title
+        ? project.title
         : "プロジェクト名の取得に失敗しました";
 
       // 3. 次回のためにローカルDBを最新化
-      await toLocalDataBase(diffTasks, projectId);
+      await toLocalDataBase(diffTasks, project);
       await updateLocalSyncMeta(newLastSyncAt, projectId);
 
       // 4. Storeを最新に更新(ローカルDB更新後)
@@ -133,12 +134,14 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       const updatedBoards = await db.boards.where({ projectId }).toArray();
       const updatedLabels = await db.labels.where({ projectId }).toArray();
       const updatedProject = await db.projects.get(projectId);
+      console.log(updatedCards, updatedBoards, updatedLabels, updatedProject);
 
       set({
         cards: Object.fromEntries(updatedCards.map((c) => [c.id, c])),
         boards: Object.fromEntries(updatedBoards.map((b) => [b.id, b])),
         labels: Object.fromEntries(updatedLabels.map((l) => [l.id, l])),
         boardOrder: updatedProject?.boardOrder || [],
+        project: project,
         projectTitle: newProjectTitle,
         syncStatus: "synced",
       });
