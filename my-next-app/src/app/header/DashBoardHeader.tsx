@@ -32,10 +32,6 @@ export default function DashBoardHeader() {
 
         {/* 中央セクション */}
         <div className="flex items-center">
-					<SyncStatusBadge
-						status={syncStatus}
-						key={syncStatus}
-					></SyncStatusBadge>
           {/* 検索バー */}
           <div className="relative w-full max-w-lg group">
             {/* アイコン：absoluteでインプットの上に重ねる */}
@@ -54,7 +50,10 @@ export default function DashBoardHeader() {
 
         {/* 右側セクション */}
         <div className="flex items-center gap-3">
-          {/* Notifications */}
+          <SyncStatusBadge
+						status={syncStatus}
+						key={syncStatus}
+					/>
 
           {/* Settings */}
 
